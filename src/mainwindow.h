@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "protocol.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +18,10 @@ public:
     
 private:
     Ui::MainWindow *ui;
+    Protocol * protocol;
+
+    void setup();
+    void log(QString text);
 };
 
 #endif // MAINWINDOW_H

@@ -13,8 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::setup() {
+    // Init GUI
     ui->portChooser->addItem(tr("TEST"));
+    ui->ledADC->setOnColor(QLed::Green);
+    ui->ledGPS->setOnColor(QLed::Green);
 
+    // Init behavior
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
         QString portName = ui->portChooser->currentText();
         log(tr("    Opening port %1...").arg(portName));
@@ -30,7 +34,7 @@ void MainWindow::setup() {
     connect(protocol, &Protocol::checkedADC, [=](bool success){
         if(success) {
             log(tr("[+] ADC ready"));
-            ui->readyADC->setChecked(true);
+            ui->ledADC->setValue(true);
             log(tr("    Checking GPS..."));
             protocol->checkGPS();
         } else {
@@ -40,7 +44,7 @@ void MainWindow::setup() {
     connect(protocol, &Protocol::checkedGPS, [=](bool success){
         if(success) {
             log(tr("[+] GPS ready"));
-            ui->readyGPS->setChecked(true);
+            ui->ledGPS->setValue(true);
             log(tr("    Now you can start data receiving"));
             ui->startBtn->setEnabled(true);
         } else {

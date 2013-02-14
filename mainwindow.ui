@@ -29,23 +29,41 @@
        <string>Link management</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="readyGPS">
-         <property name="enabled">
-          <bool>false</bool>
+       <item row="0" column="1">
+        <widget class="QLed" name="ledADC" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="text">
-          <string>GPS synchronized</string>
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="readyADC">
-         <property name="enabled">
-          <bool>false</bool>
+       <item row="1" column="1">
+        <widget class="QLed" name="ledGPS" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
          </property>
-         <property name="text">
-          <string>ADC ready</string>
+         <property name="maximumSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -63,7 +81,7 @@
          </item>
         </layout>
        </item>
-       <item row="0" column="3" rowspan="2">
+       <item row="0" column="4" rowspan="2">
         <widget class="QPushButton" name="connectBtn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -73,6 +91,20 @@
          </property>
          <property name="text">
           <string>Connect</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>GPS synchronized</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>ADC ready</string>
          </property>
         </widget>
        </item>
@@ -112,7 +144,7 @@
        <item row="0" column="3">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Samples</string>
+          <string>Samples received</string>
          </property>
         </widget>
        </item>
@@ -174,7 +206,7 @@
      <x>0</x>
      <y>0</y>
      <width>485</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -201,6 +233,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QLed</class>
+   <extends>QWidget</extends>
+   <header>src/gui/qled.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

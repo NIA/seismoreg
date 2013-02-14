@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDateTime>
 #include "protocol.h"
 
 namespace Ui {
@@ -19,6 +20,9 @@ public:
 private:
     Ui::MainWindow *ui;
     Protocol * protocol;
+    int samplesReceived;
+    QDateTime startedAt;
+    QTimer * clockTimer;
 
     void setup();
     void log(QString text);

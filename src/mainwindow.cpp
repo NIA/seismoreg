@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "protocols/testprotocol.h"
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,6 +18,12 @@ void MainWindow::setup() {
     ui->portChooser->addItem(tr("TEST"));
     ui->ledADC->setOnColor(QLed::Green);
     ui->ledGPS->setOnColor(QLed::Green);
+    ui->samplesRcvd->setText(QString::number(samplesReceived));
+    clockTimer = new QTimer(this);
+    connect(clockTimer, &QTimer::timeout, [=](){
+        QTime elapsed = QTime(0,0,0).addSecs(startedAt.secsTo(QDateTime::currentDateTime()));
+        ui->timeElapsed->setTime(elapsed);
+    });
 
     // Init behavior
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
@@ -55,10 +62,16 @@ void MainWindow::setup() {
         ui->startBtn->setEnabled(false);
         ui->stopBtn->setEnabled(true);
         log(tr("[ ] Starting receiving data..."));
+        startedAt = QDateTime::currentDateTime();
+        ui->timeStart->setDateTime(startedAt);
+        clockTimer->start(1000);
         protocol->startReceiving();
     });
     connect(protocol, &Protocol::dataAvailable, [=](QVector<DataType> d){
-        log(tr("[+] Received %1 data items").arg(d.size()));
+        int received = d.size();
+        log(tr("[+] Received %1 data items").arg(received));
+        samplesReceived += received;
+        ui->samplesRcvd->setText(QString::number(samplesReceived));
         QStringList items;
         foreach(DataType item, d) {
             items << QString::number(item);
@@ -70,6 +83,7 @@ void MainWindow::setup() {
         ui->startBtn->setEnabled(true);
         log(tr("[ ] Stopped receiving data"));
         protocol->stopReceiving();
+        clockTimer->stop();
     });
 }
 

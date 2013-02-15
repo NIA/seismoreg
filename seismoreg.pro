@@ -9,12 +9,12 @@ TEMPLATE = app
 SOURCES += src/main.cpp\
         src/mainwindow.cpp \
     src/protocols/testprotocol.cpp \
-    src/gui/qled.cpp
+    src/gui/qled/qled.cpp
 
 HEADERS  += src/mainwindow.h \
     src/protocol.h \
     src/protocols/testprotocol.h \
-    src/gui/qled.h
+    src/gui/qled/qled.h
 
 FORMS    += mainwindow.ui
 

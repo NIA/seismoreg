@@ -32,6 +32,7 @@ void MainWindow::setup() {
         if(protocol->open()) {
             log(tr("[+] Opened port %1").arg(portName));
             ui->connectBtn->setEnabled(false);
+            ui->portChooser->setFocus();
             log(tr("    Checking ADC..."));
             protocol->checkADC();
         } else {
@@ -54,6 +55,7 @@ void MainWindow::setup() {
             ui->ledGPS->setValue(true);
             log(tr("    Now you can start data receiving"));
             ui->startBtn->setEnabled(true);
+            ui->startBtn->setFocus();
         } else {
             log(tr("[-] GPS check failed!"));
         }
@@ -61,6 +63,7 @@ void MainWindow::setup() {
     connect(ui->startBtn, &QPushButton::clicked, [=](){
         ui->startBtn->setEnabled(false);
         ui->stopBtn->setEnabled(true);
+        ui->stopBtn->setFocus();
         log(tr("[ ] Starting receiving data..."));
         startedAt = QDateTime::currentDateTime();
         ui->timeStart->setDateTime(startedAt);

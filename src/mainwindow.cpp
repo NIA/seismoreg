@@ -80,6 +80,7 @@ void MainWindow::setup() {
             items << QString::number(item);
         }
         ui->dataView->addItems(items);
+        ui->dataView->scrollToBottom();
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setEnabled(false);

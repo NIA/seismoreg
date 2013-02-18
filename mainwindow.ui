@@ -81,19 +81,6 @@
          </item>
         </layout>
        </item>
-       <item row="0" column="4" rowspan="2">
-        <widget class="QPushButton" name="connectBtn">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Connect</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="2">
         <widget class="QLabel" name="label_6">
          <property name="text">
@@ -105,6 +92,35 @@
         <widget class="QLabel" name="label_5">
          <property name="text">
           <string>ADC ready</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="connectBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Connect</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="disconnectBtn">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Disconnect</string>
          </property>
         </widget>
        </item>
@@ -132,6 +148,9 @@
          <property name="text">
           <string>Start time</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
         </widget>
        </item>
        <item row="0" column="2">
@@ -139,12 +158,18 @@
          <property name="text">
           <string>Time elapsed</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
         </widget>
        </item>
        <item row="0" column="3">
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Samples received</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -160,6 +185,9 @@
        </item>
        <item row="1" column="1">
         <widget class="QTimeEdit" name="timeStart">
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -170,6 +198,9 @@
        </item>
        <item row="1" column="2">
         <widget class="QTimeEdit" name="timeElapsed">
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -180,6 +211,12 @@
        </item>
        <item row="1" column="3">
         <widget class="QLineEdit" name="samplesRcvd">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -189,7 +226,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QPlainTextEdit" name="logView">
+     <widget class="LogWindow" name="logView">
       <property name="maximumSize">
        <size>
         <width>16777215</width>
@@ -212,7 +249,7 @@
      <x>0</x>
      <y>0</y>
      <width>485</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -245,6 +282,11 @@
    <extends>QWidget</extends>
    <header>src/gui/qled/qled.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LogWindow</class>
+   <extends>QPlainTextEdit</extends>
+   <header>src/gui/logwindow.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

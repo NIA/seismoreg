@@ -16,21 +16,25 @@ public:
      * \param parent usual QObject parent argument
      */
     explicit TestProtocol(int dataSize = 100, int mean = 100, QObject *parent = 0);
+    QString description();
 
     virtual bool open();
     virtual void checkADC();
     virtual void checkGPS();
     virtual void startReceiving();
     virtual void stopReceiving();
+    virtual void close();
 
 private slots:
 
 private:
-    QVector<DataType> generateRandom();
+    DataVector generateRandom();
 
     int dataSize;
     int mean;
     QTimer * dataTimer;
+    QTimer * checkADCTimer;
+    QTimer * checkGPSTimer;
 };
 
 #endif // TESTPROTOCOL_H

@@ -2,13 +2,16 @@
 #include "ui_mainwindow.h"
 #include "protocols/testprotocol.h"
 #include <QTimer>
+#include "logger.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    // TODO choosing port
     protocol = new TestProtocol(5, 100, this);
+    worker = new Worker(protocol, this);
 
     setup();
 }
@@ -16,83 +19,85 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::setup() {
     // Init GUI
     ui->portChooser->addItem(tr("TEST"));
-    ui->ledADC->setOnColor(QLed::Green);
     ui->ledGPS->setOnColor(QLed::Green);
-    ui->samplesRcvd->setText(QString::number(samplesReceived));
     clockTimer = new QTimer(this);
     connect(clockTimer, &QTimer::timeout, [=](){
         QTime elapsed = QTime(0,0,0).addSecs(startedAt.secsTo(QDateTime::currentDateTime()));
         ui->timeElapsed->setTime(elapsed);
     });
 
-    // Init behavior
+    // Connect event handlers
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
-        QString portName = ui->portChooser->currentText();
-        log(tr("    Opening port %1...").arg(portName));
-        if(protocol->open()) {
-            log(tr("[+] Opened port %1").arg(portName));
-            ui->connectBtn->setEnabled(false);
-            ui->portChooser->setFocus();
-            log(tr("    Checking ADC..."));
-            protocol->checkADC();
-        } else {
-            log(tr("[-] Failed to open port %1!").arg(portName));
-        }
+        ui->connectBtn->setDisabled(true);
+        ui->disconnectBtn->setEnabled(true);
+        ui->portChooser->setFocus();
+        worker->reset(protocol);
+        worker->prepare();
     });
-    connect(protocol, &Protocol::checkedADC, [=](bool success){
-        if(success) {
-            log(tr("[+] ADC ready"));
-            ui->ledADC->setValue(true);
-            log(tr("    Checking GPS..."));
-            protocol->checkGPS();
-        } else {
-            log(tr("[-] ADC check failed!"));
-        }
+    connect(worker->protocol(), &Protocol::checkedADC, [=](bool success){
+        ui->ledADC->setOnColor( success ? QLed::Green : QLed::Red);
+        ui->ledADC->setValue(true);
     });
-    connect(protocol, &Protocol::checkedGPS, [=](bool success){
-        if(success) {
-            log(tr("[+] GPS ready"));
-            ui->ledGPS->setValue(true);
-            log(tr("    Now you can start data receiving"));
+    connect(worker->protocol(), &Protocol::checkedGPS, [=](bool success){
+        ui->ledGPS->setOnColor( success ? QLed::Green : QLed::Red);
+        ui->ledGPS->setValue(true);
+    });
+    connect(worker, &Worker::prepareFinished, [=](Worker::PrepareResult res){
+        if(res == Worker::PrepareSuccess) {
             ui->startBtn->setEnabled(true);
             ui->startBtn->setFocus();
         } else {
-            log(tr("[-] GPS check failed!"));
+            ui->connectBtn->setEnabled(true);
+            ui->disconnectBtn->setDisabled(true);
         }
     });
     connect(ui->startBtn, &QPushButton::clicked, [=](){
-        ui->startBtn->setEnabled(false);
+        ui->startBtn->setDisabled(true);
         ui->stopBtn->setEnabled(true);
         ui->stopBtn->setFocus();
-        log(tr("[ ] Starting receiving data..."));
+
         startedAt = QDateTime::currentDateTime();
         ui->timeStart->setDateTime(startedAt);
         clockTimer->start(1000);
-        protocol->startReceiving();
+
+        if(worker->isStarted()) {
+            worker->unpause();
+        } else {
+            worker->start();
+        }
     });
-    connect(protocol, &Protocol::dataAvailable, [=](QVector<DataType> d){
-        int received = d.size();
-        log(tr("[+] Received %1 data items").arg(received));
-        samplesReceived += received;
-        ui->samplesRcvd->setText(QString::number(samplesReceived));
+    connect(worker, &Worker::dataUpdated, [=](DataVector d){
         QStringList items;
         foreach(DataType item, d) {
             items << QString::number(item);
         }
+        ui->samplesRcvd->setText(QString::number(worker->data().size()));
         ui->dataView->addItems(items);
         ui->dataView->scrollToBottom();
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
-        ui->stopBtn->setEnabled(false);
+        ui->stopBtn->setDisabled(true);
         ui->startBtn->setEnabled(true);
-        log(tr("[ ] Stopped receiving data"));
-        protocol->stopReceiving();
+
+        worker->pause();
         clockTimer->stop();
+    });
+    connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
+        worker->finish();
+        clockTimer->stop();
+
+        ui->ledADC->setValue(false);
+        ui->ledGPS->setValue(false);
+        ui->disconnectBtn->setDisabled(true);
+        ui->stopBtn->setDisabled(true);
+        ui->startBtn->setDisabled(true);
+        ui->connectBtn->setEnabled(true);
+        ui->portChooser->setFocus();
     });
 }
 
 void MainWindow::log(QString text) {
-    ui->logView->appendPlainText(text);
+    Logger::info(text);
 }
 
 MainWindow::~MainWindow()

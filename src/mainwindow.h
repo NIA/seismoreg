@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include "protocol.h"
+#include "worker.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,7 +21,8 @@ public:
 private:
     Ui::MainWindow *ui;
     Protocol * protocol;
-    int samplesReceived;
+    Worker * worker;
+
     QDateTime startedAt;
     QTimer * clockTimer;
 

@@ -5,6 +5,7 @@
 #include <QVector>
 
 typedef int DataType;
+typedef QVector<DataType> DataVector;
 
 /*!
  * \interface Protocol
@@ -42,6 +43,12 @@ public:
      * \param parent QObject parent
      */
     explicit Protocol(QObject * parent = 0) : QObject(parent) { resetState(); }
+
+    /*!
+     * \brief Short description of protocol
+     * \return translatable description of protocol type and its parameters (like port, etc)
+     */
+    virtual QString description() = 0;
 
     /*!
      * \brief initialize protocol communication
@@ -95,6 +102,11 @@ public:
      */
     bool hasState(SingleState flag) const { return state_.testFlag(flag); }
 
+    /*!
+     * \brief Close all opened ports and finalize all work with protocol
+     */
+    virtual void close() = 0;
+
 signals:
     /*!
      * \brief emitted when ADC check result is ready
@@ -115,7 +127,7 @@ signals:
      * \param data
      * \see Protocol::startReceiving, Protocol::stopReceiving
      */
-    void dataAvailable(QVector<DataType> data);
+    void dataAvailable(DataVector data);
 
     /*!
      * \brief emitted when state is changed

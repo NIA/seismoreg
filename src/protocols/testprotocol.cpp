@@ -2,10 +2,26 @@
 #include <QTimer>
 #include <QTime>
 
+namespace {
+    void disableTimer(QTimer * timer) {
+        if(timer != NULL) {
+            timer->disconnect();
+            timer->stop();
+        }
+    }
+}
+
 TestProtocol::TestProtocol(int dataSize, int mean, QObject *parent) :
-    Protocol(parent), dataSize(dataSize), mean(mean), dataTimer(NULL)
+    Protocol(parent), dataSize(dataSize), mean(mean), dataTimer(NULL), checkADCTimer(NULL), checkGPSTimer(NULL)
 {
     qsrand(QTime::currentTime().msec());
+    checkADCTimer = new QTimer(this);
+    checkGPSTimer = new QTimer(this);
+    dataTimer = new QTimer(this);
+}
+
+QString TestProtocol::description() {
+    return tr("Test protocol x%1@%2").arg(dataSize).arg(mean);
 }
 
 bool TestProtocol::open() {
@@ -14,23 +30,21 @@ bool TestProtocol::open() {
 }
 
 void TestProtocol::checkADC() {
-    auto timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, [=](){
+    checkADCTimer->setSingleShot(true);
+    connect(checkADCTimer, &QTimer::timeout, [=](){
         addState(ADCReady);
         emit checkedADC(true);
     });
-    timer->start(1100);
+    checkADCTimer->start(1100);
 }
 
 void TestProtocol::checkGPS() {
-    auto timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, [=](){
+    checkGPSTimer->setSingleShot(true);
+    connect(checkGPSTimer, &QTimer::timeout, [=](){
         addState(GPSReady);
         emit checkedGPS(true);
     });
-    timer->start(2000);
+    checkGPSTimer->start(2000);
 }
 
 void TestProtocol::startReceiving() {
@@ -44,7 +58,6 @@ void TestProtocol::startReceiving() {
         return;
     }
     addState(Receiving);
-    dataTimer = new QTimer(this);
     connect(dataTimer, &QTimer::timeout, [=](){
         emit dataAvailable(generateRandom());
     });
@@ -60,8 +73,15 @@ void TestProtocol::stopReceiving() {
     removeState(Receiving);
 }
 
-QVector<DataType> TestProtocol::generateRandom() {
-    QVector<DataType> res(dataSize);
+void TestProtocol::close() {
+    disableTimer(dataTimer);
+    disableTimer(checkADCTimer);
+    disableTimer(checkGPSTimer);
+    resetState();
+}
+
+DataVector TestProtocol::generateRandom() {
+    DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
         res[i] = mean + qrand()*mean*0.1/RAND_MAX;
     }

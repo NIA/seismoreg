@@ -58,6 +58,7 @@ void MainWindow::setup() {
 
         startedAt = QDateTime::currentDateTime();
         ui->timeStart->setDateTime(startedAt);
+        ui->timeElapsed->setTime(QTime(0,0,0));
         clockTimer->start(1000);
 
         if(worker->isStarted()) {
@@ -78,6 +79,7 @@ void MainWindow::setup() {
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
         ui->startBtn->setEnabled(true);
+        ui->startBtn->setFocus();
 
         worker->pause();
         clockTimer->stop();

@@ -69,7 +69,7 @@ void TestProtocol::stopReceiving() {
         // TODO: report warning: already stopped
         return;
     }
-    dataTimer->stop();
+    disableTimer(dataTimer);
     removeState(Receiving);
 }
 

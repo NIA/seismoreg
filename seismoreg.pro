@@ -24,5 +24,7 @@ HEADERS  += src/mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+TRANSLATIONS += seismoreg_ru.ts
+
 RESOURCES += \
     qled.qrc

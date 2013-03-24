@@ -83,7 +83,7 @@ void TestProtocol::close() {
 DataVector TestProtocol::generateRandom() {
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
-        res[i] = mean + qrand()*mean*0.1/RAND_MAX;
+        res[i] = mean + qrand()*0.1*mean/RAND_MAX;
     }
     return res;
 }

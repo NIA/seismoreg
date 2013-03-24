@@ -27,6 +27,7 @@ private:
     QTimer * clockTimer;
 
     void setup();
+    void initWorkerHandlers();
     void log(QString text);
 };
 

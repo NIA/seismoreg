@@ -11,8 +11,10 @@ Worker::Worker(Protocol * prot, QObject *parent) :
 void Worker::reset(Protocol *prot) {
     finish();
     protocol_ = prot;
-    // Take ownership on protocol in order to prevent it from being deleted before Worker (and cause crash in destructor)
-    protocol_->setParent(this);
+    if(prot != NULL) {
+        // Take ownership on protocol in order to prevent it from being deleted before Worker (and cause crash in destructor)
+        protocol_->setParent(this);
+    }
 }
 
 void Worker::prepare(bool autostart) {

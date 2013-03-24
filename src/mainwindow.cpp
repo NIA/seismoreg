@@ -1,24 +1,33 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "protocols/testprotocol.h"
+#include "protocols/serialprotocol.h"
 #include <QTimer>
 #include "logger.h"
 
+namespace {
+    const QString TEST_PROTOCOL = "TEST";
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), protocol(NULL)
 {
     ui->setupUi(this);
-    // TODO choosing port
-    protocol = new TestProtocol(5, 100, this);
-    worker = new Worker(protocol, this);
+    worker = new Worker(NULL, this);
 
     setup();
 }
 
 void MainWindow::setup() {
     // Init GUI
-    ui->portChooser->addItem(tr("TEST"));
+    ui->portChooser->addItem(TEST_PROTOCOL);
+    // FIXME: linux-specific!
+    ui->portChooser->addItem("/dev/pts/12");
+
+    // TODO: use enumerator:
+    // ui->portChooser->addItems(SerialProtocol::portNames());
+
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
     connect(clockTimer, &QTimer::timeout, [=](){
@@ -31,9 +40,22 @@ void MainWindow::setup() {
         ui->connectBtn->setDisabled(true);
         ui->disconnectBtn->setEnabled(true);
         ui->portChooser->setFocus();
+
+        QString portName = ui->portChooser->currentText();
+        if(portName == TEST_PROTOCOL) {
+            // An option for testing
+            protocol = new TestProtocol(5, 100, this);
+        } else {
+            protocol = new SerialProtocol(portName, this);
+        }
+
         worker->reset(protocol);
+        initWorkerHandlers();
         worker->prepare();
     });
+}
+
+void MainWindow::initWorkerHandlers() {
     connect(worker->protocol(), &Protocol::checkedADC, [=](bool success){
         ui->ledADC->setOnColor( success ? QLed::Green : QLed::Red);
         ui->ledADC->setValue(true);

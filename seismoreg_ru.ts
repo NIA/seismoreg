@@ -47,80 +47,185 @@
         <translation>Порт</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="87"/>
+        <location filename="mainwindow.ui" line="91"/>
         <source>GPS synchronized</source>
         <translation>GPS синхронизован</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="94"/>
+        <location filename="mainwindow.ui" line="98"/>
         <source>ADC ready</source>
         <translation>АЦП готов</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="107"/>
+        <location filename="mainwindow.ui" line="111"/>
         <source>Connect</source>
         <translation>Подключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="123"/>
+        <location filename="mainwindow.ui" line="127"/>
         <source>Disconnect</source>
         <translation>Отключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="133"/>
+        <location filename="mainwindow.ui" line="137"/>
         <source>Data receiving</source>
         <translation>Приём данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="142"/>
+        <location filename="mainwindow.ui" line="146"/>
         <source>Start</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="149"/>
+        <location filename="mainwindow.ui" line="153"/>
         <source>Start time</source>
         <translation>Время начала</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="159"/>
+        <location filename="mainwindow.ui" line="163"/>
         <source>Time elapsed</source>
         <translation>Прошло времени</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="169"/>
+        <location filename="mainwindow.ui" line="173"/>
         <source>Samples received</source>
         <translation>Получено данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="182"/>
+        <location filename="mainwindow.ui" line="186"/>
         <source>Stop</source>
         <translation>Стоп</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="195"/>
-        <location filename="mainwindow.ui" line="208"/>
+        <location filename="mainwindow.ui" line="199"/>
+        <location filename="mainwindow.ui" line="212"/>
         <source>H:mm:ss</source>
         <translation>HH:mm:ss</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="215"/>
+        <location filename="mainwindow.ui" line="219"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="257"/>
+        <location filename="mainwindow.ui" line="261"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="274"/>
+        <location filename="mainwindow.ui" line="278"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="21"/>
         <source>TEST</source>
-        <translation>ТЕСТ</translation>
+        <translation type="obsolete">ТЕСТ</translation>
+    </message>
+</context>
+<context>
+    <name>QextSerialPort</name>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="723"/>
+        <source>No Error has occurred</source>
+        <translation>Ошибки не произошло</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="725"/>
+        <source>Invalid file descriptor (port was not opened correctly)</source>
+        <translation>Неверный дескриптор файла (порт не был открыт корректно)</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="727"/>
+        <source>Unable to allocate memory tables (POSIX)</source>
+        <translation>Невозможно аллоцировать таблицы памяти (POSIX)</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="729"/>
+        <source>Caught a non-blocked signal (POSIX)</source>
+        <translation>Получен неблокированный сигнал (POSIX)</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="731"/>
+        <source>Operation timed out (POSIX)</source>
+        <translation>Время операции истекло (POSIX)</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="733"/>
+        <source>The file opened by the port is not a valid device</source>
+        <translation>Файл открытый через порт не является верным устройством</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="735"/>
+        <source>The port detected a break condition</source>
+        <translation>Порт обнаружил условие прерывания</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="737"/>
+        <source>The port detected a framing error (usually caused by incorrect baud rate settings)</source>
+        <translation>Порт обнаружил ошибку кадрирования (обычно вызванную неверной настройкой скорости передачи)</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="739"/>
+        <source>There was an I/O error while communicating with the port</source>
+        <translation>Ошибка ввода-вывода во время сообщения с портом</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="741"/>
+        <source>Character buffer overrun</source>
+        <translation>Переполнение буфера символов</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="743"/>
+        <source>Receive buffer overflow</source>
+        <translation>Переполнение буфера приема</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="745"/>
+        <source>The port detected a parity error in the received data</source>
+        <translation>Порт обнаружил ошибку четности в принятых данных</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="747"/>
+        <source>Transmit buffer overflow</source>
+        <translation>Переполнение буфера передачи</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="749"/>
+        <source>General read operation failure</source>
+        <translation>Общая ошибка операции чтения</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="751"/>
+        <source>General write operation failure</source>
+        <translation>Общая ошибка операции записи</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="753"/>
+        <source>The %1 file doesn&apos;t exists</source>
+        <translation>Файл %1 не существует</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="755"/>
+        <source>Permission denied</source>
+        <translation>Доступ запрещён</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="757"/>
+        <source>Device is already locked</source>
+        <translation>Устройство уже заблокировано</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="759"/>
+        <source>Unknown error: %1</source>
+        <translation>Неизвестная ошибка: %1</translation>
+    </message>
+</context>
+<context>
+    <name>SerialProtocol</name>
+    <message>
+        <location filename="src/protocols/serialprotocol.cpp" line="26"/>
+        <source>Serial port %1</source>
+        <translation>Последовательный порт %1</translation>
     </message>
 </context>
 <context>
@@ -134,98 +239,98 @@
 <context>
     <name>Worker</name>
     <message>
-        <location filename="src/worker.cpp" line="21"/>
+        <location filename="src/worker.cpp" line="23"/>
         <source>Called prepare twice!</source>
         <translation>Дважды вызвана prepare!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="27"/>
+        <location filename="src/worker.cpp" line="29"/>
         <source>Opening protocol: %1...</source>
         <translation>Открываю протокол: %1...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="29"/>
+        <location filename="src/worker.cpp" line="31"/>
         <source>Opened protocol: %1</source>
         <translation>Открыт протокол: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="36"/>
-        <location filename="src/worker.cpp" line="69"/>
+        <location filename="src/worker.cpp" line="38"/>
+        <location filename="src/worker.cpp" line="71"/>
         <source>Checking ADC...</source>
         <translation>Проверка АЦП...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="39"/>
+        <location filename="src/worker.cpp" line="41"/>
         <source>Failed to open protocol: %1</source>
         <translation>Не удалось открыть протокол: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="46"/>
+        <location filename="src/worker.cpp" line="48"/>
         <source>ADC ready</source>
         <translation>АЦП готов</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="52"/>
+        <location filename="src/worker.cpp" line="54"/>
         <source>Checking GPS...</source>
         <translation>Проверка GPS...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="56"/>
+        <location filename="src/worker.cpp" line="58"/>
         <source>ADC check failed!</source>
         <translation>Проверка АЦП неудачна!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="63"/>
+        <location filename="src/worker.cpp" line="65"/>
         <source>GPS ready</source>
         <translation>GPS готов</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="73"/>
+        <location filename="src/worker.cpp" line="75"/>
         <source>GPS check failed!</source>
         <translation>Проверка GPS неудачна!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="84"/>
+        <location filename="src/worker.cpp" line="86"/>
         <source>Worker prepared and automatically started!</source>
         <translation>Worker подготовлен и автоматически запущен!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="87"/>
+        <location filename="src/worker.cpp" line="89"/>
         <source>Worker prepared and now can be started</source>
         <translation>Worker готов и может быть теперь запущен</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="95"/>
+        <location filename="src/worker.cpp" line="97"/>
         <source>Trying to start not prepared worker!</source>
         <translation>Попытка запуска не подготовленного Worker&apos;а!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="99"/>
+        <location filename="src/worker.cpp" line="101"/>
         <source>Trying to start already started worker!</source>
         <translation>Попытка запуска уже запущенного Worker&apos;а!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="106"/>
+        <location filename="src/worker.cpp" line="108"/>
         <source>Starting receiving data...</source>
         <translation>Начинаю принимать данные...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="113"/>
+        <location filename="src/worker.cpp" line="115"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="125"/>
+        <location filename="src/worker.cpp" line="127"/>
         <source>Paused receiving data!</source>
         <translation>Приём данных приостановлен!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="135"/>
+        <location filename="src/worker.cpp" line="137"/>
         <source>Continuing receiving data after pause...</source>
         <translation>Продолжаю приём данных после паузы...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="143"/>
+        <location filename="src/worker.cpp" line="145"/>
         <source>Closed protocol: %1</source>
         <translation>Закрыт протокол: %1</translation>
     </message>

@@ -22,11 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::setup() {
     // Init GUI
     ui->portChooser->addItem(TEST_PROTOCOL);
-    // FIXME: linux-specific!
-    ui->portChooser->addItem("/dev/pts/12");
-
-    // TODO: use enumerator:
-    // ui->portChooser->addItems(SerialProtocol::portNames());
+    ui->portChooser->addItems(SerialProtocol::portNames());
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -56,6 +52,7 @@ void MainWindow::setup() {
 }
 
 void MainWindow::initWorkerHandlers() {
+    worker->disconnect();
     connect(worker->protocol(), &Protocol::checkedADC, [=](bool success){
         ui->ledADC->setOnColor( success ? QLed::Green : QLed::Red);
         ui->ledADC->setValue(true);

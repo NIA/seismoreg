@@ -77,7 +77,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="portChooser"/>
+          <widget class="QComboBox" name="portChooser">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

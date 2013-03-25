@@ -7,11 +7,12 @@
 #include <QByteArray>
 
 namespace {
-    const QByteArray CHECK_ADC = "\03";
-    const QByteArray CHECK_GPS = "\04";
+    const QByteArray CHECK_ADC = "\x03";
+    const QByteArray CHECK_GPS = "\x04";
+    const QByteArray START_RECEIVE = "\x01";
     const QByteArray CHECKED_ADC = CHECK_ADC;
     const QByteArray CHECKED_GPS = CHECK_GPS;
-    const QByteArray DATA_PREFIX(5, '\05');
+    const QByteArray DATA_PREFIX(5, '\xF0');
 }
 
 SerialProtocol::SerialProtocol(QString portName, QObject *parent) :
@@ -31,17 +32,19 @@ bool SerialProtocol::open() {
         connect(port, &QextSerialPort::readyRead, this, &SerialProtocol::onDataReceived);
         return true;
     } else {
-        Logger::error(tr("Failed to open serial port %1").arg(portName));
+        if(port->lastError() != E_NO_ERROR) {
+            Logger::error(port->errorString());
+        }
         return false;
     }
 }
 
 void SerialProtocol::checkADC() {
-    port->write("\03");
+    port->write(CHECK_ADC);
 }
 
 void SerialProtocol::checkGPS() {
-    port->write("\04");
+    port->write(CHECK_GPS);
 }
 
 void SerialProtocol::startReceiving() {
@@ -54,7 +57,7 @@ void SerialProtocol::startReceiving() {
         // TODO: report warning: already receiving
         return;
     }
-    // FIXME: send command
+    port->write(START_RECEIVE);
     addState(Receiving);
 }
 
@@ -98,7 +101,9 @@ QList<QString> SerialProtocol::portNames() {
     QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
     QList<QString> names;
     foreach (QextPortInfo port, ports) {
-        names << port.portName;
+        if( ! port.portName.isEmpty() ) {
+            names << port.portName;
+        }
     }
     return names;
 }

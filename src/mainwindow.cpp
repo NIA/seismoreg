@@ -4,9 +4,39 @@
 #include "protocols/serialprotocol.h"
 #include <QTimer>
 #include "logger.h"
+#include "qwt_plot_curve.h"
+#include "qwt_plot_grid.h"
+#include "qwt_scale_draw.h"
 
 namespace {
     const QString TEST_PROTOCOL = "TEST";
+
+    const QColor GRID_COLOR(128, 128, 128);
+    const QColor CURVE_COLOR(40, 90, 120);
+    const QColor CURVE_FILL(10, 160, 255, 100);
+    const QColor AVERAGE_COLOR(255, 50, 50);
+
+    void initGrid(QwtPlot *plot) {
+        QwtPlotGrid * grid = new QwtPlotGrid;
+        grid->enableXMin(true);
+        grid->enableYMin(true);
+        grid->setMajorPen(QPen(GRID_COLOR));
+        grid->setMinorPen(QPen(GRID_COLOR, 1, Qt::DashLine));
+        grid->attach(plot);
+    }
+    inline void rotateAxisLabel(QwtScaleDraw * axisDraw) {
+        axisDraw->setLabelRotation(-90);
+        axisDraw->setLabelAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    }
+    QVector<QPointF> seriesData(DataVector data) {
+        QVector<QPointF> res;
+        int i = 0;
+        foreach(DataType val, data) {
+            res << QPointF(i, val);
+            ++i;
+        }
+        return res;
+    }
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -23,6 +53,9 @@ void MainWindow::setup() {
     // Init GUI
     ui->portChooser->addItem(TEST_PROTOCOL);
     ui->portChooser->addItems(SerialProtocol::portNames());
+
+    // Init plot
+    initPlot();
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -94,6 +127,9 @@ void MainWindow::initWorkerHandlers() {
         ui->samplesRcvd->setText(QString::number(worker->data().size()));
         ui->dataView->addItems(items);
         ui->dataView->scrollToBottom();
+        // Update plot
+        curve->setSamples(seriesData(worker->data()));
+        ui->plotArea->replot();
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
@@ -115,6 +151,21 @@ void MainWindow::initWorkerHandlers() {
         ui->connectBtn->setEnabled(true);
         ui->portChooser->setFocus();
     });
+}
+
+void MainWindow::initPlot() {
+    // FIXME: avoid max height
+    ui->plotArea->setMaximumHeight(250);
+
+    rotateAxisLabel(ui->plotArea->axisScaleDraw(QwtPlot::yLeft));
+    initGrid(ui->plotArea);
+    // TODO: tooltip
+
+    curve = new QwtPlotCurve;
+    curve->setBrush(CURVE_FILL);
+    curve->setPen(CURVE_COLOR);
+    curve->setOrientation(Qt::Vertical);
+    curve->attach(ui->plotArea);
 }
 
 void MainWindow::log(QString text) {

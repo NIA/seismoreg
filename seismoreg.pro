@@ -7,6 +7,7 @@ TARGET = seismoreg
 TEMPLATE = app
 
 include(3rdparty/qextserialport/src/qextserialport.pri)
+include(3rdparty/qwt/src/qwt.pri)
 
 SOURCES += src/main.cpp\
         src/mainwindow.cpp \

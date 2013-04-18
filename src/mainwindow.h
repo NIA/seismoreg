@@ -9,6 +9,7 @@
 namespace Ui {
 class MainWindow;
 }
+class QwtPlotCurve;
 
 class MainWindow : public QMainWindow
 {
@@ -17,6 +18,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+private:
+    void initPlot();
     
 private:
     Ui::MainWindow *ui;
@@ -25,6 +29,8 @@ private:
 
     QDateTime startedAt;
     QTimer * clockTimer;
+
+    QwtPlotCurve * curve;
 
     void setup();
     void initWorkerHandlers();

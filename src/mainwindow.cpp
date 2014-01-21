@@ -54,8 +54,10 @@ void MainWindow::setup() {
     ui->portChooser->addItem(TEST_PROTOCOL);
     ui->portChooser->addItems(SerialProtocol::portNames());
 
-    // Init plot
-    initPlot();
+    // Init plot(s)
+    initPlot(ui->plotArea2); // currently unused
+    initPlot(ui->plotArea3); // currently unused
+    initPlot(ui->plotArea);
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -153,19 +155,20 @@ void MainWindow::initWorkerHandlers() {
     });
 }
 
-void MainWindow::initPlot() {
+void MainWindow::initPlot(QwtPlot *plot) {
     // FIXME: avoid max height
-    ui->plotArea->setMaximumHeight(250);
+    plot->setMaximumHeight(180);
 
-    rotateAxisLabel(ui->plotArea->axisScaleDraw(QwtPlot::yLeft));
-    initGrid(ui->plotArea);
+    rotateAxisLabel(plot->axisScaleDraw(QwtPlot::yLeft));
+    initGrid(plot);
     // TODO: tooltip
 
+    // TODO: different curves for different plots
     curve = new QwtPlotCurve;
     curve->setBrush(CURVE_FILL);
     curve->setPen(CURVE_COLOR);
     curve->setOrientation(Qt::Vertical);
-    curve->attach(ui->plotArea);
+    curve->attach(plot);
 }
 
 void MainWindow::log(QString text) {

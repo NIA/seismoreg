@@ -10,6 +10,7 @@ namespace Ui {
 class MainWindow;
 }
 class QwtPlotCurve;
+class QwtPlot;
 
 class MainWindow : public QMainWindow
 {
@@ -20,7 +21,7 @@ public:
     ~MainWindow();
 
 private:
-    void initPlot();
+    void initPlot(QwtPlot *plot);
     
 private:
     Ui::MainWindow *ui;

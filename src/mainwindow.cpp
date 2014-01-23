@@ -10,6 +10,7 @@
 
 namespace {
     const QString TEST_PROTOCOL = "TEST";
+    const int DEFAULT_POINTS = 200;
 
     const QColor GRID_COLOR(128, 128, 128);
     const QColor CURVE_COLOR(40, 90, 120);
@@ -53,6 +54,7 @@ void MainWindow::setup() {
     // Init GUI
     ui->portChooser->addItem(TEST_PROTOCOL);
     ui->portChooser->addItems(SerialProtocol::portNames());
+    ui->pointsCounter->setValue(DEFAULT_POINTS);
 
     // Init plot(s)
     initPlot(ui->plotArea2); // currently unused
@@ -77,7 +79,7 @@ void MainWindow::setup() {
             // An option for testing
             protocol = new TestProtocol(5, 100, this);
         } else {
-            protocol = new SerialProtocol(portName, this);
+            protocol = new SerialProtocol(portName, ui->pointsCounter->value(), this);
         }
 
         worker->reset(protocol);

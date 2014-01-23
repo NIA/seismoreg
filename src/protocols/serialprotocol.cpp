@@ -13,13 +13,18 @@ namespace {
     const QByteArray CHECKED_ADC = CHECK_ADC;
     const QByteArray CHECKED_GPS = CHECK_GPS;
     const QByteArray DATA_PREFIX(5, '\xF0');
+
+    const int MIN_PACKET_SIZE = 1;
 }
 
-SerialProtocol::SerialProtocol(QString portName, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL)
+SerialProtocol::SerialProtocol(QString portName, int packetSize, QObject *parent) :
+    Protocol(parent), portName(portName), port(NULL), pointsInPacket(packetSize)
 {
     port = new QextSerialPort(portName);
     port->setBaudRate(BAUD57600);
+    if(pointsInPacket < MIN_PACKET_SIZE) {
+        pointsInPacket = MIN_PACKET_SIZE;
+    }
 }
 
 QString SerialProtocol::description() {
@@ -76,16 +81,28 @@ void SerialProtocol::close() {
 
 void SerialProtocol::onDataReceived() {
     QByteArray rawData = port->readAll();
-    if(hasState(Receiving) && rawData.startsWith(DATA_PREFIX)) {
-        int dataSize = rawData.size() - DATA_PREFIX.size();
-        // truncate bytes not fitting into a factor of sizeof(DataType)
-        dataSize -= dataSize % sizeof(DataType);
-        int dataCount = dataSize / sizeof(DataType);
-        // allocate space for data array
-        DataVector data(dataCount);
-        // copy dataSize bytes to data array
-        memcpy(data.data(), rawData.constData() + DATA_PREFIX.size(), dataSize);
-        emit dataAvailable(data);
+    if(hasState(Receiving)) {
+        if(rawData.startsWith(DATA_PREFIX)) {
+            // If we see packet start:
+            // Drop buffer
+            buffer.clear();
+            // Remove prefix
+            rawData.remove(0, DATA_PREFIX.size()); // TODO: optimize?
+        }
+        // Add data to buffer
+        buffer += rawData;
+        // if there is enough data in buffer to form and unwrap a packet, make it
+        const int packetSize = pointsInPacket*sizeof(DataType);
+        while(buffer.size() >= packetSize) {
+            // allocate space for data array
+            DataVector packetData(pointsInPacket);
+            // copy packetSize bytes to data array (unwrap)
+            memcpy(packetData.data(), buffer.constData(), packetSize);
+            // remove them from buffer
+            buffer.remove(0, packetSize);
+            // notify
+            emit dataAvailable(packetData);
+        }
     } else {
         if(rawData.startsWith(CHECKED_ADC)) {
             addState(ADCReady);

@@ -12,10 +12,11 @@ class SerialProtocol : public Protocol
 public:
     /*!
      * \brief SerialProtocol
-     * \param portName name (or path) of port to be opened. On Windows it is like COM1,
+     * \param portName - name (or path) of port to be opened. On Windows it is like COM1,
      *        while on *NIX it looks like path: i.e. /dev/ttyS0
+     * \param packetSize - number of points in packet
      */
-    explicit SerialProtocol(QString portName, QObject * parent = 0);
+    explicit SerialProtocol(QString portName, int packetSize, QObject * parent = 0);
     QString description();
 
     virtual bool open();
@@ -35,6 +36,8 @@ private:
 
     QString portName;
     QextSerialPort * port;
+    int pointsInPacket;
+    QByteArray buffer;
 };
 
 #endif // SERIALPROTOCOL_H

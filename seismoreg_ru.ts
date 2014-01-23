@@ -37,83 +37,88 @@
         <translation>Регистратор сейсмических сигналов</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="29"/>
+        <location filename="mainwindow.ui" line="50"/>
         <source>Link management</source>
         <translation>Связь</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="75"/>
+        <location filename="mainwindow.ui" line="56"/>
         <source>Port</source>
         <translation>Порт</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="91"/>
+        <location filename="mainwindow.ui" line="135"/>
         <source>GPS synchronized</source>
         <translation>GPS синхронизован</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="98"/>
+        <location filename="mainwindow.ui" line="92"/>
         <source>ADC ready</source>
         <translation>АЦП готов</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="111"/>
+        <location filename="mainwindow.ui" line="63"/>
+        <source>Points</source>
+        <translation>Число точек</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="105"/>
         <source>Connect</source>
         <translation>Подключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="127"/>
+        <location filename="mainwindow.ui" line="151"/>
         <source>Disconnect</source>
         <translation>Отключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="137"/>
+        <location filename="mainwindow.ui" line="171"/>
         <source>Data receiving</source>
         <translation>Приём данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="146"/>
+        <location filename="mainwindow.ui" line="180"/>
         <source>Start</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="153"/>
+        <location filename="mainwindow.ui" line="187"/>
         <source>Start time</source>
         <translation>Время начала</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="163"/>
+        <location filename="mainwindow.ui" line="197"/>
         <source>Time elapsed</source>
         <translation>Прошло времени</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="173"/>
+        <location filename="mainwindow.ui" line="207"/>
         <source>Samples received</source>
         <translation>Получено данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="186"/>
+        <location filename="mainwindow.ui" line="220"/>
         <source>Stop</source>
         <translation>Стоп</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="199"/>
-        <location filename="mainwindow.ui" line="212"/>
+        <location filename="mainwindow.ui" line="233"/>
+        <location filename="mainwindow.ui" line="246"/>
         <source>H:mm:ss</source>
         <translation>HH:mm:ss</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="219"/>
+        <location filename="mainwindow.ui" line="253"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="261"/>
+        <location filename="mainwindow.ui" line="295"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="278"/>
+        <location filename="mainwindow.ui" line="312"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
@@ -218,6 +223,26 @@
         <location filename="3rdparty/qextserialport/src/qextserialport.cpp" line="759"/>
         <source>Unknown error: %1</source>
         <translation>Неизвестная ошибка: %1</translation>
+    </message>
+</context>
+<context>
+    <name>QwtPlotRenderer</name>
+    <message>
+        <location filename="3rdparty/qwt/src/qwt_plot_renderer.cpp" line="980"/>
+        <location filename="3rdparty/qwt/src/qwt_plot_renderer.cpp" line="983"/>
+        <location filename="3rdparty/qwt/src/qwt_plot_renderer.cpp" line="986"/>
+        <source>Documents</source>
+        <translation>Документы</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qwt/src/qwt_plot_renderer.cpp" line="991"/>
+        <source>Images</source>
+        <translation>Изображения</translation>
+    </message>
+    <message>
+        <location filename="3rdparty/qwt/src/qwt_plot_renderer.cpp" line="1006"/>
+        <source>Export File Name</source>
+        <translation>Имя файла для экспорта</translation>
     </message>
 </context>
 <context>

@@ -37,88 +37,107 @@
         <translation>Регистратор сейсмических сигналов</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="50"/>
+        <location filename="mainwindow.ui" line="60"/>
         <source>Link management</source>
         <translation>Связь</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="56"/>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation type="obsolete">Порт</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="135"/>
+        <location filename="mainwindow.ui" line="99"/>
         <source>GPS synchronized</source>
         <translation>GPS синхронизован</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="92"/>
+        <location filename="mainwindow.ui" line="128"/>
         <source>ADC ready</source>
         <translation>АЦП готов</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="63"/>
+        <location filename="mainwindow.ui" line="175"/>
         <source>Points</source>
         <translation>Число точек</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="105"/>
+        <location filename="mainwindow.ui" line="74"/>
         <source>Connect</source>
         <translation>Подключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="151"/>
+        <location filename="mainwindow.ui" line="90"/>
         <source>Disconnect</source>
         <translation>Отключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="171"/>
+        <location filename="mainwindow.ui" line="185"/>
         <source>Data receiving</source>
         <translation>Приём данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="180"/>
+        <location filename="mainwindow.ui" line="269"/>
         <source>Start</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="187"/>
+        <location filename="mainwindow.ui" line="217"/>
         <source>Start time</source>
         <translation>Время начала</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="197"/>
+        <location filename="mainwindow.ui" line="227"/>
         <source>Time elapsed</source>
         <translation>Прошло времени</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="207"/>
+        <location filename="mainwindow.ui" line="256"/>
         <source>Samples received</source>
         <translation>Получено данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="220"/>
+        <location filename="mainwindow.ui" line="279"/>
         <source>Stop</source>
         <translation>Стоп</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="233"/>
-        <location filename="mainwindow.ui" line="246"/>
+        <location filename="mainwindow.ui" line="197"/>
+        <location filename="mainwindow.ui" line="210"/>
         <source>H:mm:ss</source>
         <translation>HH:mm:ss</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="253"/>
+        <location filename="mainwindow.ui" line="237"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
+        <location filename="mainwindow.ui" line="289"/>
+        <source>Save to file</source>
+        <translation>Сохранять в файл</translation>
+    </message>
+    <message>
         <location filename="mainwindow.ui" line="295"/>
+        <source>Browse...</source>
+        <translation>Найти...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="305"/>
+        <source>Write automatically</source>
+        <translation>Писать автоматически</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="312"/>
+        <source>Write now</source>
+        <translation>Записать</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="365"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="312"/>
+        <location filename="mainwindow.ui" line="382"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
@@ -248,7 +267,7 @@
 <context>
     <name>SerialProtocol</name>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="26"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="31"/>
         <source>Serial port %1</source>
         <translation>Последовательный порт %1</translation>
     </message>

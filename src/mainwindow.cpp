@@ -2,11 +2,13 @@
 #include "ui_mainwindow.h"
 #include "protocols/testprotocol.h"
 #include "protocols/serialprotocol.h"
-#include <QTimer>
 #include "logger.h"
 #include "qwt_plot_curve.h"
 #include "qwt_plot_grid.h"
 #include "qwt_scale_draw.h"
+
+#include <QTimer>
+#include <QFileDialog>
 
 namespace {
     const QString TEST_PROTOCOL = "TEST";
@@ -55,6 +57,7 @@ void MainWindow::setup() {
     ui->portChooser->addItem(TEST_PROTOCOL);
     ui->portChooser->addItems(SerialProtocol::portNames());
     ui->pointsCounter->setValue(DEFAULT_POINTS);
+    initFileHandlers();
 
     // Init plot(s)
     initPlot(ui->plotArea2); // currently unused
@@ -121,6 +124,7 @@ void MainWindow::initWorkerHandlers() {
             worker->unpause();
         } else {
             worker->start();
+            setFileControlsState();
         }
     });
     connect(worker, &Worker::dataUpdated, [=](DataVector d){
@@ -142,6 +146,7 @@ void MainWindow::initWorkerHandlers() {
 
         worker->pause();
         clockTimer->stop();
+        setFileControlsState();
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
         worker->finish();
@@ -154,7 +159,42 @@ void MainWindow::initWorkerHandlers() {
         ui->startBtn->setDisabled(true);
         ui->connectBtn->setEnabled(true);
         ui->portChooser->setFocus();
+        setFileControlsState();
     });
+}
+
+void MainWindow::initFileHandlers() {
+
+    // TODO: if auto-write fails, worker should notify GUI (show warning, uncheck checkbox)
+    connect(ui->writeToFileEnabled, &QCheckBox::stateChanged, [=](int state){
+        worker->setAutoWriteEnabled(state == Qt::Checked);
+        setFileControlsState();
+    });
+
+    connect(ui->writeNowBtn, &QPushButton::clicked, [=](){
+        worker->writeNow();
+    });
+
+    connect(ui->browseBtn, &QPushButton::clicked, [=](){
+        QString file = QFileDialog::getSaveFileName(this, tr("Choose file for writing data"), ui->saveFileName->text());
+        if( ! file.isEmpty()) {
+            ui->saveFileName->setText(file);
+        }
+    });
+
+    connect(ui->saveFileName, &QLineEdit::textChanged, [=](QString text){
+        worker->setSaveFileName(text);
+    });
+
+    QString defaultFileName = QString("%1.dat").arg(QDateTime::currentDateTime().toString(Qt::ISODate));
+    ui->saveFileName->setText(defaultFileName);
+}
+
+void MainWindow::setFileControlsState() {
+    bool disableChangingFile = (ui->writeToFileEnabled->isChecked() && worker->isStarted());
+    // If running and auto-saving => cannot change file name
+    ui->saveFileName->setDisabled(disableChangingFile);
+    ui->browseBtn->setDisabled(disableChangingFile);
 }
 
 void MainWindow::initPlot(QwtPlot *plot) {

@@ -4,6 +4,8 @@
 #include <QObject>
 #include "protocol.h"
 
+class QFile;
+
 /*!
  * \brief The Worker class for controlling data processing process (pun intended)
  *
@@ -129,6 +131,41 @@ public:
      */
     void finish();
 
+    // File saving API:
+
+    /*!
+     * \brief Sets current file name that will be used for writing.
+     *
+     * \warning This method only sets file name, it doesn't
+     *          actually write to file!
+     * \see Worker::setAutoWriteEnabled, Worker::writeNow
+     *
+     * When the file will be actually opened:
+     *   - If autowrite is enabled, the file will be opened when starting worker.
+     *   - If autowrite is enabled AND it is already started, the old
+     *     file will be closed and the new one will be opened immediately.
+     *   - If autowrite is disabled, the file will be opened when calling
+     *     Worker::writeNow and closed after that
+     *
+     * When the data will be written to file:
+     *   - If autowrite is enabled, the data will be written to file
+     *     as soon as they are received.
+     *   - If autowrite is disabled, the data will be written when calling Worker::writeNow
+     * \param fileName name of file to write
+     * TODO: return success or failure
+     */
+    void setSaveFileName(QString fileName);
+    QString saveFileName() { return saveFileName_; }
+
+    /*!
+     * \brief setAutoWriteEnabled
+     * \param enabled
+     */
+    void setAutoWriteEnabled(bool enabled);
+    bool autoWriteEnabled() { return autoWrite; }
+
+    void writeNow();
+
     ~Worker() { finish(); }
 
 signals:
@@ -161,6 +198,10 @@ private:
     bool prepared;
     bool started;
     bool paused;
+
+    QString saveFileName_;
+    QFile * file;
+    bool autoWrite;
 };
 
 #endif // WORKER_H

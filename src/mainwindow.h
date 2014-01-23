@@ -35,6 +35,8 @@ private:
 
     void setup();
     void initWorkerHandlers();
+    void initFileHandlers();
+    void setFileControlsState();
     void log(QString text);
 };
 

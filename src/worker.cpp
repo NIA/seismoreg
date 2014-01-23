@@ -151,3 +151,15 @@ void Worker::finish() {
     started = false;
     paused = false;
 }
+
+void Worker::setSaveFileName(QString fileName) {
+    // NOT YET IMPLEMENTED
+}
+
+void Worker::setAutoWriteEnabled(bool enabled) {
+    // NOT YET IMPLEMENTED
+}
+
+void Worker::writeNow() {
+    // NOT YET IMPLEMENTED
+}

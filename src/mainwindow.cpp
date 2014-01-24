@@ -188,6 +188,7 @@ void MainWindow::initFileHandlers() {
 
     QString defaultFileName = QString("%1.dat").arg(QDateTime::currentDateTime().toString(Qt::ISODate));
     ui->saveFileName->setText(defaultFileName);
+    setFileControlsState();
 }
 
 void MainWindow::setFileControlsState() {
@@ -195,6 +196,10 @@ void MainWindow::setFileControlsState() {
     // If running and auto-saving => cannot change file name
     ui->saveFileName->setDisabled(disableChangingFile);
     ui->browseBtn->setDisabled(disableChangingFile);
+
+    bool disableWriteNow = (ui->writeToFileEnabled->isChecked());
+    // If auto-saving => cannot write now
+    ui->writeNowBtn->setDisabled(disableWriteNow);
 }
 
 void MainWindow::initPlot(QwtPlot *plot) {

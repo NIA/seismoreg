@@ -16,7 +16,8 @@ SOURCES += src/main.cpp\
     src/worker.cpp \
     src/gui/logwindow.cpp \
     src/logger.cpp \
-    src/protocols/serialprotocol.cpp
+    src/protocols/serialprotocol.cpp \
+    src/filewriter.cpp
 
 HEADERS  += src/mainwindow.h \
     src/protocol.h \
@@ -25,7 +26,8 @@ HEADERS  += src/mainwindow.h \
     src/worker.h \
     src/gui/logwindow.h \
     src/logger.h \
-    src/protocols/serialprotocol.h
+    src/protocols/serialprotocol.h \
+    src/filewriter.h
 
 FORMS    += mainwindow.ui
 

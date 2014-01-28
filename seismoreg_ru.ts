@@ -2,6 +2,35 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="ru_RU">
 <context>
+    <name>FileWriter</name>
+    <message>
+        <location filename="src/filewriter.cpp" line="54"/>
+        <source>Nothing to write to file</source>
+        <oldsource>Nothing to write in queue</oldsource>
+        <translation type="unfinished">Нечего записать в файл</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="72"/>
+        <source>Written %1 items to file %2</source>
+        <translation>Записано %1 данных в файл %2</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="81"/>
+        <source>Failed to open file %1: %2</source>
+        <translation>Не удалось открыть файл %1: %2</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="84"/>
+        <source>Opened file %1</source>
+        <translation>Открыт файл %1</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="93"/>
+        <source>Closed file %1</source>
+        <translation>Закрыт файл %1</translation>
+    </message>
+</context>
+<context>
     <name>LogWindow</name>
     <message>
         <location filename="src/gui/logwindow.cpp" line="22"/>
@@ -108,42 +137,53 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="237"/>
+        <location filename="mainwindow.ui" line="293"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="289"/>
+        <location filename="mainwindow.ui" line="286"/>
+        <source>Awaiting writing</source>
+        <translation>Ожидают записи</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="309"/>
         <source>Save to file</source>
         <translation>Сохранять в файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="295"/>
+        <location filename="mainwindow.ui" line="315"/>
         <source>Browse...</source>
         <translation>Найти...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="305"/>
+        <location filename="mainwindow.ui" line="325"/>
         <source>Write automatically</source>
         <translation>Писать автоматически</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="312"/>
+        <location filename="mainwindow.ui" line="335"/>
         <source>Write now</source>
         <translation>Записать</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="365"/>
+        <location filename="mainwindow.ui" line="388"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="382"/>
+        <location filename="mainwindow.ui" line="405"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
         <source>TEST</source>
         <translation type="obsolete">ТЕСТ</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="189"/>
+        <source>Choose file for writing data</source>
+        <translation>Выберите файл для записи данных</translation>
     </message>
 </context>
 <context>

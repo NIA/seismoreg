@@ -19,6 +19,8 @@ namespace {
     const QColor CURVE_FILL(10, 160, 255, 100);
     const QColor AVERAGE_COLOR(255, 50, 50);
 
+    const QString DEFAULT_FILENAME = QString("data-%1.dat").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
+
     void initGrid(QwtPlot *plot) {
         QwtPlotGrid * grid = new QwtPlotGrid;
         grid->enableXMin(true);
@@ -48,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     worker = new Worker(NULL, this);
+    fileWriter = new FileWriter(DEFAULT_FILENAME, this);
 
     setup();
 }
@@ -139,6 +142,8 @@ void MainWindow::initWorkerHandlers() {
         curve->setSamples(seriesData(worker->data()));
         ui->plotArea->replot();
     });
+    connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
+
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
         ui->startBtn->setEnabled(true);
@@ -165,29 +170,33 @@ void MainWindow::initWorkerHandlers() {
 
 void MainWindow::initFileHandlers() {
 
-    // TODO: if auto-write fails, worker should notify GUI (show warning, uncheck checkbox)
-    connect(ui->writeToFileEnabled, &QCheckBox::stateChanged, [=](int state){
-        worker->setAutoWriteEnabled(state == Qt::Checked);
-        setFileControlsState();
+    connect(this,             &MainWindow::autoWriteChanged, fileWriter, &FileWriter::setAutoWriteEnabled);
+    connect(ui->saveFileName, &QLineEdit::textChanged,       fileWriter, &FileWriter::setFileName);
+    connect(ui->writeNowBtn,  &QPushButton::clicked,         fileWriter, &FileWriter::writeOnce);
+    // connecting to Worker::dataUpdated is made in initWorkerHandlers
+    connect(fileWriter, &FileWriter::queueSizeChanged, [=](unsigned size){
+        ui->samplesInQueue->setText(QString::number(size));
     });
 
-    connect(ui->writeNowBtn, &QPushButton::clicked, [=](){
-        worker->writeNow();
+    // TODO: if auto-write fails, worker should notify GUI (show warning, uncheck checkbox)
+    connect(ui->writeToFileEnabled, &QCheckBox::stateChanged, [=](int state){
+        bool enabled = (state == Qt::Checked);
+        emit autoWriteChanged(enabled);
+        setFileControlsState();
     });
 
     connect(ui->browseBtn, &QPushButton::clicked, [=](){
         QString file = QFileDialog::getSaveFileName(this, tr("Choose file for writing data"), ui->saveFileName->text());
         if( ! file.isEmpty()) {
             ui->saveFileName->setText(file);
+            // this will automatically notify fileWriter: changing ui->saveFileName text
+            // will trigger textChanged, which is connected to setFileName of FileWriter (see above)
         }
     });
 
-    connect(ui->saveFileName, &QLineEdit::textChanged, [=](QString text){
-        worker->setSaveFileName(text);
-    });
-
-    QString defaultFileName = QString("%1.dat").arg(QDateTime::currentDateTime().toString(Qt::ISODate));
-    ui->saveFileName->setText(defaultFileName);
+    // Set initial values
+    ui->saveFileName->setText(DEFAULT_FILENAME);
+    emit autoWriteChanged(ui->writeToFileEnabled->isChecked());
     setFileControlsState();
 }
 
@@ -225,4 +234,6 @@ void MainWindow::log(QString text) {
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete worker;
+    delete fileWriter;
 }

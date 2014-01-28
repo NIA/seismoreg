@@ -280,6 +280,26 @@
              </property>
             </widget>
            </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Awaiting writing</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QLineEdit" name="samplesInQueue">
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -360,7 +380,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

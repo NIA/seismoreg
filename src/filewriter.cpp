@@ -37,6 +37,9 @@ void FileWriter::setAutoWriteEnabled(bool enabled) {
     autoWrite = enabled;
     if (enabled) {
         // TODO: check if can write and disable autoWrite if cannot
+        if (! waitingQueue.isEmpty()) {
+            writeNow();
+        }
     } else {
         closeIfOpened();
     }

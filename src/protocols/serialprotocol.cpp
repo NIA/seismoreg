@@ -17,8 +17,8 @@ namespace {
     const int MIN_PACKET_SIZE = 1;
 }
 
-SerialProtocol::SerialProtocol(QString portName, int packetSize, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL), pointsInPacket(packetSize)
+SerialProtocol::SerialProtocol(QString portName, int pointsPerChannel, QObject *parent) :
+    Protocol(parent), portName(portName), port(NULL), pointsInPacket(pointsPerChannel)
 {
     port = new QextSerialPort(portName);
     port->setBaudRate(BAUD57600);
@@ -87,12 +87,12 @@ void SerialProtocol::onDataReceived() {
             // Drop buffer
             buffer.clear();
             // Remove prefix
-            rawData.remove(0, DATA_PREFIX.size()); // TODO: optimize?
+            rawData.remove(0, DATA_PREFIX.size()); // TODO: optimize? (avoid removing from beginning here and below)
         }
         // Add data to buffer
         buffer += rawData;
         // if there is enough data in buffer to form and unwrap a packet, make it
-        const int packetSize = pointsInPacket*sizeof(DataType);
+        const int packetSize = CHANNELS_NUM*pointsInPacket*sizeof(DataType);
         while(buffer.size() >= packetSize) {
             // allocate space for data array
             DataVector packetData(pointsInPacket);

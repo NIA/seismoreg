@@ -5,7 +5,11 @@
 #include <QVector>
 
 typedef int DataType;
-typedef QVector<DataType> DataVector;
+const unsigned CHANNELS_NUM = 3;
+struct DataItem {
+    DataType byChannel[CHANNELS_NUM];
+};
+typedef QVector<DataItem> DataVector;
 
 /*!
  * \interface Protocol
@@ -124,7 +128,7 @@ signals:
 
     /*!
      * \brief emitted when new data from ADC is available
-     * \param data
+     * \param data newly received data
      * \see Protocol::startReceiving, Protocol::stopReceiving
      */
     void dataAvailable(DataVector data);

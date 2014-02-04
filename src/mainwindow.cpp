@@ -33,11 +33,11 @@ namespace {
         axisDraw->setLabelRotation(-90);
         axisDraw->setLabelAlignment(Qt::AlignHCenter | Qt::AlignTop);
     }
-    QVector<QPointF> seriesData(DataVector data) {
+    QVector<QPointF> seriesData(DataVector data, unsigned ch) {
         QVector<QPointF> res;
         int i = 0;
-        foreach(DataType val, data) {
-            res << QPointF(i, val);
+        foreach(DataItem item, data) {
+            res << QPointF(i, item.byChannel[ch]);
             ++i;
         }
         return res;
@@ -52,6 +52,12 @@ MainWindow::MainWindow(QWidget *parent) :
     worker = new Worker(NULL, this);
     fileWriter = new FileWriter(DEFAULT_FILENAME, this);
 
+    plots[0] = ui->plotArea;
+    plots[1] = ui->plotArea2;
+    plots[2] = ui->plotArea3;
+    // TODO: avoid this limitation
+    Q_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::MainWindow", "MainWindow implementation assumes CHANNELS_NUM == 3");
+
     setup();
 }
 
@@ -63,9 +69,9 @@ void MainWindow::setup() {
     initFileHandlers();
 
     // Init plot(s)
-    initPlot(ui->plotArea2); // currently unused
-    initPlot(ui->plotArea3); // currently unused
-    initPlot(ui->plotArea);
+    for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+        initPlot(ch);
+    }
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -132,15 +138,22 @@ void MainWindow::initWorkerHandlers() {
     });
     connect(worker, &Worker::dataUpdated, [=](DataVector d){
         QStringList items;
-        foreach(DataType item, d) {
-            items << QString::number(item);
+        foreach(DataItem item, d) {
+            // TODO: use table instead of list
+            QStringList itemStr;
+            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+                itemStr << QString::number(item.byChannel[ch]);
+            }
+            items << itemStr.join("; ");
         }
         ui->samplesRcvd->setText(QString::number(worker->data().size()));
         ui->dataView->addItems(items);
         ui->dataView->scrollToBottom();
         // Update plot
-        curve->setSamples(seriesData(worker->data()));
-        ui->plotArea->replot();
+        for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+            curves[ch]->setSamples(seriesData(worker->data(), ch));
+            plots[ch]->replot();
+        }
     });
     connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
 
@@ -211,7 +224,8 @@ void MainWindow::setFileControlsState() {
     ui->writeNowBtn->setDisabled(disableWriteNow);
 }
 
-void MainWindow::initPlot(QwtPlot *plot) {
+void MainWindow::initPlot(int ch) {
+    QwtPlot * plot = plots[ch];
     // FIXME: avoid max height
     plot->setMaximumHeight(180);
 
@@ -220,11 +234,11 @@ void MainWindow::initPlot(QwtPlot *plot) {
     // TODO: tooltip
 
     // TODO: different curves for different plots
-    curve = new QwtPlotCurve;
-    curve->setBrush(CURVE_FILL);
-    curve->setPen(CURVE_COLOR);
-    curve->setOrientation(Qt::Vertical);
-    curve->attach(plot);
+    curves[ch] = new QwtPlotCurve;
+    curves[ch]->setBrush(CURVE_FILL);
+    curves[ch]->setPen(CURVE_COLOR);
+    curves[ch]->setOrientation(Qt::Vertical);
+    curves[ch]->attach(plot);
 }
 
 void MainWindow::log(QString text) {

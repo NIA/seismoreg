@@ -25,7 +25,7 @@ signals:
     void autoWriteChanged(bool enabled);
 
 private:
-    void initPlot(QwtPlot *plot);
+    void initPlot(int ch);
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
@@ -40,7 +40,8 @@ private:
     QDateTime startedAt;
     QTimer * clockTimer;
 
-    QwtPlotCurve * curve;
+    QwtPlotCurve * curves[CHANNELS_NUM];
+    QwtPlot * plots[CHANNELS_NUM];
 };
 
 #endif // MAINWINDOW_H

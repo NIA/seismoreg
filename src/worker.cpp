@@ -112,9 +112,8 @@ Worker::StartResult Worker::start() {
 }
 
 void Worker::onDataAvailable(DataVector newData) {
-    Logger::trace(tr("Received %1 data items").arg(newData.size()));
+    Logger::trace(tr("Received %1 data items").arg(newData.size()*CHANNELS_NUM));
     data_ += newData;
-    /// TODO: Writing into file here? How often?
     emit dataUpdated(newData);
 }
 

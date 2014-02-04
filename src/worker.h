@@ -154,7 +154,6 @@ private:
     void setPrepared(PrepareResult res);
 
     Protocol * protocol_;
-    // TODO: data[CHANNELS]
     DataVector data_;
 
     bool autostart;

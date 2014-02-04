@@ -83,7 +83,9 @@ void TestProtocol::close() {
 DataVector TestProtocol::generateRandom() {
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
-        res[i] = mean + qrand()*0.1*mean/RAND_MAX;
+        for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+            res[i].byChannel[ch] = mean + qrand()*0.1*mean/RAND_MAX;
+        }
     }
     return res;
 }

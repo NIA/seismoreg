@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QStringList>
 
 FileWriter::FileWriter(QString fileName, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false)
@@ -22,9 +23,13 @@ void FileWriter::setFileName(QString fileName) {
 }
 
 void FileWriter::receiveData(DataVector d) {
-    foreach(DataType item, d) {
+    foreach(DataItem item, d) {
         // TODO: actual formatting
-        waitingQueue.enqueue( QString("%1\n").arg(item) );
+        QStringList itemStr;
+        for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+            itemStr << QString::number(item.byChannel[ch]);
+        }
+        waitingQueue.enqueue( itemStr.join("\t") + "\n" );
     }
     emit queueSizeChanged(waitingQueue.size());
 

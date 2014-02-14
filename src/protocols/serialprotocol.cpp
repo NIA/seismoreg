@@ -9,7 +9,9 @@
 namespace {
     const QByteArray CHECK_ADC = "\x03";
     const QByteArray CHECK_GPS = "\x04";
-    const QByteArray START_RECEIVE = "\x01";
+    const QByteArray START_RECEIVE_50 = "\x01";
+    const QByteArray START_RECEIVE_200 = "\x02";
+    const QByteArray STOP_RECEIVE("\x00", 1); // simply = "\x00" won't work: will be empty string
     const QByteArray CHECKED_ADC = CHECK_ADC;
     const QByteArray CHECKED_GPS = CHECK_GPS;
     const QByteArray DATA_PREFIX(5, '\xF0');
@@ -21,7 +23,8 @@ SerialProtocol::SerialProtocol(QString portName, int pointsPerChannel, QObject *
     Protocol(parent), portName(portName), port(NULL), pointsInPacket(pointsPerChannel)
 {
     port = new QextSerialPort(portName);
-    port->setBaudRate(BAUD57600);
+    // TODO: configurable baud rate
+    port->setBaudRate(BAUD115200);
     if(pointsInPacket < MIN_PACKET_SIZE) {
         pointsInPacket = MIN_PACKET_SIZE;
     }
@@ -62,7 +65,8 @@ void SerialProtocol::startReceiving() {
         // TODO: report warning: already receiving
         return;
     }
-    port->write(START_RECEIVE);
+    // FIXME: choose between 50 and 200
+    port->write(START_RECEIVE_200);
     addState(Receiving);
 }
 
@@ -71,12 +75,19 @@ void SerialProtocol::stopReceiving() {
         // TODO: report warning: already stopped
         return;
     }
-    // FIXME: send command
+    port->write(STOP_RECEIVE);
     removeState(Receiving);
 }
 
 void SerialProtocol::close() {
+    if (hasState(Receiving))  {
+        stopReceiving();
+    }
     port->close();
+}
+
+SerialProtocol::~SerialProtocol() {
+    close();
 }
 
 void SerialProtocol::onDataReceived() {
@@ -107,6 +118,9 @@ void SerialProtocol::onDataReceived() {
         if(rawData.startsWith(CHECKED_ADC)) {
             addState(ADCReady);
             emit checkedADC(true);
+            // FIXME: temporary workaround!!!
+            addState(GPSReady);
+            emit checkedGPS(true);
         } else if(rawData.startsWith(CHECKED_GPS)) {
             addState(GPSReady);
             emit checkedGPS(true);

@@ -26,6 +26,8 @@ public:
     virtual void stopReceiving();
     virtual void close();
 
+    ~SerialProtocol();
+
     static QList<QString> portNames();
 
 private slots:

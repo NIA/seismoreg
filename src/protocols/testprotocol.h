@@ -25,6 +25,8 @@ public:
     virtual void stopReceiving();
     virtual void close();
 
+    ~TestProtocol();
+
 private slots:
 
 private:

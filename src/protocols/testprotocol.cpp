@@ -80,6 +80,10 @@ void TestProtocol::close() {
     resetState();
 }
 
+TestProtocol::~TestProtocol() {
+    close();
+}
+
 DataVector TestProtocol::generateRandom() {
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {

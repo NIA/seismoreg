@@ -111,6 +111,8 @@ public:
      */
     virtual void close() = 0;
 
+    virtual ~Protocol() {}
+
 signals:
     /*!
      * \brief emitted when ADC check result is ready

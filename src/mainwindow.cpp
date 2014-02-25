@@ -15,8 +15,9 @@ namespace {
     const int DEFAULT_POINTS = 200;
 
     const QColor GRID_COLOR(128, 128, 128);
-    const QColor CURVE_COLOR(40, 90, 120);
-    const QColor CURVE_FILL(10, 160, 255, 100);
+    const QColor CURVE_COLOR(40, 90, 180);
+    const QColor CURVE_FILL = Qt::transparent;
+    const qreal  CURVE_WIDTH = 2;
     const QColor AVERAGE_COLOR(255, 50, 50);
 
     const QString DEFAULT_FILENAME = QString("data-%1.dat").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
@@ -42,6 +43,12 @@ namespace {
         }
         return res;
     }
+    class RoundedScaleDraw : public QwtScaleDraw {
+    public:
+        virtual QwtText label(double value) const {
+            return QLocale().toString(value, 'f', 0);
+        }
+    };
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -229,15 +236,16 @@ void MainWindow::initPlot(int ch) {
     // FIXME: avoid max height
     plot->setMaximumHeight(180);
 
-    rotateAxisLabel(plot->axisScaleDraw(QwtPlot::yLeft));
+    plot->setAxisScaleDraw(QwtPlot::yLeft, new RoundedScaleDraw);
     initGrid(plot);
     // TODO: tooltip
 
     // TODO: different curves for different plots
     curves[ch] = new QwtPlotCurve;
     curves[ch]->setBrush(CURVE_FILL);
-    curves[ch]->setPen(CURVE_COLOR);
+    curves[ch]->setPen(CURVE_COLOR, CURVE_WIDTH);
     curves[ch]->setOrientation(Qt::Vertical);
+    curves[ch]->setRenderHint(QwtPlotCurve::RenderAntialiased);
     curves[ch]->attach(plot);
 }
 

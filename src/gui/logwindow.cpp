@@ -15,6 +15,7 @@
 #include <QIcon>
 #include <QAction>
 #include <QMenu>
+#include <QDebug>
 
 LogWindow::LogWindow(QWidget *parent) :
     super(parent)
@@ -38,12 +39,21 @@ void LogWindow::contextMenuEvent(QContextMenuEvent *e) {
 }
 
 void LogWindow::sl_messageAdded(Logger::Level level, QString message) {
+    QString dateTime = QDateTime::currentDateTime().time().toString(Qt::DefaultLocaleShortDate);
+
     QString formattedMessage = "";
     formattedMessage += QString("<font color='%1'><b>").arg(levelColor(level));
-    formattedMessage += QString("[%1] ").arg(QDateTime::currentDateTime().time().toString(Qt::DefaultLocaleShortDate));
+    formattedMessage += QString("[%1] ").arg(dateTime);
     formattedMessage += (levelName(level) + ":</b> ");
     formattedMessage += message.toHtmlEscaped();
     formattedMessage += "</font>";
+
+    QString plainTextMessage = QString("[%1] %2: %3").arg(dateTime).arg(levelName(level)).arg(message);
+    if ( level == Logger::Error ) {
+        qCritical() << plainTextMessage;
+    } else {
+        qDebug() << plainTextMessage;
+    }
 
     appendHtml(formattedMessage);
 }

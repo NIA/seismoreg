@@ -75,7 +75,7 @@ void FileWriter::writeNow() {
     int itemsWritten = 0;
     while ( ! writeQueue.isEmpty() ) {
         out << writeQueue.dequeue();
-        itemsWritten += 1;
+        itemsWritten += CHANNELS_NUM;
     }
     Logger::trace(tr("Written %1 items to file %2").arg(itemsWritten).arg(file->fileName()));
 }

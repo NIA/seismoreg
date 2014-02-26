@@ -16,12 +16,12 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Seismic signals recorder</string>
+   <string>Precision signals recorder</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,4,2">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,6,2">
       <item>
        <widget class="QListWidget" name="dataView">
         <property name="sizePolicy">
@@ -93,10 +93,17 @@
              </item>
             </layout>
            </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>GPS synchronized</string>
+           <item row="2" column="2">
+            <widget class="QComboBox" name="portChooser">
+             <property name="editable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QComboBox" name="portChooserGPS">
+             <property name="editable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -122,14 +129,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>ADC ready</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QLed" name="ledGPS" native="true">
              <property name="minimumSize">
               <size>
@@ -145,36 +145,29 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QComboBox" name="portChooser">
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QComboBox" name="portChooser2">
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="4" column="0">
-            <widget class="QSpinBox" name="pointsCounter">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>1000</number>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>GPS port</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1" colspan="2">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>ADC port</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2">
             <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>Points</string>
+              <string>Sampling frequency</string>
              </property>
             </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QComboBox" name="samplingFreq"/>
            </item>
           </layout>
          </widget>
@@ -260,16 +253,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="startBtn">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Start</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="2">
             <widget class="QPushButton" name="stopBtn">
              <property name="enabled">
@@ -297,6 +280,16 @@
              </property>
              <property name="readOnly">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="startBtn">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Start</string>
              </property>
             </widget>
            </item>
@@ -389,7 +382,14 @@
     </property>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionShowTable"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -403,6 +403,14 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionShowTable">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show table</string>
    </property>
   </action>
  </widget>

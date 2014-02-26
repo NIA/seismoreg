@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QDateTime>
+#include <QVector>
 #include "protocol.h"
 #include "worker.h"
 #include "filewriter.h"
@@ -42,6 +43,8 @@ private:
 
     QwtPlotCurve * curves[CHANNELS_NUM];
     QwtPlot * plots[CHANNELS_NUM];
+
+    QVector<QWidget*> disableOnConnect;
 };
 
 #endif // MAINWINDOW_H

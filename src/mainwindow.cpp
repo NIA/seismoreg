@@ -12,7 +12,8 @@
 
 namespace {
     const QString TEST_PROTOCOL = "TEST";
-    const int DEFAULT_POINTS = 200;
+    const int FREQ_200 = 200;
+    const int FREQ_50  = 50;
 
     const QColor GRID_COLOR(128, 128, 128);
     const QColor CURVE_COLOR(40, 90, 180);
@@ -30,6 +31,11 @@ namespace {
         grid->setMinorPen(QPen(GRID_COLOR, 1, Qt::DashLine));
         grid->attach(plot);
     }
+    void initPortChooser(QComboBox * chooser) {
+        chooser->addItem(TEST_PROTOCOL);
+        chooser->addItems(SerialProtocol::portNames());
+    }
+
     inline void rotateAxisLabel(QwtScaleDraw * axisDraw) {
         axisDraw->setLabelRotation(-90);
         axisDraw->setLabelAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -70,10 +76,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::setup() {
     // Init GUI
-    ui->portChooser->addItem(TEST_PROTOCOL);
-    ui->portChooser->addItems(SerialProtocol::portNames());
-    ui->pointsCounter->setValue(DEFAULT_POINTS);
+    initPortChooser(ui->portChooser);
+    initPortChooser(ui->portChooserGPS);
+    ui->samplingFreq->addItem(QString::number(FREQ_200));
+    ui->samplingFreq->addItem(QString::number(FREQ_50));
     initFileHandlers();
+    disableOnConnect << ui->portChooser << ui->portChooserGPS << ui->samplingFreq;
+
+    connect(ui->actionShowTable, &QAction::triggered, [=](bool checked){
+        if (checked) {
+            ui->dataView->show();
+        } else {
+            ui->dataView->hide();
+        }
+    });
+    // Hide by default
+    ui->actionShowTable->setChecked(false);
+    ui->dataView->hide();
 
     // Init plot(s)
     for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
@@ -91,14 +110,18 @@ void MainWindow::setup() {
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
         ui->connectBtn->setDisabled(true);
         ui->disconnectBtn->setEnabled(true);
-        ui->portChooser->setFocus();
+        ui->portChooser->setFocus(); // TODO: control focus somehow another way
+        foreach(QWidget * w, disableOnConnect) {
+            w->setDisabled(true);
+        }
 
         QString portName = ui->portChooser->currentText();
+        int samplingFrequency = ui->samplingFreq->currentText().toInt();
         if(portName == TEST_PROTOCOL) {
             // An option for testing
-            protocol = new TestProtocol(5, 100, this);
+            protocol = new TestProtocol(samplingFrequency, 100, this);
         } else {
-            protocol = new SerialProtocol(portName, ui->pointsCounter->value(), this);
+            protocol = new SerialProtocol(portName, samplingFrequency, this);
         }
 
         worker->reset(protocol);
@@ -124,6 +147,10 @@ void MainWindow::initWorkerHandlers() {
         } else {
             ui->connectBtn->setEnabled(true);
             ui->disconnectBtn->setDisabled(true);
+            foreach(QWidget * w, disableOnConnect) {
+                w->setEnabled(true);
+            }
+            ui->portChooser->setFocus();
         }
     });
     connect(ui->startBtn, &QPushButton::clicked, [=](){
@@ -183,6 +210,9 @@ void MainWindow::initWorkerHandlers() {
         ui->stopBtn->setDisabled(true);
         ui->startBtn->setDisabled(true);
         ui->connectBtn->setEnabled(true);
+        foreach(QWidget * w, disableOnConnect) {
+            w->setEnabled(true);
+        }
         ui->portChooser->setFocus();
         setFileControlsState();
     });

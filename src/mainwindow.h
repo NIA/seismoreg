@@ -31,6 +31,7 @@ private:
     void initWorkerHandlers();
     void initFileHandlers();
     void setFileControlsState();
+    void setCurrentTime();
     void log(QString text);
 
     Ui::MainWindow *ui;

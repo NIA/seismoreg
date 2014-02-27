@@ -35,6 +35,15 @@ namespace {
         chooser->addItem(TEST_PROTOCOL);
         chooser->addItems(SerialProtocol::portNames());
     }
+    void initShowHideAction(QAction * action, QWidget * widgetToHide) {
+        QObject::connect(action, &QAction::triggered, [=](bool checked){
+            if (checked) {
+                widgetToHide->show();
+            } else {
+                widgetToHide->hide();
+            }
+        });
+    }
 
     inline void rotateAxisLabel(QwtScaleDraw * axisDraw) {
         axisDraw->setLabelRotation(-90);
@@ -83,13 +92,8 @@ void MainWindow::setup() {
     initFileHandlers();
     disableOnConnect << ui->portChooser << ui->portChooserGPS << ui->samplingFreq;
 
-    connect(ui->actionShowTable, &QAction::triggered, [=](bool checked){
-        if (checked) {
-            ui->dataView->show();
-        } else {
-            ui->dataView->hide();
-        }
-    });
+    initShowHideAction(ui->actionShowTable,    ui->dataView);
+    initShowHideAction(ui->actionShowSettings, ui->settings);
     // Hide by default
     ui->actionShowTable->setChecked(false);
     ui->dataView->hide();
@@ -102,9 +106,14 @@ void MainWindow::setup() {
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
     connect(clockTimer, &QTimer::timeout, [=](){
-        QTime elapsed = QTime(0,0,0).addSecs(startedAt.secsTo(QDateTime::currentDateTime()));
-        ui->timeElapsed->setTime(elapsed);
+        setCurrentTime();
+        if(worker->isStarted() && ! worker->isPaused()) {
+            QTime elapsed = QTime(0,0,0).addSecs(startedAt.secsTo(QDateTime::currentDateTime()));
+            ui->timeElapsed->setTime(elapsed);
+        }
     });
+    clockTimer->start(1000);
+    setCurrentTime(); // And set for the first time
 
     // Connect event handlers
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
@@ -161,7 +170,6 @@ void MainWindow::initWorkerHandlers() {
         startedAt = QDateTime::currentDateTime();
         ui->timeStart->setDateTime(startedAt);
         ui->timeElapsed->setTime(QTime(0,0,0));
-        clockTimer->start(1000);
 
         if(worker->isStarted()) {
             worker->unpause();
@@ -197,12 +205,10 @@ void MainWindow::initWorkerHandlers() {
         ui->startBtn->setFocus();
 
         worker->pause();
-        clockTimer->stop();
         setFileControlsState();
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
         worker->finish();
-        clockTimer->stop();
 
         ui->ledADC->setValue(false);
         ui->ledGPS->setValue(false);
@@ -261,6 +267,12 @@ void MainWindow::setFileControlsState() {
     ui->writeNowBtn->setDisabled(disableWriteNow);
 }
 
+void MainWindow::setCurrentTime() {
+    QDateTime now = QDateTime::currentDateTime();
+    ui->currentDate->setText(now.date().toString(Qt::DefaultLocaleShortDate));
+    ui->currentTime->setText(now.time().toString(Qt::DefaultLocaleShortDate));
+}
+
 void MainWindow::initPlot(int ch) {
     QwtPlot * plot = plots[ch];
     // FIXME: avoid max height
@@ -285,6 +297,7 @@ void MainWindow::log(QString text) {
 
 MainWindow::~MainWindow()
 {
+    clockTimer->stop();
     delete ui;
     delete worker;
     delete fileWriter;

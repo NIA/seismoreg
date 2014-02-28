@@ -7,13 +7,12 @@
 #include "protocol.h"
 #include "worker.h"
 #include "filewriter.h"
-#include "gui/statsbox.h"
 
 namespace Ui {
 class MainWindow;
 }
-class QwtPlotCurve;
-class QwtPlot;
+class StatsBox;
+class TimePlot;
 
 class MainWindow : public QMainWindow
 {
@@ -27,7 +26,6 @@ signals:
     void autoWriteChanged(bool enabled);
 
 private:
-    void initPlot(int ch);
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
@@ -43,8 +41,7 @@ private:
     QDateTime startedAt;
     QTimer * clockTimer;
 
-    QwtPlotCurve * curves[CHANNELS_NUM];
-    QwtPlot * plots[CHANNELS_NUM];
+    TimePlot * plots[CHANNELS_NUM];
     StatsBox * stats[CHANNELS_NUM];
 
     QVector<QWidget*> disableOnConnect;

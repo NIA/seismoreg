@@ -1,36 +1,22 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "protocols/testprotocol.h"
-#include "protocols/serialprotocol.h"
-#include "logger.h"
-#include "qwt_plot_curve.h"
-#include "qwt_plot_grid.h"
-#include "qwt_scale_draw.h"
 
 #include <QTimer>
 #include <QFileDialog>
+
+#include "protocols/testprotocol.h"
+#include "protocols/serialprotocol.h"
+#include "logger.h"
+#include "gui/statsbox.h"
+#include "gui/timeplot.h"
 
 namespace {
     const QString TEST_PROTOCOL = "TEST";
     const int FREQ_200 = 200;
     const int FREQ_50  = 50;
 
-    const QColor GRID_COLOR(128, 128, 128);
-    const QColor CURVE_COLOR(40, 90, 180);
-    const QColor CURVE_FILL = Qt::transparent;
-    const qreal  CURVE_WIDTH = 2;
-    const QColor AVERAGE_COLOR(255, 50, 50);
-
     const QString DEFAULT_FILENAME = QString("data-%1.dat").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
 
-    void initGrid(QwtPlot *plot) {
-        QwtPlotGrid * grid = new QwtPlotGrid;
-        grid->enableXMin(true);
-        grid->enableYMin(true);
-        grid->setMajorPen(QPen(GRID_COLOR));
-        grid->setMinorPen(QPen(GRID_COLOR, 1, Qt::DashLine));
-        grid->attach(plot);
-    }
     void initPortChooser(QComboBox * chooser) {
         chooser->addItem(TEST_PROTOCOL);
         chooser->addItems(SerialProtocol::portNames());
@@ -53,25 +39,6 @@ namespace {
         Q_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::initWidgetsArray", "MainWindow implementation assumes CHANNELS_NUM == 3");
     }
 
-    inline void rotateAxisLabel(QwtScaleDraw * axisDraw) {
-        axisDraw->setLabelRotation(-90);
-        axisDraw->setLabelAlignment(Qt::AlignHCenter | Qt::AlignTop);
-    }
-    QVector<QPointF> seriesData(DataVector data, unsigned ch) {
-        QVector<QPointF> res;
-        int i = 0;
-        foreach(DataItem item, data) {
-            res << QPointF(i, item.byChannel[ch]);
-            ++i;
-        }
-        return res;
-    }
-    class RoundedScaleDraw : public QwtScaleDraw {
-    public:
-        virtual QwtText label(double value) const {
-            return QLocale().toString(value, 'f', 0);
-        }
-    };
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -105,11 +72,6 @@ void MainWindow::setup() {
     // Hide by default
     ui->actionShowTable->setChecked(false);
     ui->dataView->hide();
-
-    // Init plot(s)
-    for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-        initPlot(ch);
-    }
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -201,8 +163,7 @@ void MainWindow::initWorkerHandlers() {
         ui->dataView->scrollToBottom();
         for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             // Update plot
-            curves[ch]->setSamples(seriesData(worker->data(), ch));
-            plots[ch]->replot();
+            plots[ch]->setData(worker->data(), ch);
             // Update stats
             stats[ch]->setStats(d, ch);
         }
@@ -283,22 +244,6 @@ void MainWindow::setCurrentTime() {
     ui->currentTime->setText(now.time().toString(Qt::DefaultLocaleShortDate));
 }
 
-void MainWindow::initPlot(int ch) {
-    QwtPlot * plot = plots[ch];
-    plot->setMinimumHeight(75);
-
-    plot->setAxisScaleDraw(QwtPlot::yLeft, new RoundedScaleDraw);
-    initGrid(plot);
-    // TODO: tooltip
-
-    // TODO: different curves for different plots
-    curves[ch] = new QwtPlotCurve;
-    curves[ch]->setBrush(CURVE_FILL);
-    curves[ch]->setPen(CURVE_COLOR, CURVE_WIDTH);
-    curves[ch]->setOrientation(Qt::Vertical);
-    curves[ch]->setRenderHint(QwtPlotCurve::RenderAntialiased);
-    curves[ch]->attach(plot);
-}
 
 void MainWindow::log(QString text) {
     Logger::info(text);

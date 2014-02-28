@@ -18,7 +18,8 @@ SOURCES += src/main.cpp\
     src/logger.cpp \
     src/protocols/serialprotocol.cpp \
     src/filewriter.cpp \
-    src/gui/statsbox.cpp
+    src/gui/statsbox.cpp \
+    src/gui/timeplot.cpp
 
 HEADERS  += src/mainwindow.h \
     src/protocol.h \
@@ -29,7 +30,8 @@ HEADERS  += src/mainwindow.h \
     src/logger.h \
     src/protocols/serialprotocol.h \
     src/filewriter.h \
-    src/gui/statsbox.h
+    src/gui/statsbox.h \
+    src/gui/timeplot.h
 
 FORMS    += mainwindow.ui \
     src/gui/statsbox.ui

@@ -1,4 +1,6 @@
 #include "testprotocol.h"
+// TODO: remove this dependency.
+#include "serialprotocol.h" // for SerialProtocol::generateTiestamps
 #include <QTimer>
 #include <QTime>
 
@@ -59,7 +61,7 @@ void TestProtocol::startReceiving() {
     }
     addState(Receiving);
     connect(dataTimer, &QTimer::timeout, [=](){
-        emit dataAvailable(generateRandom());
+        emit dataAvailable(SerialProtocol::generateTimeStamps(1000, dataSize), generateRandom());
     });
     dataTimer->start(1000);
 }

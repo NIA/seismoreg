@@ -108,6 +108,7 @@ public:
      * \see Worker::dataUpdated
      */
     DataVector data() { return data_; }
+    TimeStampsVector timeStamps() { return timeStamps_; }
 
     /*!
      * \brief Pause receiving data without closing protocol
@@ -141,20 +142,23 @@ signals:
 
     /*!
      * \brief emitted when new data has come
-     * \param newData newly received data items
+     * \param newData - newly received data
+     * \param newTimeStamps - timestamps for \a data
      * \see Worker::data
      */
-    void dataUpdated(DataVector newData);
+    void dataUpdated(TimeStampsVector newTimeStamps, DataVector newData);
 
 private slots:
     void onCheckedADC(bool);
     void onCheckedGPS(bool);
-    void onDataAvailable(DataVector);
+    void onDataAvailable(TimeStampsVector, DataVector);
 private:
     void setPrepared(PrepareResult res);
 
     Protocol * protocol_;
+    // TODO: do not store all data and all timestamps. Better: store only needed in client (mainwindow)
     DataVector data_;
+    TimeStampsVector timeStamps_;
 
     bool autostart;
     bool prepared;

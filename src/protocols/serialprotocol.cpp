@@ -111,8 +111,10 @@ void SerialProtocol::onDataReceived() {
             memcpy(packetData.data(), buffer.constData(), packetSize);
             // remove them from buffer
             buffer.remove(0, packetSize);
+            // generate timestamps
+            TimeStampsVector timeStamps = generateTimeStamps(1000, pointsInPacket);
             // notify
-            emit dataAvailable(packetData);
+            emit dataAvailable(timeStamps, packetData);
         }
     } else {
         if(rawData.startsWith(CHECKED_ADC)) {
@@ -137,4 +139,15 @@ QList<QString> SerialProtocol::portNames() {
         }
     }
     return names;
+}
+
+TimeStampsVector SerialProtocol::generateTimeStamps(double periodMsecs, int count) {
+    TimeStampsVector res(count);
+
+    TimeStampType start = TimeStampType::currentDateTime().addMSecs(-periodMsecs);
+    double deltaMsecs = periodMsecs / count;
+    for (int i = 0; i < count; ++i) {
+        res[i] = start.addMSecs( i*deltaMsecs );
+    }
+    return res;
 }

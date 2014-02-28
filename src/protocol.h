@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QDateTime>
 
 typedef int DataType;
 const unsigned CHANNELS_NUM = 3;
@@ -10,6 +11,9 @@ struct DataItem {
     DataType byChannel[CHANNELS_NUM];
 };
 typedef QVector<DataItem> DataVector;
+
+typedef QDateTime TimeStampType;
+typedef QVector<TimeStampType> TimeStampsVector;
 
 /*!
  * \interface Protocol
@@ -130,10 +134,11 @@ signals:
 
     /*!
      * \brief emitted when new data from ADC is available
-     * \param data newly received data
+     * \param data - newly received data
+     * \param timestamps - timestamps for \a data
      * \see Protocol::startReceiving, Protocol::stopReceiving
      */
-    void dataAvailable(DataVector data);
+    void dataAvailable(TimeStampsVector timestamps, DataVector data);
 
     /*!
      * \brief emitted when state is changed

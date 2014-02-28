@@ -22,12 +22,14 @@ void FileWriter::setFileName(QString fileName) {
     file = new QFile(saveFileName);
 }
 
-void FileWriter::receiveData(DataVector d) {
-    foreach(DataItem item, d) {
+void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
+    int count = qMin(t.size(), d.size()); // TODO: warn if different
+    for(int i = 0; i < count; ++i) {
         // TODO: actual formatting
         QStringList itemStr;
+        itemStr << t[i].toString("hh:mm:ss.zzz");
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            itemStr << QString::number(item.byChannel[ch]);
+            itemStr << QString::number(d[i].byChannel[ch]);
         }
         waitingQueue.enqueue( itemStr.join("\t") + "\n" );
     }

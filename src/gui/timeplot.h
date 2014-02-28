@@ -25,10 +25,11 @@ public:
      * From each item of \a items array, takes all
      * values for the channel number \a ch and sets
      * as the curve samples.
-     * @param items
-     * @param ch
+     * @param timestamps - timestamps for \a items
+     * @param items - data items (for all channels)
+     * @param ch - number of channels to take
      */
-    void setData(DataVector items, unsigned ch);
+    void setData(TimeStampsVector timestamps, DataVector items, unsigned ch);
     
 private:
     void initGrid();

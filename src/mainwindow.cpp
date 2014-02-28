@@ -148,7 +148,7 @@ void MainWindow::initWorkerHandlers() {
             setFileControlsState();
         }
     });
-    connect(worker, &Worker::dataUpdated, [=](DataVector d){
+    connect(worker, &Worker::dataUpdated, [=](TimeStampsVector t, DataVector d){
         QStringList items;
         foreach(DataItem item, d) {
             // TODO: use table instead of list
@@ -163,7 +163,7 @@ void MainWindow::initWorkerHandlers() {
         ui->dataView->scrollToBottom();
         for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             // Update plot
-            plots[ch]->setData(worker->data(), ch);
+            plots[ch]->setData(worker->timeStamps(), worker->data(), ch);
             // Update stats
             stats[ch]->setStats(d, ch);
         }

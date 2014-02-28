@@ -30,6 +30,17 @@ public:
 
     static QList<QString> portNames();
 
+    /**
+     * @brief Generates timestamps for received data
+     *
+     * If \a t0 is current time, it will create \a count timestamps
+     * in the interval [t0 - periodMsecs, t0), with evenly distributed intervals
+     * @param periodMsecs - size of interval
+     * @param count - number of timestamps to be generated
+     * @return the vector of timestamps
+     */
+    static TimeStampsVector generateTimeStamps(double periodMsecs, int count);
+
 private slots:
     void onDataReceived();
 

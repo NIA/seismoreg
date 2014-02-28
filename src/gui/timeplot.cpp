@@ -2,6 +2,10 @@
 #include "qwt_plot_curve.h"
 #include "qwt_plot_grid.h"
 #include "qwt_scale_draw.h"
+#include "qwt_date.h"
+#include "qwt_date_scale_draw.h"
+#include "qwt_date_scale_engine.h"
+#include "../logger.h"
 
 namespace {
     const QColor GRID_COLOR(128, 128, 128);
@@ -17,24 +21,42 @@ namespace {
         }
     };
 
+    class TimeScaleDraw : public QwtDateScaleDraw {
+    protected:
+        virtual QString dateFormatOfDate(const QDateTime &, QwtDate::IntervalType) const {
+            // Same format for all
+            // TODO: too wide plots
+            return "hh:mm:ss";
+        }
+    };
+
 }
 
 TimePlot::TimePlot(QWidget *parent) :
     QwtPlot(parent)
 {
     setMinimumHeight(75);
-    setAxisScaleDraw(QwtPlot::yLeft, new RoundedScaleDraw);
+    setAxisScaleDraw(yLeft,   new RoundedScaleDraw);
+    setAxisScaleDraw(xBottom, new TimeScaleDraw);
+    setAxisScaleEngine(xBottom, new QwtDateScaleEngine);
 
     initCurve();
     initGrid();
 }
 
-void TimePlot::setData(DataVector items, unsigned ch) {
+void TimePlot::setData(TimeStampsVector timestamps, DataVector items, unsigned ch) {
     QVector<QPointF> data;
-    int i = 0;
-    foreach(DataItem item, items) {
-        // TODO: 1) time axis 2) take not all?
-        data << QPointF(i, item.byChannel[ch]);
+
+    int itemsCount = items.count();
+    int timestampsCount = timestamps.count();
+    if (timestampsCount != itemsCount) {
+        Logger::warning(tr("Unequal size of timestamps and items: %1 vs %2").arg(timestampsCount).arg(itemsCount));
+        itemsCount = qMin(itemsCount, timestampsCount);
+    }
+
+    for(int i = 0; i < itemsCount; ++i) {
+        // TODO: take not all?
+        data << QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
         ++i;
     }
 

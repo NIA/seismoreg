@@ -60,7 +60,7 @@ public slots:
      * \brief Adds new data to queue of data waiting to be written to disk
      * \param d - new data values
      */
-    void receiveData(DataVector d);
+    void receiveData(TimeStampsVector t, DataVector d);
 
     /*!
      * \brief Enables or disables auto-writing (data written as soon as received)

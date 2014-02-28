@@ -111,10 +111,11 @@ Worker::StartResult Worker::start() {
     return StartSuccess;
 }
 
-void Worker::onDataAvailable(DataVector newData) {
+void Worker::onDataAvailable(TimeStampsVector newTimeStamps, DataVector newData) {
     Logger::trace(tr("Received %1 data items").arg(newData.size()*CHANNELS_NUM));
     data_ += newData;
-    emit dataUpdated(newData);
+    timeStamps_ += newTimeStamps;
+    emit dataUpdated(newTimeStamps, newData);
 }
 
 void Worker::pause() {

@@ -17,7 +17,8 @@ SOURCES += src/main.cpp\
     src/gui/logwindow.cpp \
     src/logger.cpp \
     src/protocols/serialprotocol.cpp \
-    src/filewriter.cpp
+    src/filewriter.cpp \
+    src/gui/statsbox.cpp
 
 HEADERS  += src/mainwindow.h \
     src/protocol.h \
@@ -27,9 +28,11 @@ HEADERS  += src/mainwindow.h \
     src/gui/logwindow.h \
     src/logger.h \
     src/protocols/serialprotocol.h \
-    src/filewriter.h
+    src/filewriter.h \
+    src/gui/statsbox.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    src/gui/statsbox.ui
 
 TRANSLATIONS += seismoreg_ru.ts
 

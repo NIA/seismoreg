@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "worker.h"
 #include "filewriter.h"
+#include "gui/statsbox.h"
 
 namespace Ui {
 class MainWindow;
@@ -44,6 +45,7 @@ private:
 
     QwtPlotCurve * curves[CHANNELS_NUM];
     QwtPlot * plots[CHANNELS_NUM];
+    StatsBox * stats[CHANNELS_NUM];
 
     QVector<QWidget*> disableOnConnect;
 };

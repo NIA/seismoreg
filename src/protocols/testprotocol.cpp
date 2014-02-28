@@ -88,7 +88,7 @@ DataVector TestProtocol::generateRandom() {
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            res[i].byChannel[ch] = mean + qrand()*0.1*mean/RAND_MAX;
+            res[i].byChannel[ch] = mean + qrand()*0.5*mean/RAND_MAX;
         }
     }
     return res;

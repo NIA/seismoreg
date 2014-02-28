@@ -44,6 +44,14 @@ namespace {
             }
         });
     }
+    template <class W>
+    void initWidgetsArray(W * widgets[CHANNELS_NUM], W * w0, W * w1, W * w2) {
+        widgets[0] = w0;
+        widgets[1] = w1;
+        widgets[2] = w2;
+        // TODO: avoid this limitation
+        Q_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::initWidgetsArray", "MainWindow implementation assumes CHANNELS_NUM == 3");
+    }
 
     inline void rotateAxisLabel(QwtScaleDraw * axisDraw) {
         axisDraw->setLabelRotation(-90);
@@ -74,11 +82,8 @@ MainWindow::MainWindow(QWidget *parent) :
     worker = new Worker(NULL, this);
     fileWriter = new FileWriter(DEFAULT_FILENAME, this);
 
-    plots[0] = ui->plotArea;
-    plots[1] = ui->plotArea2;
-    plots[2] = ui->plotArea3;
-    // TODO: avoid this limitation
-    Q_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::MainWindow", "MainWindow implementation assumes CHANNELS_NUM == 3");
+    initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
+    initWidgetsArray(stats, ui->stats, ui->stats2, ui->stats3);
 
     setup();
 }
@@ -94,6 +99,9 @@ void MainWindow::setup() {
 
     initShowHideAction(ui->actionShowTable,    ui->dataView);
     initShowHideAction(ui->actionShowSettings, ui->settings);
+    for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+        initShowHideAction(ui->actionShowStats, stats[ch]);
+    }
     // Hide by default
     ui->actionShowTable->setChecked(false);
     ui->dataView->hide();
@@ -191,10 +199,12 @@ void MainWindow::initWorkerHandlers() {
         ui->samplesRcvd->setText(QString::number(worker->data().size()));
         ui->dataView->addItems(items);
         ui->dataView->scrollToBottom();
-        // Update plot
         for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+            // Update plot
             curves[ch]->setSamples(seriesData(worker->data(), ch));
             plots[ch]->replot();
+            // Update stats
+            stats[ch]->setStats(d, ch);
         }
     });
     connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
@@ -275,8 +285,7 @@ void MainWindow::setCurrentTime() {
 
 void MainWindow::initPlot(int ch) {
     QwtPlot * plot = plots[ch];
-    // FIXME: avoid max height
-    plot->setMaximumHeight(180);
+    plot->setMinimumHeight(75);
 
     plot->setAxisScaleDraw(QwtPlot::yLeft, new RoundedScaleDraw);
     initGrid(plot);

@@ -12,7 +12,7 @@ namespace {
     const QColor CURVE_COLOR(40, 90, 180);
     const QColor CURVE_FILL = Qt::transparent; // may be some color, but currently disabled
     const qreal  CURVE_WIDTH = 2;
-
+    const double HISTORY_SECONDS = 5;
 
     class RoundedScaleDraw : public QwtScaleDraw {
     public:
@@ -59,8 +59,13 @@ void TimePlot::setData(TimeStampsVector timestamps, DataVector items, unsigned c
         data << QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
         ++i;
     }
-
     curve->setSamples(data);
+
+    // Set axis range
+    double xmax = data.last().x();
+    double xmin = xmax - HISTORY_SECONDS*1000;
+    setAxisScale(xBottom, xmin, xmax);
+
     replot();
 }
 

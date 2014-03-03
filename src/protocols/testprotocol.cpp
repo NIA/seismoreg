@@ -3,6 +3,7 @@
 #include "serialprotocol.h" // for SerialProtocol::generateTiestamps
 #include <QTimer>
 #include <QTime>
+#include <qmath.h>
 
 namespace {
     void disableTimer(QTimer * timer) {
@@ -11,10 +12,14 @@ namespace {
             timer->stop();
         }
     }
+    const double OMEGA1 = 2*M_PI/1000;
+    const double OMEGA2 = OMEGA1/10;
+    const double NOISE_VALUE = 0.1;
+    const double PHASE_SHIFT = M_PI/8;
 }
 
-TestProtocol::TestProtocol(int dataSize, int mean, QObject *parent) :
-    Protocol(parent), dataSize(dataSize), mean(mean), dataTimer(NULL), checkADCTimer(NULL), checkGPSTimer(NULL)
+TestProtocol::TestProtocol(int dataSize, int amp, QObject *parent) :
+    Protocol(parent), dataSize(dataSize), amp(amp), dataTimer(NULL), checkADCTimer(NULL), checkGPSTimer(NULL)
 {
     qsrand(QTime::currentTime().msec());
     checkADCTimer = new QTimer(this);
@@ -23,7 +28,7 @@ TestProtocol::TestProtocol(int dataSize, int mean, QObject *parent) :
 }
 
 QString TestProtocol::description() {
-    return tr("Test protocol x%1@%2").arg(dataSize).arg(mean);
+    return tr("Test protocol x%1@%2").arg(dataSize).arg(amp);
 }
 
 bool TestProtocol::open() {
@@ -61,7 +66,8 @@ void TestProtocol::startReceiving() {
     }
     addState(Receiving);
     connect(dataTimer, &QTimer::timeout, [=](){
-        emit dataAvailable(SerialProtocol::generateTimeStamps(1000, dataSize), generateRandom());
+        TimeStampsVector t = SerialProtocol::generateTimeStamps(1000, dataSize);
+        emit dataAvailable(t, generateRandom(t));
     });
     dataTimer->start(1000);
 }
@@ -86,11 +92,14 @@ TestProtocol::~TestProtocol() {
     close();
 }
 
-DataVector TestProtocol::generateRandom() {
+DataVector TestProtocol::generateRandom(TimeStampsVector ts) {
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            res[i].byChannel[ch] = mean + qrand()*0.5*mean/RAND_MAX;
+            double t = ts[i].toMSecsSinceEpoch();
+            res[i].byChannel[ch] =
+                    amp*qSin(OMEGA1*t + PHASE_SHIFT*ch)*qCos(OMEGA2*t + PHASE_SHIFT*ch) +
+                    qrand()*NOISE_VALUE*amp/RAND_MAX;
         }
     }
     return res;

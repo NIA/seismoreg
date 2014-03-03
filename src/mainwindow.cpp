@@ -98,7 +98,7 @@ void MainWindow::setup() {
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
         if(portName == TEST_PROTOCOL) {
             // An option for testing
-            protocol = new TestProtocol(samplingFrequency, 100, this);
+            protocol = new TestProtocol(samplingFrequency, 9000000, this);
         } else {
             protocol = new SerialProtocol(portName, samplingFrequency, this);
         }

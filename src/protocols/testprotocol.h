@@ -15,7 +15,7 @@ public:
      * \param mean the mean value of random data that will be generated for testing
      * \param parent usual QObject parent argument
      */
-    explicit TestProtocol(int dataSize = 100, int mean = 100, QObject *parent = 0);
+    explicit TestProtocol(int dataSize = 100, int amp = 100,  QObject *parent = 0);
     QString description();
 
     virtual bool open();
@@ -30,10 +30,10 @@ public:
 private slots:
 
 private:
-    DataVector generateRandom();
+    DataVector generateRandom(TimeStampsVector t);
 
     int dataSize;
-    int mean;
+    int amp;
     QTimer * dataTimer;
     QTimer * checkADCTimer;
     QTimer * checkGPSTimer;

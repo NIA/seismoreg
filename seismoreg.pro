@@ -39,4 +39,5 @@ FORMS    += mainwindow.ui \
 TRANSLATIONS += seismoreg_ru.ts
 
 RESOURCES += \
-    qled.qrc
+    qled.qrc \
+    seismoreg.qrc

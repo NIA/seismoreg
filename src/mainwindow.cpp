@@ -85,6 +85,14 @@ void MainWindow::setup() {
     clockTimer->start(1000);
     setCurrentTime(); // And set for the first time
 
+    // Configure toolbar and status bar
+    ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    connect(Logger::instance(), &Logger::si_messageAdded, [=](Logger::Level level, QString message){
+        if (level >= Logger::Info) {
+            ui->statusBar->showMessage(message);
+        }
+    });
+
     // Connect event handlers
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
         ui->connectBtn->setDisabled(true);

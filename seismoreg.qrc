@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>resources/curve.ico</file>
+        <file>resources/exit.ico</file>
+        <file>resources/settings.ico</file>
+        <file>resources/table.ico</file>
+        <file>resources/stats.ico</file>
+    </qresource>
+</RCC>

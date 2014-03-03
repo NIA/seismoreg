@@ -591,15 +591,28 @@
    <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionShowTable"/>
+   <addaction name="actionShowStats"/>
+   <addaction name="actionShowSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/exit.ico</normaloff>:/icons/resources/exit.ico</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
@@ -607,6 +620,10 @@
   <action name="actionShowTable">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/table.ico</normaloff>:/icons/resources/table.ico</iconset>
    </property>
    <property name="text">
     <string>Show table</string>
@@ -619,6 +636,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/settings.ico</normaloff>:/icons/resources/settings.ico</iconset>
+   </property>
    <property name="text">
     <string>Show settings</string>
    </property>
@@ -629,6 +650,10 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/stats.ico</normaloff>:/icons/resources/stats.ico</iconset>
    </property>
    <property name="text">
     <string>Show stats</string>
@@ -661,7 +686,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="seismoreg.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>

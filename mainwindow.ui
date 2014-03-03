@@ -18,6 +18,10 @@
   <property name="windowTitle">
    <string>Precision signals recorder</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="seismoreg.qrc">
+    <normaloff>:/icons/resources/curve.ico</normaloff>:/icons/resources/curve.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>

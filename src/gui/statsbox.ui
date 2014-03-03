@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>280</width>
+    <width>217</width>
     <height>170</height>
    </rect>
   </property>
@@ -43,6 +43,12 @@
        <height>25</height>
       </size>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>85</width>
+       <height>25</height>
+      </size>
+     </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
@@ -59,6 +65,12 @@
        <height>25</height>
       </size>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>85</width>
+       <height>25</height>
+      </size>
+     </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
@@ -72,6 +84,12 @@
      <property name="minimumSize">
       <size>
        <width>82</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>85</width>
        <height>25</height>
       </size>
      </property>
@@ -121,6 +139,12 @@
        <height>25</height>
       </size>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>85</width>
+       <height>25</height>
+      </size>
+     </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
@@ -134,6 +158,12 @@
      <property name="minimumSize">
       <size>
        <width>82</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>85</width>
        <height>25</height>
       </size>
      </property>
@@ -160,6 +190,12 @@
      <property name="minimumSize">
       <size>
        <width>82</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>85</width>
        <height>25</height>
       </size>
      </property>

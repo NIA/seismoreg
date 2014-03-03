@@ -26,7 +26,7 @@ void StatsBox::setStats(DataVector items, int ch) {
 
     DataType min, max;
     min = max = items[0].byChannel[ch];
-    DataType avg = 0;
+    double avg = 0;
     foreach (DataItem item, items) {
         DataType val  = item.byChannel[ch];
         if (val < min) {

@@ -36,6 +36,7 @@ TimePlot::TimePlot(QWidget *parent) :
     QwtPlot(parent)
 {
     setMinimumHeight(75);
+    setMinimumWidth(350);
     setAxisScaleDraw(yLeft,   new RoundedScaleDraw);
     setAxisScaleDraw(xBottom, new TimeScaleDraw);
     setAxisScaleEngine(xBottom, new QwtDateScaleEngine);

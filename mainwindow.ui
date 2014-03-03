@@ -33,11 +33,11 @@
        </widget>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout_5" columnstretch="3,1">
+       <layout class="QGridLayout" name="gridLayout_5" columnstretch="1,0">
         <item row="0" column="0">
          <widget class="TimePlot" name="plotArea">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
             <horstretch>3</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -45,13 +45,33 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="TimePlot" name="plotArea2"/>
+         <widget class="TimePlot" name="plotArea2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
-         <widget class="TimePlot" name="plotArea3"/>
+         <widget class="TimePlot" name="plotArea3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item row="0" column="1">
          <widget class="StatsBox" name="stats">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -68,6 +88,12 @@
         </item>
         <item row="1" column="1">
          <widget class="StatsBox" name="stats2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -78,6 +104,12 @@
         </item>
         <item row="2" column="1">
          <widget class="StatsBox" name="stats3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -182,14 +214,14 @@
             <string>Save to file</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="3">
+            <item row="0" column="1">
              <widget class="QPushButton" name="browseBtn">
               <property name="text">
                <string>Browse...</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="3">
+            <item row="0" column="0">
              <widget class="QLineEdit" name="saveFileName"/>
             </item>
             <item row="1" column="0">
@@ -202,7 +234,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
+            <item row="1" column="1">
              <widget class="QPushButton" name="writeNowBtn">
               <property name="text">
                <string>Write now</string>

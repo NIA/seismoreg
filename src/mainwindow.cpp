@@ -7,6 +7,7 @@
 #include "protocols/testprotocol.h"
 #include "protocols/serialprotocol.h"
 #include "logger.h"
+#include "settings.h"
 #include "gui/statsbox.h"
 #include "gui/timeplot.h"
 
@@ -17,17 +18,16 @@ namespace {
 
     const QString DEFAULT_FILENAME = QString("data-%1.dat").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
 
-    void initPortChooser(QComboBox * chooser) {
+    void initPortChooser(QComboBox * chooser, QString initialValue) {
         chooser->addItem(TEST_PROTOCOL);
         chooser->addItems(SerialProtocol::portNames());
+        chooser->lineEdit()->setText(initialValue);
     }
-    void initShowHideAction(QAction * action, QWidget * widgetToHide) {
+    void initShowHideAction(QAction * action, QWidget * widgetToHide, bool initiallyShown) {
+        action->setChecked(initiallyShown);
+        widgetToHide->setVisible(initiallyShown);
         QObject::connect(action, &QAction::triggered, [=](bool checked){
-            if (checked) {
-                widgetToHide->show();
-            } else {
-                widgetToHide->hide();
-            }
+            widgetToHide->setVisible(checked);
         });
     }
     template <class W>
@@ -56,22 +56,20 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::setup() {
+    Settings settings;
     // Init GUI
-    initPortChooser(ui->portChooser);
-    initPortChooser(ui->portChooserGPS);
+    initPortChooser(ui->portChooser, settings.portNameADC());
+    initPortChooser(ui->portChooserGPS, settings.portNameGPS());
     ui->samplingFreq->addItem(QString::number(FREQ_200));
     ui->samplingFreq->addItem(QString::number(FREQ_50));
     initFileHandlers();
     disableOnConnect << ui->portChooser << ui->portChooserGPS << ui->samplingFreq;
 
-    initShowHideAction(ui->actionShowTable,    ui->dataView);
-    initShowHideAction(ui->actionShowSettings, ui->settings);
+    initShowHideAction(ui->actionShowTable,    ui->dataView, settings.isTableShown());
+    initShowHideAction(ui->actionShowSettings, ui->settings, settings.isSettingsShown());
     for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-        initShowHideAction(ui->actionShowStats, stats[ch]);
+        initShowHideAction(ui->actionShowStats, stats[ch], settings.isStatsShown());
     }
-    // Hide by default
-    ui->actionShowTable->setChecked(false);
-    ui->dataView->hide();
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -260,6 +258,12 @@ void MainWindow::log(QString text) {
 MainWindow::~MainWindow()
 {
     clockTimer->stop();
+    Settings settings;
+    settings.setPortNameADC(ui->portChooser->currentText());
+    settings.setPortNameGPS(ui->portChooserGPS->currentText());
+    settings.setTableShown(ui->actionShowTable->isChecked());
+    settings.setSettingsShown(ui->actionShowSettings->isChecked());
+    settings.setStatsShown(ui->actionShowStats->isChecked());
     delete ui;
     delete worker;
     delete fileWriter;

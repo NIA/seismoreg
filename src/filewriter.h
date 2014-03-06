@@ -39,6 +39,8 @@ public:
     QString fileName() { return saveFileName; }
     bool autoWriteEnabled() { return autoWrite; }
 
+    static QString defaultFileName();
+
     ~FileWriter();
 signals:
     void queueSizeChanged(unsigned newSize);

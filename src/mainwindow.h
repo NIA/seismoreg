@@ -33,6 +33,8 @@ private:
     void setCurrentTime();
     void log(QString text);
 
+    void saveSettings();
+
     Ui::MainWindow *ui;
     Protocol * protocol;
     Worker * worker;

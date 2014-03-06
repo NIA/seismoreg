@@ -3,6 +3,7 @@
 
 #include <QTimer>
 #include <QFileDialog>
+#include <QList>
 
 #include "protocols/testprotocol.h"
 #include "protocols/serialprotocol.h"
@@ -16,13 +17,21 @@ namespace {
     const int FREQ_200 = 200;
     const int FREQ_50  = 50;
 
-    const QString DEFAULT_FILENAME = QString("data-%1.dat").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
-
     void initPortChooser(QComboBox * chooser, QString initialValue) {
         chooser->addItem(TEST_PROTOCOL);
         chooser->addItems(SerialProtocol::portNames());
         chooser->lineEdit()->setText(initialValue);
     }
+    void initFreqChooser(QComboBox * chooser, QList<int> values, int initialValue) {
+        foreach(int value, values) {
+            chooser->addItem(QString::number(value));
+            if (value == initialValue) {
+                // select this (last) value
+                chooser->setCurrentIndex(chooser->count() - 1);
+            }
+        }
+    }
+
     void initShowHideAction(QAction * action, QWidget * widgetToHide, bool initiallyShown) {
         action->setChecked(initiallyShown);
         widgetToHide->setVisible(initiallyShown);
@@ -47,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     worker = new Worker(NULL, this);
-    fileWriter = new FileWriter(DEFAULT_FILENAME, this);
+    fileWriter = new FileWriter(FileWriter::defaultFileName(), this);
 
     initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
     initWidgetsArray(stats, ui->stats, ui->stats2, ui->stats3);
@@ -60,8 +69,8 @@ void MainWindow::setup() {
     // Init GUI
     initPortChooser(ui->portChooser, settings.portNameADC());
     initPortChooser(ui->portChooserGPS, settings.portNameGPS());
-    ui->samplingFreq->addItem(QString::number(FREQ_200));
-    ui->samplingFreq->addItem(QString::number(FREQ_50));
+    initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50}), settings.samplingFrequency());
+    fileWriter->setFileName(settings.saveFileNameOrDefault(fileWriter->fileName()));
     initFileHandlers();
     disableOnConnect << ui->portChooser << ui->portChooserGPS << ui->samplingFreq;
 
@@ -228,7 +237,7 @@ void MainWindow::initFileHandlers() {
     });
 
     // Set initial values
-    ui->saveFileName->setText(DEFAULT_FILENAME);
+    ui->saveFileName->setText(fileWriter->fileName());
     emit autoWriteChanged(ui->writeToFileEnabled->isChecked());
     setFileControlsState();
 }
@@ -255,15 +264,20 @@ void MainWindow::log(QString text) {
     Logger::info(text);
 }
 
-MainWindow::~MainWindow()
-{
-    clockTimer->stop();
+void MainWindow::saveSettings() {
     Settings settings;
     settings.setPortNameADC(ui->portChooser->currentText());
     settings.setPortNameGPS(ui->portChooserGPS->currentText());
+    settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
     settings.setTableShown(ui->actionShowTable->isChecked());
     settings.setSettingsShown(ui->actionShowSettings->isChecked());
     settings.setStatsShown(ui->actionShowStats->isChecked());
+}
+
+MainWindow::~MainWindow()
+{
+    clockTimer->stop();
+    saveSettings();
     delete ui;
     delete worker;
     delete fileWriter;

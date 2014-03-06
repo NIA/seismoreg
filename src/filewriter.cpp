@@ -5,11 +5,16 @@
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
+#include <QDateTime>
 
 FileWriter::FileWriter(QString fileName, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false)
 {
     setFileName(fileName); // will also init `file` instance variable
+}
+
+QString FileWriter::defaultFileName() {
+    return QString("data-%1.dat").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
 }
 
 void FileWriter::setFileName(QString fileName) {

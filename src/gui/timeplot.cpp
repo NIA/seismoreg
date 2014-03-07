@@ -29,11 +29,10 @@ namespace {
             return "hh:mm:ss";
         }
     };
-
 }
 
 TimePlot::TimePlot(QWidget *parent) :
-    QwtPlot(parent)
+    QwtPlot(parent), channel(0), pointsPerSec(200)
 {
     setMinimumHeight(75);
     setMinimumWidth(350);
@@ -46,28 +45,33 @@ TimePlot::TimePlot(QWidget *parent) :
 }
 
 void TimePlot::setData(TimeStampsVector timestamps, DataVector items, unsigned ch) {
-    QVector<QPointF> data;
+    QVector<QPointF> points = itemsToPoints(timestamps, items, ch);
+    setData(points);
+}
 
-    int itemsCount = items.count();
-    int timestampsCount = timestamps.count();
-    if (timestampsCount != itemsCount) {
-        Logger::warning(tr("Unequal size of timestamps and items: %1 vs %2").arg(timestampsCount).arg(itemsCount));
-        itemsCount = qMin(itemsCount, timestampsCount);
-    }
-
-    for(int i = 0; i < itemsCount; ++i) {
-        // TODO: take not all?
-        data << QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
-        ++i;
-    }
-    curve->setSamples(data);
+void TimePlot::setData(QVector<QPointF> points) {
+    curve->setSamples(points);
 
     // Set axis range
-    double xmax = data.last().x();
+    double xmax = points.last().x();
     double xmin = xmax - HISTORY_SECONDS*1000;
     setAxisScale(xBottom, xmin, xmax);
 
     replot();
+}
+
+void TimePlot::receiveData(TimeStampsVector timestamps, DataVector items) {
+    // Add new points
+    QVector<QPointF> newPoints = itemsToPoints(timestamps, items, channel);
+    buffer += newPoints;
+
+    // Strip old ones from the beginning
+    int maxSize = maxBufferSize();
+    if (buffer.size() > maxSize) {
+         int excess = buffer.size() - maxSize;
+         buffer.remove(0, excess);
+    }
+    setData(buffer);
 }
 
 void TimePlot::initGrid() {
@@ -88,3 +92,28 @@ void TimePlot::initCurve() {
     curve->attach(this);
 
 }
+
+int TimePlot::maxBufferSize() {
+    /* How many points should we store to be able to plot last HISTORY_SECONDS seconds?
+     * It is HISTORY_SECONDS*pointsPerSec, but reserve two times of this just to have some margin.
+     */
+    return 2*HISTORY_SECONDS*pointsPerSec;
+}
+
+
+QVector<QPointF> TimePlot::itemsToPoints(TimeStampsVector timestamps, DataVector items, unsigned ch) {
+    int itemsCount = items.count();
+    int timestampsCount = timestamps.count();
+    if (timestampsCount != itemsCount) {
+        Logger::warning(tr("Unequal size of timestamps and items: %1 vs %2").arg(timestampsCount).arg(itemsCount));
+        itemsCount = qMin(itemsCount, timestampsCount);
+    }
+
+    QVector<QPointF> data(itemsCount);
+    for(int i = 0; i < itemsCount; ++i) {
+        data[i] = QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
+    }
+
+    return data;
+}
+

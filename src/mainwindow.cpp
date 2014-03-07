@@ -78,6 +78,8 @@ void MainWindow::setup() {
     initShowHideAction(ui->actionShowSettings, ui->settings, settings.isSettingsShown());
     for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
         initShowHideAction(ui->actionShowStats, stats[ch], settings.isStatsShown());
+
+        plots[ch]->setChannel(ch);
     }
 
     ui->ledGPS->setOnColor(QLed::Green);
@@ -116,6 +118,9 @@ void MainWindow::setup() {
             protocol = new TestProtocol(samplingFrequency, 9000000, this);
         } else {
             protocol = new SerialProtocol(portName, samplingFrequency, this);
+        }
+        for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+            plots[ch]->setPointsPerSec(samplingFrequency);
         }
 
         worker->reset(protocol);
@@ -177,13 +182,14 @@ void MainWindow::initWorkerHandlers() {
         ui->dataView->addItems(items);
         ui->dataView->scrollToBottom();
         for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            // Update plot
-            plots[ch]->setData(worker->timeStamps(), worker->data(), ch);
             // Update stats
             stats[ch]->setStats(d, ch);
         }
     });
     connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
+    for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+        connect(worker, &Worker::dataUpdated, plots[ch], &TimePlot::receiveData);
+    }
 
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);

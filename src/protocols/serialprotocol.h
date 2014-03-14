@@ -16,7 +16,7 @@ public:
      *        while on *NIX it looks like path: i.e. /dev/ttyS0
      * \param packetSize - number of points in packet
      */
-    explicit SerialProtocol(QString portName, int pointsPerChannel, QObject * parent = 0);
+    explicit SerialProtocol(QString portName, int samplingFrequency, QObject * parent = 0);
     QString description();
 
     virtual bool open();
@@ -49,7 +49,7 @@ private:
 
     QString portName;
     QextSerialPort * port;
-    int pointsInPacket;
+    int frequency;
     QByteArray buffer;
 };
 

@@ -16,6 +16,7 @@ namespace {
     const QString TEST_PROTOCOL = "TEST";
     const int FREQ_200 = 200;
     const int FREQ_50  = 50;
+    const int FREQ_1   = 1;
 
     void initPortChooser(QComboBox * chooser, QString initialValue) {
         chooser->addItem(TEST_PROTOCOL);
@@ -69,7 +70,7 @@ void MainWindow::setup() {
     // Init GUI
     initPortChooser(ui->portChooser, settings.portNameADC());
     initPortChooser(ui->portChooserGPS, settings.portNameGPS());
-    initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50}), settings.samplingFrequency());
+    initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_1}), settings.samplingFrequency());
     fileWriter->setFileName(settings.saveFileNameOrDefault(fileWriter->fileName()));
     initFileHandlers();
     disableOnConnect << ui->portChooser << ui->portChooserGPS << ui->samplingFreq;

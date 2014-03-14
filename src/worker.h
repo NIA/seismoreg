@@ -101,16 +101,6 @@ public:
     bool isStarted() { return started; }
 
     /*!
-     * \brief Getter for accessing entire data vector
-     *
-     * If you need only last added data items instead, they are passed to Worker::dataUpdated signal
-     * \return all data items received from the begining (or from the last Worker::reset)
-     * \see Worker::dataUpdated
-     */
-    DataVector data() { return data_; }
-    TimeStampsVector timeStamps() { return timeStamps_; }
-
-    /*!
      * \brief Pause receiving data without closing protocol
      */
     void pause();
@@ -151,14 +141,10 @@ signals:
 private slots:
     void onCheckedADC(bool);
     void onCheckedGPS(bool);
-    void onDataAvailable(TimeStampsVector, DataVector);
 private:
     void setPrepared(PrepareResult res);
 
     Protocol * protocol_;
-    // TODO: do not store all data and all timestamps. Better: store only needed in client (mainwindow)
-    DataVector data_;
-    TimeStampsVector timeStamps_;
 
     bool autostart;
     bool prepared;

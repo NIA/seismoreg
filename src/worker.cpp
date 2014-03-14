@@ -103,19 +103,12 @@ Worker::StartResult Worker::start() {
     }
 
     started = true;
-    connect(protocol_, &Protocol::dataAvailable, this, &Worker::onDataAvailable);
+    connect(protocol_, &Protocol::dataAvailable, this, &Worker::dataUpdated);
 
     Logger::trace(tr("Starting receiving data..."));
     protocol_->startReceiving();
 
     return StartSuccess;
-}
-
-void Worker::onDataAvailable(TimeStampsVector newTimeStamps, DataVector newData) {
-    Logger::trace(tr("Received %1 data items").arg(newData.size()*CHANNELS_NUM));
-    data_ += newData;
-    timeStamps_ += newTimeStamps;
-    emit dataUpdated(newTimeStamps, newData);
 }
 
 void Worker::pause() {

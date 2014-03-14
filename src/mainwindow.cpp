@@ -52,7 +52,7 @@ namespace {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), protocol(NULL)
+    ui(new Ui::MainWindow), protocol(NULL), receivedItems(0)
 {
     ui->setupUi(this);
     worker = new Worker(NULL, this);
@@ -169,6 +169,7 @@ void MainWindow::initWorkerHandlers() {
         }
     });
     connect(worker, &Worker::dataUpdated, [=](TimeStampsVector t, DataVector d){
+        Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
         QStringList items;
         foreach(DataItem item, d) {
             // TODO: use table instead of list
@@ -178,9 +179,11 @@ void MainWindow::initWorkerHandlers() {
             }
             items << itemStr.join("; ");
         }
-        ui->samplesRcvd->setText(QString::number(worker->data().size()));
-        ui->dataView->addItems(items);
-        ui->dataView->scrollToBottom();
+        receivedItems += d.size()*CHANNELS_NUM;
+        ui->samplesRcvd->setText(QString::number(receivedItems));
+        // TODO: dataView is currently disabled! Find a way to enable it without lags
+        //ui->dataView->addItems(items);
+        //ui->dataView->scrollToBottom();
         for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             // Update stats
             stats[ch]->setStats(d, ch);

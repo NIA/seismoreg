@@ -42,6 +42,7 @@ private:
 
     QDateTime startedAt;
     QTimer * clockTimer;
+    int receivedItems;
 
     TimePlot * plots[CHANNELS_NUM];
     StatsBox * stats[CHANNELS_NUM];

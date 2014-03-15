@@ -303,7 +303,7 @@ MainWindow::~MainWindow()
 {
     clockTimer->stop();
     saveSettings();
-    delete ui;
     delete worker;
     delete fileWriter;
+    delete ui;
 }

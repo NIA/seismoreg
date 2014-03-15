@@ -9,7 +9,7 @@
  *
  * Normal workflow is as follows:
  *
- * - new Worker(protocol, this)
+ * - new Worker(protocol1, protocol2, this)
  * - Worker::prepare
  * - Worker::start
  * - get data via Worker::dataUpdated signal
@@ -46,30 +46,38 @@ public:
 
     /*!
      * \brief Worker constructor. Initializes worker with given protocol
-     * \param prot protocol to be used
-     * \param parent usual QObject parent parameter
-     * \warning Worker takes ownership on protocol in order to prevent it from
+     * \param protADC - protocol to be used for communication with ADC (send commands, receive data)
+     * \param protGPS - protocol to be used for communication with GPS (receive time and coordinates).
+     *                  Can be the same as protADC or not.
+     * \param parent  - usual QObject parent parameter
+     * \warning Worker takes ownership on protocols in order to prevent it from
      *          being deleted before Worker (and cause crash in destructor)
      */
-    explicit Worker(Protocol * prot, QObject *parent = 0);
+    explicit Worker(Protocol * protADC, Protocol * protGPS, QObject *parent = 0);
 
     /*!
-     * \brief Reset worker to given protocol
+     * \brief Reset worker to given protocols
      *
      * All operation with previous protocol is interrupted.
-     * Data is cleared.
+     * Previous protocol is closed and disconnected.
      * After that Worker::prepare can be called again.
-     * \param prot protocol to be used from now
+     * \param protADC - protocol to be used for ADC from now
+     * \param protGPS - protocol to be used for GPS from now
      * \warning Worker takes ownership on protocol in order to prevent it from
      *          being deleted before Worker (and cause crash in destructor)
      */
-    void reset(Protocol * prot);
+    void reset(Protocol * protADC, Protocol * protGPS);
 
     /*!
      * \brief Getter for connecting to signals of Protocol
-     * \return current protocol in action
+     * \return current protocol for ADC
      */
-    Protocol * protocol() { return protocol_; }
+    Protocol * protocolADC() { return protocolADC_; }
+    /*!
+     * \brief Getter for connecting to signals of Protocol
+     * \return current protocol for GPS
+     */
+    Protocol * protocolGPS() { return protocolGPS_; }
 
     /*!
      * \brief Prepare for data receiving
@@ -144,7 +152,11 @@ private slots:
 private:
     void setPrepared(PrepareResult res);
 
-    Protocol * protocol_;
+    void assignProtocol(Protocol *& lvalue, Protocol * rvalue);
+    void finalizeProtocol(Protocol * prot);
+
+    Protocol * protocolADC_;
+    Protocol * protocolGPS_;
 
     bool autostart;
     bool prepared;

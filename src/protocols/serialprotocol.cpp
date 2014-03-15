@@ -93,6 +93,7 @@ void SerialProtocol::close() {
         stopReceiving();
     }
     port->close();
+    resetState();
 }
 
 SerialProtocol::~SerialProtocol() {
@@ -153,6 +154,7 @@ void SerialProtocol::onDataReceived() {
             addState(GPSReady);
             emit checkedGPS(true);
         } else if(rawData.startsWith(CHECKED_GPS)) {
+            // FIXME: actual GPS packet parsing!!!
             addState(GPSReady);
             emit checkedGPS(true);
         }

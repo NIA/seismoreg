@@ -1,44 +1,67 @@
 #include "worker.h"
 #include "logger.h"
 
-Worker::Worker(Protocol * prot, QObject *parent) :
-    QObject(parent), protocol_(NULL)
+Worker::Worker(Protocol * protADC, Protocol *protGPS, QObject *parent) :
+    QObject(parent), protocolADC_(NULL), protocolGPS_(NULL)
 {
     // NB: bool instance variables are initialized in reset (in finish)
-    reset(prot);
+    reset(protADC, protGPS);
 }
 
-void Worker::reset(Protocol *prot) {
+void Worker::reset(Protocol *protADC, Protocol *protGPS) {
     finish();
-    protocol_ = prot;
-    if(prot != NULL) {
+    assignProtocol(protocolADC_, protADC);
+    assignProtocol(protocolGPS_, protGPS);
+}
+
+void Worker::assignProtocol(Protocol *&lvalue, Protocol *rvalue) {
+    lvalue = rvalue;
+    if (lvalue != NULL) {
         // Take ownership on protocol in order to prevent it from being deleted before Worker (and cause crash in destructor)
-        protocol_->setParent(this);
+        lvalue->setParent(this);
     }
 }
 
 void Worker::prepare(bool autostart) {
-    Q_ASSERT_X(protocol_ != 0, "Worker::prepare", "protocol not set");
-    if( prepared ) {
+    Q_ASSERT_X(protocolADC_ != 0, "Worker::prepare", "ADC protocol not set");
+    Q_ASSERT_X(protocolGPS_ != 0, "Worker::prepare", "GPS protocol not set");
+    if ( prepared ) {
         Logger::error(tr("Called prepare twice!"));
         setPrepared(PrepareAlready);
         return;
     }
 
     this->autostart = autostart;
-    Logger::trace(tr("Opening protocol: %1...").arg(protocol_->description()));
-    if(protocol_->open()) {
-        Logger::info(tr("Opened protocol: %1").arg(protocol_->description()));
+
+    // Open first port:
+    Logger::trace(tr("Opening protocol: %1...").arg(protocolADC_->description()));
+    if (protocolADC_->open()) {
+        Logger::info(tr("Opened protocol: %1").arg(protocolADC_->description()));
+
+        // If OK, open second port (if it is different):
+        if (protocolADC_ != protocolGPS_) {
+            Logger::trace(tr("Opening GPS protocol: %1...").arg(protocolGPS_->description()));
+            if (protocolGPS_->open()) {
+                Logger::info(tr("Opened protocol: %1").arg(protocolGPS_->description()));
+                // all ok, continue
+            } else {
+                Logger::error(tr("Failed to open GPS protocol: %1").arg(protocolGPS_->description()));
+                setPrepared(PrepareFail);
+                // not ok, interrupt
+                return;
+            }
+            // TODO: but what if they are different instances of SerialProtocol with same port value? This should somehow be prohibited.
+        }
 
         // Connect signals before starting
-        connect(protocol_, &Protocol::checkedADC, this, &Worker::onCheckedADC);
-        connect(protocol_, &Protocol::checkedGPS, this, &Worker::onCheckedGPS);
+        connect(protocolADC_, &Protocol::checkedADC, this, &Worker::onCheckedADC);
+        connect(protocolGPS_, &Protocol::checkedGPS, this, &Worker::onCheckedGPS);
 
         // Start checking
         Logger::trace(tr("Checking ADC..."));
-        protocol_->checkADC();
+        protocolADC_->checkADC();
     } else {
-        Logger::error(tr("Failed to open protocol: %1").arg(protocol_->description()));
+        Logger::error(tr("Failed to open ADC protocol: %1").arg(protocolADC_->description()));
         setPrepared(PrepareFail);
     }
 }
@@ -46,13 +69,13 @@ void Worker::prepare(bool autostart) {
 void Worker::onCheckedADC(bool success) {
     if(success) {
         Logger::info(tr("ADC ready"));
-        if(protocol_->hasState(Protocol::GPSReady)) {
+        if(protocolGPS_->hasState(Protocol::GPSReady)) {
             // ADC checked, GPS ready => prepared!
             setPrepared(PrepareSuccess);
         } else {
             // Otherwise check it
             Logger::trace(tr("Checking GPS..."));
-            protocol_->checkGPS();
+            protocolGPS_->checkGPS();
         }
     } else {
         Logger::error(tr("ADC check failed!"));
@@ -63,13 +86,13 @@ void Worker::onCheckedADC(bool success) {
 void Worker::onCheckedGPS(bool success) {
     if(success) {
         Logger::info(tr("GPS ready"));
-        if(protocol_->hasState(Protocol::ADCReady)) {
+        if(protocolADC_->hasState(Protocol::ADCReady)) {
             // GPS checked, ADC ready => prepared!
             setPrepared(PrepareSuccess);
         } else {
             // Otherwise check it
             Logger::trace(tr("Checking ADC..."));
-            protocol_->checkADC();
+            protocolADC_->checkADC();
         }
     } else {
         Logger::error(tr("GPS check failed!"));
@@ -92,7 +115,7 @@ void Worker::setPrepared(PrepareResult res) {
 }
 
 Worker::StartResult Worker::start() {
-    Q_ASSERT_X(protocol_ != 0, "Worker::start", "protocol not set");
+    Q_ASSERT_X(protocolADC_ != 0, "Worker::start", "ADC protocol not set");
     if( ! prepared ) {
         Logger::error(tr("Trying to start not prepared worker!"));
         return StartFailNotPrepared;
@@ -103,41 +126,48 @@ Worker::StartResult Worker::start() {
     }
 
     started = true;
-    connect(protocol_, &Protocol::dataAvailable, this, &Worker::dataUpdated);
+    connect(protocolADC_, &Protocol::dataAvailable, this, &Worker::dataUpdated);
 
     Logger::trace(tr("Starting receiving data..."));
-    protocol_->startReceiving();
+    protocolADC_->startReceiving();
 
     return StartSuccess;
 }
 
 void Worker::pause() {
-    Q_ASSERT_X(protocol_ != 0, "Worker::pause", "protocol not set");
+    Q_ASSERT_X(protocolADC_ != 0, "Worker::pause", "protocol not set");
     if( paused ) {
         return;
     }
     paused = true;
     Logger::warning(tr("Paused receiving data!"));
-    protocol_->stopReceiving();
+    protocolADC_->stopReceiving();
 }
 
 void Worker::unpause() {
-    Q_ASSERT_X(protocol_ != 0, "Worker::unpause", "protocol not set");
+    Q_ASSERT_X(protocolADC_ != 0, "Worker::unpause", "protocol not set");
     if( ! paused ) {
         return;
     }
     paused = false;
     Logger::info(tr("Continuing receiving data after pause..."));
-    protocol_->startReceiving();
+    protocolADC_->startReceiving();
+}
+
+void Worker::finalizeProtocol(Protocol * protocol) {
+    if(protocol != NULL) {
+        if(protocol->hasState(Protocol::Open)) {
+            protocol->close();
+            Logger::info(tr("Closed protocol: %1").arg(protocol->description()));
+        }
+        protocol->disconnect(this);
+    }
 }
 
 void Worker::finish() {
-    if(protocol_ != NULL) {
-        if(protocol_->hasState(Protocol::Open)) {
-            protocol_->close();
-            Logger::info(tr("Closed protocol: %1").arg(protocol_->description()));
-        }
-        protocol_->disconnect(this);
+    finalizeProtocol(protocolADC_);
+    if (protocolADC_ != protocolGPS_) {
+        finalizeProtocol(protocolGPS_);
     }
     autostart = false;
     prepared = false;

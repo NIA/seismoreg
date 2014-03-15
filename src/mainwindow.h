@@ -36,7 +36,8 @@ private:
     void saveSettings();
 
     Ui::MainWindow *ui;
-    Protocol * protocol;
+    Protocol * protocolADC;
+    Protocol * protocolGPS;
     Worker * worker;
     FileWriter * fileWriter;
 

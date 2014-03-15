@@ -49,14 +49,24 @@ namespace {
         Q_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::initWidgetsArray", "MainWindow implementation assumes CHANNELS_NUM == 3");
     }
 
+    // "Protocol factory"
+    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent) {
+        if(portName == TEST_PROTOCOL) {
+            // An option for testing
+            return new TestProtocol(samplingFrequency, 9000000, parent);
+        } else {
+            return new SerialProtocol(portName, samplingFrequency, parent);
+        }
+    }
+
 }
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), protocol(NULL), receivedItems(0)
+    ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0)
 {
     ui->setupUi(this);
-    worker = new Worker(NULL, this);
+    worker = new Worker(NULL, NULL, this);
     fileWriter = new FileWriter(FileWriter::defaultFileName(), this);
 
     initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
@@ -112,19 +122,24 @@ void MainWindow::setup() {
             w->setDisabled(true);
         }
 
-        QString portName = ui->portChooser->currentText();
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
-        if(portName == TEST_PROTOCOL) {
-            // An option for testing
-            protocol = new TestProtocol(samplingFrequency, 9000000, this);
-        } else {
-            protocol = new SerialProtocol(portName, samplingFrequency, this);
-        }
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             plots[ch]->setPointsPerSec(samplingFrequency);
         }
 
-        worker->reset(protocol);
+        QString portNameADC = ui->portChooser->currentText();
+        QString portNameGPS = ui->portChooserGPS->currentText();
+        protocolADC = makeProtocol(portNameADC, samplingFrequency, this);
+        if (portNameADC == portNameGPS) {
+            // Important! If port names are equal, protocols also should be the
+            // same instance, NOT two different instances with the same parameters!
+            protocolGPS = protocolADC;
+            // TODO: move this `if` into makeProtocol and move this function to core?
+        } else {
+            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this);
+        }
+
+        worker->reset(protocolADC, protocolGPS);
         initWorkerHandlers();
         worker->prepare();
     });
@@ -132,11 +147,11 @@ void MainWindow::setup() {
 
 void MainWindow::initWorkerHandlers() {
     worker->disconnect();
-    connect(worker->protocol(), &Protocol::checkedADC, [=](bool success){
+    connect(worker->protocolADC(), &Protocol::checkedADC, [=](bool success){
         ui->ledADC->setOnColor( success ? QLed::Green : QLed::Red);
         ui->ledADC->setValue(true);
     });
-    connect(worker->protocol(), &Protocol::checkedGPS, [=](bool success){
+    connect(worker->protocolGPS(), &Protocol::checkedGPS, [=](bool success){
         ui->ledGPS->setOnColor( success ? QLed::Green : QLed::Red);
         ui->ledGPS->setValue(true);
     });

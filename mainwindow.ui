@@ -470,7 +470,7 @@
       <item row="0" column="5">
        <widget class="QLineEdit" name="currentLatitude">
         <property name="text">
-         <string>45°02'00&quot;</string>
+         <string notr="true">45°02'00&quot;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -483,7 +483,7 @@
       <item row="1" column="5">
        <widget class="QLineEdit" name="currentLongitude">
         <property name="text">
-         <string>38°59'00&quot;</string>
+         <string notr="true">38°59'00&quot;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

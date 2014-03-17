@@ -50,12 +50,12 @@ namespace {
     }
 
     // "Protocol factory"
-    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent) {
+    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent, BaudRateType baudRate = SerialProtocol::DEFAULT_BAUD_RATE) {
         if(portName == TEST_PROTOCOL) {
             // An option for testing
             return new TestProtocol(samplingFrequency, 9000000, parent);
         } else {
-            return new SerialProtocol(portName, samplingFrequency, parent);
+            return new SerialProtocol(portName, samplingFrequency, baudRate, parent);
         }
     }
 
@@ -136,7 +136,7 @@ void MainWindow::setup() {
             protocolGPS = protocolADC;
             // TODO: move this `if` into makeProtocol and move this function to core?
         } else {
-            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this);
+            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this, SerialProtocol::GPS_BAUD_RATE);
         }
 
         worker->reset(protocolADC, protocolGPS);

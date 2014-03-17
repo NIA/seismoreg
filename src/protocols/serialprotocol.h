@@ -2,21 +2,24 @@
 #define SERIALPROTOCOL_H
 
 #include "../protocol.h"
+#include "qextserialport.h"
 
 class QTimer;
-class QextSerialPort;
 
 class SerialProtocol : public Protocol
 {
     Q_OBJECT
 public:
+    static const BaudRateType DEFAULT_BAUD_RATE;
+    static const BaudRateType GPS_BAUD_RATE;
+
     /*!
      * \brief SerialProtocol
      * \param portName - name (or path) of port to be opened. On Windows it is like COM1,
      *        while on *NIX it looks like path: i.e. /dev/ttyS0
-     * \param packetSize - number of points in packet
+     * \param samplingFrequency - number of points per second in result
      */
-    explicit SerialProtocol(QString portName, int samplingFrequency, QObject * parent = 0);
+    explicit SerialProtocol(QString portName, int samplingFrequency, BaudRateType baudRate = DEFAULT_BAUD_RATE, bool debug = false, QObject * parent = 0);
     QString description();
 
     virtual bool open();
@@ -51,6 +54,8 @@ private:
     QextSerialPort * port;
     int frequency;
     QByteArray buffer;
+
+    bool debugMode;
 };
 
 #endif // SERIALPROTOCOL_H

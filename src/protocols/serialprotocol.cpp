@@ -1,5 +1,4 @@
 #include "serialprotocol.h"
-#include "qextserialport.h"
 #include "qextserialenumerator.h"
 #include "../logger.h"
 #include <QTimer>
@@ -13,19 +12,22 @@ namespace {
     const QByteArray START_RECEIVE_200 = "\x02";
     const QByteArray STOP_RECEIVE("\x00", 1); // simply = "\x00" won't work: will be empty string
     const QByteArray CHECKED_ADC = CHECK_ADC;
-    const QByteArray CHECKED_GPS = CHECK_GPS;
     const QByteArray DATA_PREFIX(5, '\xF0');
+    const QByteArray GPS_PREFIX = "\x10";
 
     const int MIN_FREQUENCY = 1;
     const int POINTS_IN_PACKET = 200;
 }
 
-SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL), frequency(samplingFrequency)
+const BaudRateType SerialProtocol::DEFAULT_BAUD_RATE = BAUD115200;
+const BaudRateType SerialProtocol::GPS_BAUD_RATE = BAUD9600;
+
+SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, BaudRateType baudRate, bool debug, QObject *parent) :
+    Protocol(parent), portName(portName), port(NULL), frequency(samplingFrequency), debugMode(debug)
 {
     port = new QextSerialPort(portName);
     // TODO: configurable baud rate
-    port->setBaudRate(BAUD115200);
+    port->setBaudRate(baudRate);
     if (frequency < MIN_FREQUENCY) {
         Logger::error(tr("Incorrect frequency: cannot be less than %1").arg(MIN_FREQUENCY));
         frequency = MIN_FREQUENCY;
@@ -102,7 +104,12 @@ SerialProtocol::~SerialProtocol() {
 
 void SerialProtocol::onDataReceived() {
     QByteArray rawData = port->readAll();
-    if(hasState(Receiving)) {
+
+    if (debugMode) {
+        Logger::info(portName + ": " + rawData.toHex());
+    }
+
+    if (hasState(Receiving)) {
         if(rawData.startsWith(DATA_PREFIX)) {
             // If we see packet start:
             // Drop buffer
@@ -150,10 +157,7 @@ void SerialProtocol::onDataReceived() {
         if(rawData.startsWith(CHECKED_ADC)) {
             addState(ADCReady);
             emit checkedADC(true);
-            // FIXME: temporary workaround!!!
-            addState(GPSReady);
-            emit checkedGPS(true);
-        } else if(rawData.startsWith(CHECKED_GPS)) {
+        } else if(rawData.startsWith(GPS_PREFIX)) {
             // FIXME: actual GPS packet parsing!!!
             addState(GPSReady);
             emit checkedGPS(true);

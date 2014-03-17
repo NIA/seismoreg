@@ -67,7 +67,11 @@ void Worker::prepare(bool autostart) {
 }
 
 void Worker::onCheckedADC(bool success) {
-    if(success) {
+    if (prepared) {
+        // If already prepared, no need to notify anyone
+        return;
+    }
+    if (success) {
         Logger::info(tr("ADC ready"));
         if(protocolGPS_->hasState(Protocol::GPSReady)) {
             // ADC checked, GPS ready => prepared!
@@ -84,7 +88,11 @@ void Worker::onCheckedADC(bool success) {
 }
 
 void Worker::onCheckedGPS(bool success) {
-    if(success) {
+    if (prepared) {
+        // If already prepared, no need to notify anyone
+        return;
+    }
+    if (success) {
         Logger::info(tr("GPS ready"));
         if(protocolADC_->hasState(Protocol::ADCReady)) {
             // GPS checked, ADC ready => prepared!

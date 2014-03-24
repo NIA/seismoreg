@@ -20,7 +20,8 @@ SOURCES += src/main.cpp\
     src/filewriter.cpp \
     src/gui/statsbox.cpp \
     src/gui/timeplot.cpp \
-    src/settings.cpp
+    src/settings.cpp \
+    src/gui/portsettingsdialog.cpp
 
 HEADERS  += src/mainwindow.h \
     src/protocol.h \
@@ -33,10 +34,12 @@ HEADERS  += src/mainwindow.h \
     src/filewriter.h \
     src/gui/statsbox.h \
     src/gui/timeplot.h \
-    src/settings.h
+    src/settings.h \
+    src/gui/portsettingsdialog.h
 
 FORMS    += mainwindow.ui \
-    src/gui/statsbox.ui
+    src/gui/statsbox.ui \
+    src/gui/portsettingsdialog.ui
 
 TRANSLATIONS += seismoreg_ru.ts
 

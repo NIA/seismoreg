@@ -11,6 +11,7 @@
 #include "settings.h"
 #include "gui/statsbox.h"
 #include "gui/timeplot.h"
+#include "gui/portsettingsdialog.h"
 
 namespace {
     const QString TEST_PROTOCOL = "TEST";
@@ -92,6 +93,9 @@ void MainWindow::setup() {
 
         plots[ch]->setChannel(ch);
     }
+
+    initPortSettingsAction(ui->actionADCPortSettings, ui->actionADCPortSettings->text(), portSettingsADC);
+    initPortSettingsAction(ui->actionGPSPortSettings, ui->actionGPSPortSettings->text(), portSettingsGPS);
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -265,6 +269,23 @@ void MainWindow::initFileHandlers() {
     ui->saveFileName->setText(fileWriter->fileName());
     emit autoWriteChanged(ui->writeToFileEnabled->isChecked());
     setFileControlsState();
+}
+
+void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings) {
+    // TODO: get from settings
+    portSettings.BaudRate = BAUD9600;
+    portSettings.Parity = PAR_NONE;
+    portSettings.FlowControl = FLOW_OFF;
+    portSettings.DataBits = DATA_8;
+    portSettings.StopBits = STOP_1;
+    portSettings.Timeout_Millisec = 10;
+
+    connect(action, &QAction::triggered, [=,&portSettings](){
+        PortSettingsDialog dlg(title, portSettings, this);
+        if (PortSettingsDialog::Accepted == dlg.exec()) {
+            portSettings = dlg.portSettings();
+        }
+    });
 }
 
 void MainWindow::setFileControlsState() {

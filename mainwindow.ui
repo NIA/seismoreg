@@ -591,8 +591,16 @@
     <addaction name="actionShowSettings"/>
     <addaction name="actionShowStats"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionADCPortSettings"/>
+    <addaction name="actionGPSPortSettings"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="movable">
@@ -661,6 +669,16 @@
    </property>
    <property name="text">
     <string>Show stats</string>
+   </property>
+  </action>
+  <action name="actionADCPortSettings">
+   <property name="text">
+    <string>ADC port settings</string>
+   </property>
+  </action>
+  <action name="actionGPSPortSettings">
+   <property name="text">
+    <string>GPS port settings</string>
    </property>
   </action>
  </widget>

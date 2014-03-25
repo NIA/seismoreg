@@ -212,14 +212,14 @@
             <item row="1" column="1">
              <widget class="QToolButton" name="portSettingsADC">
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
              <widget class="QToolButton" name="portSettingsGPS">
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
              </widget>
             </item>

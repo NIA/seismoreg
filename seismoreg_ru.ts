@@ -88,12 +88,12 @@
         <translation type="obsolete">Число точек</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="305"/>
+        <location filename="mainwindow.ui" line="319"/>
         <source>Connect</source>
         <translation>Подключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="321"/>
+        <location filename="mainwindow.ui" line="335"/>
         <source>Disconnect</source>
         <translation>Отключить</translation>
     </message>
@@ -102,145 +102,224 @@
         <translation type="obsolete">Приём данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="553"/>
+        <location filename="mainwindow.ui" line="567"/>
         <source>Start</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="540"/>
+        <location filename="mainwindow.ui" line="554"/>
         <source>Start time</source>
         <translation>Время начала</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="334"/>
+        <location filename="mainwindow.ui" line="348"/>
         <source>Time elapsed</source>
         <translation>Прошло времени</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="350"/>
+        <location filename="mainwindow.ui" line="364"/>
         <source>Samples received</source>
         <translation>Получено данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="563"/>
+        <location filename="mainwindow.ui" line="577"/>
         <source>Stop</source>
         <translation>Стоп</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="292"/>
-        <location filename="mainwindow.ui" line="527"/>
+        <location filename="mainwindow.ui" line="306"/>
+        <location filename="mainwindow.ui" line="541"/>
         <source>H:mm:ss</source>
         <translation>HH:mm:ss</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="194"/>
+        <location filename="mainwindow.ui" line="139"/>
         <source>GPS port</source>
         <translation>Порт GPS</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="201"/>
+        <location filename="mainwindow.ui" line="170"/>
         <source>ADC port</source>
         <translation>Порт АЦП</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="208"/>
+        <location filename="mainwindow.ui" line="163"/>
         <source>Sampling frequency</source>
         <translation>Частота выборки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="408"/>
-        <location filename="mainwindow.ui" line="499"/>
+        <location filename="mainwindow.ui" line="422"/>
+        <location filename="mainwindow.ui" line="513"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="447"/>
+        <location filename="mainwindow.ui" line="461"/>
         <source>Awaiting writing</source>
         <translation>Ожидают записи</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="218"/>
+        <location filename="mainwindow.ui" line="232"/>
         <source>Save to file</source>
         <translation>Сохранять в файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="224"/>
+        <location filename="mainwindow.ui" line="238"/>
         <source>Browse...</source>
         <translation>Найти...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="234"/>
+        <location filename="mainwindow.ui" line="248"/>
         <source>Write automatically</source>
         <translation>Писать автоматически</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="244"/>
+        <location filename="mainwindow.ui" line="258"/>
         <source>Write now</source>
         <translation>Записать</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="366"/>
+        <location filename="mainwindow.ui" line="380"/>
         <source>Date</source>
         <translation>Дата</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="382"/>
+        <location filename="mainwindow.ui" line="396"/>
         <source>Time</source>
         <translation>Время</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="398"/>
+        <location filename="mainwindow.ui" line="412"/>
         <source>Longitude</source>
         <translation>Долгота</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="463"/>
+        <location filename="mainwindow.ui" line="477"/>
         <source>Latitude</source>
         <translation>Широта</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="582"/>
+        <location filename="mainwindow.ui" line="596"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="588"/>
+        <location filename="mainwindow.ui" line="602"/>
         <source>View</source>
         <translation>Вид</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="621"/>
+        <location filename="mainwindow.ui" line="610"/>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="643"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="633"/>
+        <location filename="mainwindow.ui" line="655"/>
         <source>Show table</source>
         <translation>Показать таблицу</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="648"/>
+        <location filename="mainwindow.ui" line="670"/>
         <source>Show settings</source>
         <translation>Показать настройки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="663"/>
+        <location filename="mainwindow.ui" line="685"/>
         <source>Show stats</source>
         <translation>Показать статистику</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="694"/>
+        <source>ADC port settings</source>
+        <translation>Настройки порта АЦП</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="703"/>
+        <source>GPS port settings</source>
+        <translation>Настройки порта GPS</translation>
     </message>
     <message>
         <source>TEST</source>
         <translation type="obsolete">ТЕСТ</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="188"/>
+        <location filename="src/mainwindow.cpp" line="192"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="256"/>
+        <location filename="src/mainwindow.cpp" line="260"/>
         <source>Choose file for writing data</source>
         <translation>Выберите файл для записи данных</translation>
+    </message>
+</context>
+<context>
+    <name>PortSettingsDialog</name>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="25"/>
+        <source>Baud rate</source>
+        <translation>Скорость (бод)</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="35"/>
+        <source>Data bits</source>
+        <translation>Информационных бит</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="45"/>
+        <source>Stop bits</source>
+        <translation>Стоповых бит</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="55"/>
+        <source>Parity</source>
+        <translation>Контроль четности</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="65"/>
+        <source>Flow control</source>
+        <translation>Управление</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="59"/>
+        <source>Space</source>
+        <translation>Всегда 0</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="60"/>
+        <source>Mark</source>
+        <translation>Всегда 1</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="61"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="69"/>
+        <source>None</source>
+        <translation>Нет</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="62"/>
+        <source>Even</source>
+        <translation>До четности</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="63"/>
+        <source>Odd</source>
+        <translation>До нечетности</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="70"/>
+        <source>Hardware</source>
+        <translation>Аппаратное</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.cpp" line="71"/>
+        <source>Software</source>
+        <translation>Программное</translation>
     </message>
 </context>
 <context>
@@ -364,17 +443,17 @@
 <context>
     <name>SerialProtocol</name>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="30"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="36"/>
         <source>Incorrect frequency: cannot be less than %1</source>
         <translation>Неверная частота: должна быть не меньше %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="34"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="40"/>
         <source>Incorrect frequency: should be a divisor of %1</source>
         <translation>Неверная частота: должна быть делителем чилса %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="40"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="46"/>
         <source>Serial port %1</source>
         <translation>Последовательный порт %1</translation>
     </message>
@@ -458,7 +537,7 @@
     </message>
     <message>
         <location filename="src/worker.cpp" line="61"/>
-        <location filename="src/worker.cpp" line="94"/>
+        <location filename="src/worker.cpp" line="102"/>
         <source>Checking ADC...</source>
         <translation>Проверка АЦП...</translation>
     </message>
@@ -472,52 +551,52 @@
         <translation>Не удалось открыть протокол АЦП: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="71"/>
+        <location filename="src/worker.cpp" line="75"/>
         <source>ADC ready</source>
         <translation>АЦП готов</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="77"/>
+        <location filename="src/worker.cpp" line="81"/>
         <source>Checking GPS...</source>
         <translation>Проверка GPS...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="81"/>
+        <location filename="src/worker.cpp" line="85"/>
         <source>ADC check failed!</source>
         <translation>Проверка АЦП неудачна!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="88"/>
+        <location filename="src/worker.cpp" line="96"/>
         <source>GPS ready</source>
         <translation>GPS готов</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="98"/>
+        <location filename="src/worker.cpp" line="106"/>
         <source>GPS check failed!</source>
         <translation>Проверка GPS неудачна!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="109"/>
+        <location filename="src/worker.cpp" line="117"/>
         <source>Worker prepared and automatically started!</source>
         <translation>Worker подготовлен и автоматически запущен!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="112"/>
+        <location filename="src/worker.cpp" line="120"/>
         <source>Worker prepared and now can be started</source>
         <translation>Worker готов и может быть теперь запущен</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="120"/>
+        <location filename="src/worker.cpp" line="128"/>
         <source>Trying to start not prepared worker!</source>
         <translation>Попытка запуска не подготовленного Worker&apos;а!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="124"/>
+        <location filename="src/worker.cpp" line="132"/>
         <source>Trying to start already started worker!</source>
         <translation>Попытка запуска уже запущенного Worker&apos;а!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="131"/>
+        <location filename="src/worker.cpp" line="139"/>
         <source>Starting receiving data...</source>
         <translation>Начинаю принимать данные...</translation>
     </message>
@@ -526,17 +605,17 @@
         <translation type="obsolete">Получено %1 данных</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="143"/>
+        <location filename="src/worker.cpp" line="151"/>
         <source>Paused receiving data!</source>
         <translation>Приём данных приостановлен!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="153"/>
+        <location filename="src/worker.cpp" line="161"/>
         <source>Continuing receiving data after pause...</source>
         <translation>Продолжаю приём данных после паузы...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="161"/>
+        <location filename="src/worker.cpp" line="169"/>
         <source>Closed protocol: %1</source>
         <translation>Закрыт протокол: %1</translation>
     </message>

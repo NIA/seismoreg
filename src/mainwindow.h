@@ -14,6 +14,7 @@ class MainWindow;
 }
 class StatsBox;
 class TimePlot;
+class QToolButton;
 
 class MainWindow : public QMainWindow
 {
@@ -30,7 +31,7 @@ private:
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
-    void initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings);
+    void initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings, QToolButton *btn);
     void setFileControlsState();
     void setCurrentTime();
     void log(QString text);

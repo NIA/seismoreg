@@ -19,15 +19,19 @@ namespace {
     const int POINTS_IN_PACKET = 200;
 }
 
-const BaudRateType SerialProtocol::DEFAULT_BAUD_RATE = BAUD115200;
-const BaudRateType SerialProtocol::GPS_BAUD_RATE = BAUD9600;
+const PortSettings SerialProtocol::DEFAULT_PORT_SETTINGS = {BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10};
 
-SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, BaudRateType baudRate, bool debug, QObject *parent) :
+SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, PortSettings settings, bool debug, QObject *parent) :
     Protocol(parent), portName(portName), port(NULL), frequency(samplingFrequency), debugMode(debug)
 {
     port = new QextSerialPort(portName);
-    // TODO: configurable baud rate
-    port->setBaudRate(baudRate);
+    port->setBaudRate(settings.BaudRate);
+    port->setDataBits(settings.DataBits);
+    port->setStopBits(settings.StopBits);
+    port->setParity(settings.Parity);
+    port->setFlowControl(settings.FlowControl);
+    // TODO: support timeout setting?
+
     if (frequency < MIN_FREQUENCY) {
         Logger::error(tr("Incorrect frequency: cannot be less than %1").arg(MIN_FREQUENCY));
         frequency = MIN_FREQUENCY;

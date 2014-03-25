@@ -51,12 +51,12 @@ namespace {
     }
 
     // "Protocol factory"
-    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent, BaudRateType baudRate = SerialProtocol::DEFAULT_BAUD_RATE) {
+    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent, PortSettings portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS, bool debug = false) {
         if(portName == TEST_PROTOCOL) {
             // An option for testing
             return new TestProtocol(samplingFrequency, 9000000, parent);
         } else {
-            return new SerialProtocol(portName, samplingFrequency, baudRate, parent);
+            return new SerialProtocol(portName, samplingFrequency, portSettings, debug, parent);
         }
     }
 
@@ -94,8 +94,8 @@ void MainWindow::setup() {
         plots[ch]->setChannel(ch);
     }
 
-    initPortSettingsAction(ui->actionADCPortSettings, ui->actionADCPortSettings->text(), portSettingsADC);
-    initPortSettingsAction(ui->actionGPSPortSettings, ui->actionGPSPortSettings->text(), portSettingsGPS);
+    initPortSettingsAction(ui->actionADCPortSettings, ui->actionADCPortSettings->text(), portSettingsADC, ui->portSettingsADC);
+    initPortSettingsAction(ui->actionGPSPortSettings, ui->actionGPSPortSettings->text(), portSettingsGPS, ui->portSettingsGPS);
 
     ui->ledGPS->setOnColor(QLed::Green);
     clockTimer = new QTimer(this);
@@ -133,14 +133,14 @@ void MainWindow::setup() {
 
         QString portNameADC = ui->portChooser->currentText();
         QString portNameGPS = ui->portChooserGPS->currentText();
-        protocolADC = makeProtocol(portNameADC, samplingFrequency, this);
+        protocolADC = makeProtocol(portNameADC, samplingFrequency, this, portSettingsADC);
         if (portNameADC == portNameGPS) {
             // Important! If port names are equal, protocols also should be the
             // same instance, NOT two different instances with the same parameters!
             protocolGPS = protocolADC;
             // TODO: move this `if` into makeProtocol and move this function to core?
         } else {
-            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this, SerialProtocol::GPS_BAUD_RATE);
+            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this, portSettingsGPS, true);
         }
 
         worker->reset(protocolADC, protocolGPS);
@@ -271,15 +271,11 @@ void MainWindow::initFileHandlers() {
     setFileControlsState();
 }
 
-void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings) {
+void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings, QToolButton * btn) {
     // TODO: get from settings
-    portSettings.BaudRate = BAUD9600;
-    portSettings.Parity = PAR_NONE;
-    portSettings.FlowControl = FLOW_OFF;
-    portSettings.DataBits = DATA_8;
-    portSettings.StopBits = STOP_1;
-    portSettings.Timeout_Millisec = 10;
+    portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS;
 
+    btn->setDefaultAction(action);
     connect(action, &QAction::triggered, [=,&portSettings](){
         PortSettingsDialog dlg(title, portSettings, this);
         if (PortSettingsDialog::Accepted == dlg.exec()) {

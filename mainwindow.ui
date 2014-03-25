@@ -133,7 +133,45 @@
             <string>Link management</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="1" column="1">
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>GPS port</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="3">
+             <widget class="QComboBox" name="samplingFreq"/>
+            </item>
+            <item row="1" column="3">
+             <widget class="QComboBox" name="portChooser">
+              <property name="editable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QComboBox" name="portChooserGPS">
+              <property name="editable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="3">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Sampling frequency</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>ADC port</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
              <widget class="QLed" name="ledADC" native="true">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -155,7 +193,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="3" column="2">
              <widget class="QLed" name="ledGPS" native="true">
               <property name="minimumSize">
                <size>
@@ -171,41 +209,17 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="2">
-             <widget class="QComboBox" name="samplingFreq"/>
-            </item>
-            <item row="1" column="2">
-             <widget class="QComboBox" name="portChooser">
-              <property name="editable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QComboBox" name="portChooserGPS">
-              <property name="editable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_6">
+            <item row="1" column="1">
+             <widget class="QToolButton" name="portSettingsADC">
               <property name="text">
-               <string>GPS port</string>
+               <string>...</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_5">
+            <item row="3" column="1">
+             <widget class="QToolButton" name="portSettingsGPS">
               <property name="text">
-               <string>ADC port</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0" colspan="2">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>Sampling frequency</string>
+               <string>...</string>
               </property>
              </widget>
             </item>
@@ -672,11 +686,19 @@
    </property>
   </action>
   <action name="actionADCPortSettings">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/gear.ico</normaloff>:/icons/resources/gear.ico</iconset>
+   </property>
    <property name="text">
     <string>ADC port settings</string>
    </property>
   </action>
   <action name="actionGPSPortSettings">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/gear.ico</normaloff>:/icons/resources/gear.ico</iconset>
+   </property>
    <property name="text">
     <string>GPS port settings</string>
    </property>

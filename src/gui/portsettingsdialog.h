@@ -2,20 +2,21 @@
 #define PORTSETTINGSDIALOG_H
 
 #include <QDialog>
-#include "qextserialport.h"
+#include "../protocols/serialprotocol.h"
 
 namespace Ui {
 class PortSettingsDialog;
 }
+
 
 class PortSettingsDialog : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit PortSettingsDialog(QString title, PortSettings portSettings, QWidget *parent = 0);
+    explicit PortSettingsDialog(QString title, PortSettingsEx portSettings, QWidget *parent = 0);
     virtual void accept();
-    PortSettings portSettings() const { return settings; }
+    PortSettingsEx portSettings() const { return settings; }
     ~PortSettingsDialog();
     
 private:
@@ -29,7 +30,7 @@ private:
     void getInputValues();
 
     Ui::PortSettingsDialog *ui;
-    PortSettings settings;
+    PortSettingsEx settings;
 };
 
 #endif // PORTSETTINGSDIALOG_H

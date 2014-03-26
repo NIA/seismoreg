@@ -19,10 +19,16 @@ namespace {
     const int POINTS_IN_PACKET = 200;
 }
 
-const PortSettings SerialProtocol::DEFAULT_PORT_SETTINGS = {BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10};
+PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, ParityType parity, StopBitsType stopBits, FlowType flowControl, long timeoutMillisec, bool debug)
+    : PortSettings({baudRate, dataBits, parity, stopBits, flowControl, timeoutMillisec}),
+      debug(debug)
+{}
 
-SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, PortSettings settings, bool debug, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL), frequency(samplingFrequency), debugMode(debug)
+
+const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10, false);
+
+SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, PortSettingsEx settings, QObject *parent) :
+    Protocol(parent), portName(portName), port(NULL), frequency(samplingFrequency), debugMode(settings.debug)
 {
     port = new QextSerialPort(portName);
     port->setBaudRate(settings.BaudRate);

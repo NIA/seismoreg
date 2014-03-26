@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <QVector>
-#include "qextserialport.h"
 #include "protocol.h"
+#include "protocols/serialprotocol.h"
 #include "worker.h"
 #include "filewriter.h"
 
@@ -31,7 +31,7 @@ private:
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
-    void initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings, QToolButton *btn);
+    void initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton *btn);
     void setFileControlsState();
     void setCurrentTime();
     void log(QString text);
@@ -41,8 +41,8 @@ private:
     Ui::MainWindow *ui;
     Protocol * protocolADC;
     Protocol * protocolGPS;
-    PortSettings portSettingsADC;
-    PortSettings portSettingsGPS;
+    PortSettingsEx portSettingsADC;
+    PortSettingsEx portSettingsGPS;
     Worker * worker;
     FileWriter * fileWriter;
 

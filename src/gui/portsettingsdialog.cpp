@@ -14,7 +14,7 @@ Q_DECLARE_METATYPE(StopBitsType)
 Q_DECLARE_METATYPE(ParityType)
 Q_DECLARE_METATYPE(FlowType)
 
-PortSettingsDialog::PortSettingsDialog(QString title, PortSettings portSettings, QWidget *parent) :
+PortSettingsDialog::PortSettingsDialog(QString title, PortSettingsEx portSettings, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PortSettingsDialog),
     settings(portSettings)
@@ -97,6 +97,7 @@ void PortSettingsDialog::setInputValues() {
     initChooser(ui->parity,      parityValues,   settings.Parity);
     initChooser(ui->flowControl, flowValues,     settings.FlowControl);
     // TODO: suppot timeout setting?
+    ui->debug->setChecked(settings.debug);
 }
 
 void PortSettingsDialog::getInputValues() {
@@ -105,4 +106,5 @@ void PortSettingsDialog::getInputValues() {
     getValue(ui->stopBits, settings.StopBits);
     getValue(ui->parity,   settings.Parity);
     getValue(ui->flowControl, settings.FlowControl);
+    settings.debug = ui->debug->isChecked();
 }

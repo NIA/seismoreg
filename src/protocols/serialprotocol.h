@@ -6,11 +6,20 @@
 
 class QTimer;
 
+struct PortSettingsEx : public PortSettings {
+    // In addition to all its fields, one another:
+    bool debug;
+    // and constructor:
+    PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, ParityType parity, StopBitsType stopBits, FlowType flowControl, long timeoutMillisec, bool debug);
+    // and default constructor for convenience:
+    PortSettingsEx() {}
+};
+
 class SerialProtocol : public Protocol
 {
     Q_OBJECT
 public:
-    static const PortSettings DEFAULT_PORT_SETTINGS;
+    static const PortSettingsEx DEFAULT_PORT_SETTINGS;
 
     /*!
      * \brief SerialProtocol
@@ -18,7 +27,7 @@ public:
      *        while on *NIX it looks like path: i.e. /dev/ttyS0
      * \param samplingFrequency - number of points per second in result
      */
-    explicit SerialProtocol(QString portName, int samplingFrequency, PortSettings settings = DEFAULT_PORT_SETTINGS, bool debug = false, QObject * parent = 0);
+    explicit SerialProtocol(QString portName, int samplingFrequency, PortSettingsEx settings = DEFAULT_PORT_SETTINGS, QObject * parent = 0);
     QString description();
 
     virtual bool open();

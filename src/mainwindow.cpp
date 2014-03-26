@@ -51,12 +51,12 @@ namespace {
     }
 
     // "Protocol factory"
-    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent, PortSettings portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS, bool debug = false) {
+    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent, PortSettingsEx portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS) {
         if(portName == TEST_PROTOCOL) {
             // An option for testing
             return new TestProtocol(samplingFrequency, 9000000, parent);
         } else {
-            return new SerialProtocol(portName, samplingFrequency, portSettings, debug, parent);
+            return new SerialProtocol(portName, samplingFrequency, portSettings, parent);
         }
     }
 
@@ -94,6 +94,8 @@ void MainWindow::setup() {
         plots[ch]->setChannel(ch);
     }
 
+    // TODO: get from settings
+    portSettingsADC = portSettingsGPS = SerialProtocol::DEFAULT_PORT_SETTINGS;
     initPortSettingsAction(ui->actionADCPortSettings, ui->actionADCPortSettings->text(), portSettingsADC, ui->portSettingsADC);
     initPortSettingsAction(ui->actionGPSPortSettings, ui->actionGPSPortSettings->text(), portSettingsGPS, ui->portSettingsGPS);
 
@@ -140,7 +142,7 @@ void MainWindow::setup() {
             protocolGPS = protocolADC;
             // TODO: move this `if` into makeProtocol and move this function to core?
         } else {
-            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this, portSettingsGPS, true);
+            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this, portSettingsGPS);
         }
 
         worker->reset(protocolADC, protocolGPS);
@@ -271,10 +273,7 @@ void MainWindow::initFileHandlers() {
     setFileControlsState();
 }
 
-void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettings & portSettings, QToolButton * btn) {
-    // TODO: get from settings
-    portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS;
-
+void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton * btn) {
     btn->setDefaultAction(action);
     connect(action, &QAction::triggered, [=,&portSettings](){
         PortSettingsDialog dlg(title, portSettings, this);

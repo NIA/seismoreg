@@ -19,6 +19,9 @@ public:
     int samplingFrequency() const;
     void setSamplingFrequency(int value);
 
+    int filterFrequency() const;
+    void setFilterFrequency(int value);
+
     /**
      * This setting has no predefined default value and normally is not saved between sessions.
      * It is useful only for command-line usage.

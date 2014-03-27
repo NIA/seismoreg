@@ -51,12 +51,12 @@ namespace {
     }
 
     // "Protocol factory"
-    Protocol * makeProtocol(QString portName, int samplingFrequency, QObject * parent, PortSettingsEx portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS) {
+    Protocol * makeProtocol(QString portName, int samplingFrequency, int filterFrequency, QObject * parent, PortSettingsEx portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS) {
         if(portName == TEST_PROTOCOL) {
             // An option for testing
             return new TestProtocol(samplingFrequency, 9000000, parent);
         } else {
-            return new SerialProtocol(portName, samplingFrequency, portSettings, parent);
+            return new SerialProtocol(portName, samplingFrequency, filterFrequency, portSettings, parent);
         }
     }
 
@@ -82,9 +82,12 @@ void MainWindow::setup() {
     initPortChooser(ui->portChooser, settings.portName(Settings::PortADC));
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_1}), settings.samplingFrequency());
+    initFreqChooser(ui->filterFreq,   QList<int>({FREQ_200, FREQ_50}),         settings.filterFrequency());
     fileWriter->setFileName(settings.saveFileNameOrDefault(fileWriter->fileName()));
     initFileHandlers();
-    disableOnConnect << ui->portChooser << ui->portChooserGPS << ui->samplingFreq;
+    disableOnConnect << ui->portChooser << ui->portChooserGPS
+                     << ui->samplingFreq << ui->filterFreq
+                     << ui->portSettingsADC << ui->portSettingsGPS;
 
     initShowHideAction(ui->actionShowTable,    ui->dataView, settings.isTableShown());
     initShowHideAction(ui->actionShowSettings, ui->settings, settings.isSettingsShown());
@@ -130,20 +133,21 @@ void MainWindow::setup() {
         }
 
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
+        int filterFrequency   = ui->filterFreq->currentText().toInt();
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             plots[ch]->setPointsPerSec(samplingFrequency);
         }
 
         QString portNameADC = ui->portChooser->currentText();
         QString portNameGPS = ui->portChooserGPS->currentText();
-        protocolADC = makeProtocol(portNameADC, samplingFrequency, this, portSettingsADC);
+        protocolADC = makeProtocol(portNameADC, samplingFrequency, filterFrequency, this, portSettingsADC);
         if (portNameADC == portNameGPS) {
             // Important! If port names are equal, protocols also should be the
             // same instance, NOT two different instances with the same parameters!
             protocolGPS = protocolADC;
             // TODO: move this `if` into makeProtocol and move this function to core?
         } else {
-            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, this, portSettingsGPS);
+            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, filterFrequency, this, portSettingsGPS);
         }
 
         worker->reset(protocolADC, protocolGPS);
@@ -308,11 +312,12 @@ void MainWindow::log(QString text) {
 
 void MainWindow::saveSettings() {
     Settings settings;
+    settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
+    settings.setFilterFrequency(ui->filterFreq->currentText().toInt());
     settings.setPortName(Settings::PortADC, ui->portChooser->currentText());
     settings.setPortSettings(Settings::PortADC, portSettingsADC);
     settings.setPortName(Settings::PortGPS, ui->portChooserGPS->currentText());
     settings.setPortSettings(Settings::PortGPS, portSettingsGPS);
-    settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
     settings.setTableShown(ui->actionShowTable->isChecked());
     settings.setSettingsShown(ui->actionShowSettings->isChecked());
     settings.setStatsShown(ui->actionShowStats->isChecked());

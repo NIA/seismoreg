@@ -17,6 +17,7 @@ namespace {
 
     const int MIN_FREQUENCY = 1;
     const int POINTS_IN_PACKET = 200;
+    const int DEFAULT_FILTER_FREQ = 200;
 }
 
 PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, ParityType parity, StopBitsType stopBits, FlowType flowControl, long timeoutMillisec, bool debug)
@@ -27,8 +28,8 @@ PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, Par
 
 const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10, false);
 
-SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, PortSettingsEx settings, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL), frequency(samplingFrequency), debugMode(settings.debug)
+SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings, QObject *parent) :
+    Protocol(parent), portName(portName), port(NULL), samplingFrequency(samplingFreq), filterFrequency(filterFreq), debugMode(settings.debug)
 {
     port = new QextSerialPort(portName);
     port->setBaudRate(settings.BaudRate);
@@ -38,13 +39,13 @@ SerialProtocol::SerialProtocol(QString portName, int samplingFrequency, PortSett
     port->setFlowControl(settings.FlowControl);
     // TODO: support timeout setting?
 
-    if (frequency < MIN_FREQUENCY) {
+    if (samplingFrequency < MIN_FREQUENCY) {
         Logger::error(tr("Incorrect frequency: cannot be less than %1").arg(MIN_FREQUENCY));
-        frequency = MIN_FREQUENCY;
+        samplingFrequency = MIN_FREQUENCY;
     }
-    if (POINTS_IN_PACKET % frequency != 0) { // and also if frequency > POINTS_IN_PACKET
+    if (POINTS_IN_PACKET % samplingFrequency != 0) { // and also if frequency > POINTS_IN_PACKET
         Logger::error(tr("Incorrect frequency: should be a divisor of %1").arg(POINTS_IN_PACKET));
-        frequency = POINTS_IN_PACKET;
+        samplingFrequency = POINTS_IN_PACKET;
     }
 }
 
@@ -83,7 +84,7 @@ void SerialProtocol::startReceiving() {
         // TODO: report warning: already receiving
         return;
     }
-    if (frequency == POINTS_IN_PACKET) {
+    if (filterFrequency == DEFAULT_FILTER_FREQ) {
         port->write(START_RECEIVE_200);
     } else {
         port->write(START_RECEIVE_50);
@@ -133,16 +134,16 @@ void SerialProtocol::onDataReceived() {
         const int packetSize = CHANNELS_NUM*POINTS_IN_PACKET*sizeof(DataType);
         while(buffer.size() >= packetSize) {
             // allocate space for data array
-            DataVector packetData(frequency);
+            DataVector packetData(samplingFrequency);
             // Unwrap data:
-            if (frequency == POINTS_IN_PACKET) {
+            if (samplingFrequency == POINTS_IN_PACKET) {
                 // Easy case: just copy
                 memcpy(packetData.data(), buffer.constData(), packetSize);
             } else {
                 // Hard case: compute average of each avgSize items into one point
-                int avgSize = POINTS_IN_PACKET / frequency; // frequency must not be and must not be greater that POINTS_IN_PACKET: it is checked in constructor
+                int avgSize = POINTS_IN_PACKET / samplingFrequency; // frequency must not be and must not be greater that POINTS_IN_PACKET: it is checked in constructor
                 const DataItem* curItem = reinterpret_cast<const DataItem*>(buffer.constData());
-                for (int i = 0; i < frequency; ++i) {
+                for (int i = 0; i < samplingFrequency; ++i) {
                     double sums[CHANNELS_NUM];
                     for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) { sums[ch] = 0; }
                     for (int j = 0; j < avgSize; ++j) {

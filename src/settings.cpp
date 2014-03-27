@@ -21,9 +21,10 @@ namespace {
     }
 
     // Complete keys
-    const QString DEVICE_ID = CORE_PREFIX + "device_id";
-    const QString FREQUENCY = CORE_PREFIX + "frequency";
-    const QString FILE_NAME = CORE_PREFIX + "save_file"; // note that this setting has no default value
+    const QString DEVICE_ID  = CORE_PREFIX + "device_id";
+    const QString SAMPL_FREQ = CORE_PREFIX + "sampling_frequency";
+    const QString FILTR_FREQ = CORE_PREFIX + "filter_frequency";
+    const QString FILE_NAME  = CORE_PREFIX + "save_file"; // note that this setting has no default value
     const QString TABLE_SHOWN    = GUI_PREFIX + "table_shown";
     const QString SETTINGS_SHOWN = GUI_PREFIX + "settings_shown";
     const QString STATS_SHOWN    = GUI_PREFIX + "stats_shown";
@@ -123,10 +124,17 @@ void Settings::setDeviceId(int value) {
 }
 
 int Settings::samplingFrequency() const {
-    return settings.value(FREQUENCY, FREQUENCY_DEFAULT).toInt();
+    return settings.value(SAMPL_FREQ, FREQUENCY_DEFAULT).toInt();
 }
 void Settings::setSamplingFrequency(int value) {
-    settings.setValue(FREQUENCY, value);
+    settings.setValue(SAMPL_FREQ, value);
+}
+
+int Settings::filterFrequency() const {
+    return settings.value(FILTR_FREQ, FREQUENCY_DEFAULT).toInt();
+}
+void Settings::setFilterFrequency(int value) {
+    settings.setValue(FILTR_FREQ, value);
 }
 
 QString Settings::saveFileNameOrDefault(const QString &defaultFileName) const {

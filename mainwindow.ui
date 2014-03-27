@@ -171,6 +171,36 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="QToolButton" name="portSettingsADC">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QToolButton" name="portSettingsGPS">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QLed" name="ledGPS" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="2">
              <widget class="QLed" name="ledADC" native="true">
               <property name="sizePolicy">
@@ -193,35 +223,15 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
-             <widget class="QLed" name="ledGPS" native="true">
-              <property name="minimumSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
+            <item row="7" column="0" colspan="3">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>Filter frequency</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QToolButton" name="portSettingsADC">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QToolButton" name="portSettingsGPS">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+            <item row="7" column="3">
+             <widget class="QComboBox" name="filterFreq"/>
             </item>
            </layout>
           </widget>

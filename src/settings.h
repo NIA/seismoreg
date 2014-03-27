@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSettings>
+#include "protocols/serialprotocol.h"
 
 class Settings : public QObject
 {
@@ -11,11 +12,9 @@ public:
     explicit Settings(QObject *parent = 0);
 
     // Core settings
-    QString portNameADC() const;
-    void setPortNameADC(const QString &port);
 
-    QString portNameGPS() const;
-    void setPortNameGPS(const QString &port);
+    int deviceId() const;
+    void setDeviceId(int value);
 
     int samplingFrequency() const;
     void setSamplingFrequency(int value);
@@ -26,6 +25,39 @@ public:
      */
     QString saveFileNameOrDefault(const QString &defaultFileName) const;
     void setSaveFileName(const QString &value);
+
+    // Ports settings
+
+    enum WhichPort {
+        PortADC,
+        PortGPS
+    };
+
+    QString portName(WhichPort port) const;
+    void setPortName(WhichPort port, const QString &value);
+
+    BaudRateType baudRate(WhichPort port) const;
+    void setBaudRate(WhichPort port, BaudRateType value);
+
+    DataBitsType dataBits(WhichPort port) const;
+    void setDataBits(WhichPort port, DataBitsType value);
+
+    StopBitsType stopBits(WhichPort port) const;
+    void setStopBits(WhichPort port, StopBitsType value);
+
+    ParityType parity(WhichPort port) const;
+    void setParity(WhichPort port, ParityType value);
+
+    FlowType flowControl(WhichPort port) const;
+    void setFlowControl(WhichPort port, FlowType value);
+    // TODO: add timeout setting?
+
+    bool debugMode(WhichPort port) const;
+    void setDebugMode(WhichPort port, bool value);
+
+    // a convenience: get/set all params above in one call
+    PortSettingsEx portSettigns(WhichPort port) const;
+    void setPortSettings(WhichPort port, PortSettingsEx value);
 
     // GUI settings
 

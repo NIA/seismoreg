@@ -79,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::setup() {
     Settings settings;
     // Init GUI
-    initPortChooser(ui->portChooser, settings.portNameADC());
-    initPortChooser(ui->portChooserGPS, settings.portNameGPS());
+    initPortChooser(ui->portChooser, settings.portName(Settings::PortADC));
+    initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_1}), settings.samplingFrequency());
     fileWriter->setFileName(settings.saveFileNameOrDefault(fileWriter->fileName()));
     initFileHandlers();
@@ -95,7 +95,8 @@ void MainWindow::setup() {
     }
 
     // TODO: get from settings
-    portSettingsADC = portSettingsGPS = SerialProtocol::DEFAULT_PORT_SETTINGS;
+    portSettingsADC = settings.portSettigns(Settings::PortADC);
+    portSettingsGPS = settings.portSettigns(Settings::PortGPS);
     initPortSettingsAction(ui->actionADCPortSettings, ui->actionADCPortSettings->text(), portSettingsADC, ui->portSettingsADC);
     initPortSettingsAction(ui->actionGPSPortSettings, ui->actionGPSPortSettings->text(), portSettingsGPS, ui->portSettingsGPS);
 
@@ -307,8 +308,10 @@ void MainWindow::log(QString text) {
 
 void MainWindow::saveSettings() {
     Settings settings;
-    settings.setPortNameADC(ui->portChooser->currentText());
-    settings.setPortNameGPS(ui->portChooserGPS->currentText());
+    settings.setPortName(Settings::PortADC, ui->portChooser->currentText());
+    settings.setPortSettings(Settings::PortADC, portSettingsADC);
+    settings.setPortName(Settings::PortGPS, ui->portChooserGPS->currentText());
+    settings.setPortSettings(Settings::PortGPS, portSettingsGPS);
     settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
     settings.setTableShown(ui->actionShowTable->isChecked());
     settings.setSettingsShown(ui->actionShowSettings->isChecked());

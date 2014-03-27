@@ -248,12 +248,12 @@
         <translation type="obsolete">ТЕСТ</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="192"/>
+        <location filename="src/mainwindow.cpp" line="195"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="260"/>
+        <location filename="src/mainwindow.cpp" line="263"/>
         <source>Choose file for writing data</source>
         <translation>Выберите файл для записи данных</translation>
     </message>
@@ -284,6 +284,16 @@
         <location filename="src/gui/portsettingsdialog.ui" line="65"/>
         <source>Flow control</source>
         <translation>Управление</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="90"/>
+        <source>Debug</source>
+        <translation>Отладка</translation>
+    </message>
+    <message>
+        <location filename="src/gui/portsettingsdialog.ui" line="97"/>
+        <source>Enabled</source>
+        <translation>Включить</translation>
     </message>
     <message>
         <location filename="src/gui/portsettingsdialog.cpp" line="59"/>
@@ -443,17 +453,17 @@
 <context>
     <name>SerialProtocol</name>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="36"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="42"/>
         <source>Incorrect frequency: cannot be less than %1</source>
         <translation>Неверная частота: должна быть не меньше %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="40"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="46"/>
         <source>Incorrect frequency: should be a divisor of %1</source>
         <translation>Неверная частота: должна быть делителем чилса %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="46"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="52"/>
         <source>Serial port %1</source>
         <translation>Последовательный порт %1</translation>
     </message>

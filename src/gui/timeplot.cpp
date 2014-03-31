@@ -12,7 +12,6 @@ namespace {
     const QColor CURVE_COLOR(40, 90, 180);
     const QColor CURVE_FILL = Qt::transparent; // may be some color, but currently disabled
     const qreal  CURVE_WIDTH = 2;
-    const double HISTORY_SECONDS = 5;
 
     class RoundedScaleDraw : public QwtScaleDraw {
     public:
@@ -32,7 +31,8 @@ namespace {
 }
 
 TimePlot::TimePlot(QWidget *parent) :
-    QwtPlot(parent), channel(0), pointsPerSec(200)
+    QwtPlot(parent), channel(0), pointsPerSec(POINTS_PER_SEC_DEFAULT),
+    historySeconds(HISTORY_SECONDS_DEFAULT), fixedScaleMax(FIXED_SCALE_MAX_DEFAULT), fixedScale(FIXED_SCALE_DEFAULT)
 {
     setMinimumHeight(75);
     setMinimumWidth(350);
@@ -52,12 +52,34 @@ void TimePlot::setData(TimeStampsVector timestamps, DataVector items, unsigned c
 void TimePlot::setData(QVector<QPointF> points) {
     curve->setSamples(points);
 
-    // Set axis range
-    double xmax = points.last().x();
-    double xmin = xmax - HISTORY_SECONDS*1000;
-    setAxisScale(xBottom, xmin, xmax);
+    setTimeRange(buffer);
 
     replot();
+}
+
+void TimePlot::setTimeRange(QVector<QPointF> points) {
+    double xmax = points.isEmpty() ? QwtDate::toDouble(QDateTime::currentDateTime()) : points.last().x();
+    double xmin = xmax - historySeconds*1000;
+    setAxisScale(xBottom, xmin, xmax);
+}
+
+void TimePlot::setHistorySecs(double secs) {
+    historySeconds = secs;
+    setTimeRange(buffer); // TODO: need to pass buffer or not?
+}
+
+void TimePlot::setFixedScaleY(bool fixed) {
+    fixedScale = fixed;
+    setAxisAutoScale(yLeft, ! fixed);
+    if (fixedScale) {
+        // Restore again previous value that may be lost after automatic scale
+        setFixedScaleYMax(fixedScaleMax);
+    }
+}
+
+void TimePlot::setFixedScaleYMax(double max) {
+    fixedScaleMax = max;
+    setAxisScale(yLeft, -max, +max);
 }
 
 void TimePlot::receiveData(TimeStampsVector timestamps, DataVector items) {
@@ -94,10 +116,10 @@ void TimePlot::initCurve() {
 }
 
 int TimePlot::maxBufferSize() {
-    /* How many points should we store to be able to plot last HISTORY_SECONDS seconds?
-     * It is HISTORY_SECONDS*pointsPerSec, but reserve two times of this just to have some margin.
+    /* How many points should we store to be able to plot last historySeconds seconds?
+     * It is historySeconds*pointsPerSec, but reserve two times of this just to have some margin.
      */
-    return 2*HISTORY_SECONDS*pointsPerSec;
+    return 2*historySeconds*pointsPerSec;
 }
 
 

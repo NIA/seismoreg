@@ -1,6 +1,8 @@
 #include "settings.h"
 #include <QHash>
 
+#include "gui/timeplot.h"
+
 namespace {
     const QString SETTINGS_FILE = "seismoreg.ini";
 
@@ -28,6 +30,9 @@ namespace {
     const QString TABLE_SHOWN    = GUI_PREFIX + "table_shown";
     const QString SETTINGS_SHOWN = GUI_PREFIX + "settings_shown";
     const QString STATS_SHOWN    = GUI_PREFIX + "stats_shown";
+    const QString FIXED_SCALE    = GUI_PREFIX + "fixed_scale";
+    const QString FIXED_SCALE_MAX= GUI_PREFIX + "fixed_scale_max";
+    const QString HISTORY_SECS   = GUI_PREFIX + "history_secs";
     // Incomplete keys (should be combined with either ADC_PORT_PREFIX or GPS_PORT_PREFIX)
     const QString _PORT =  "port";
     const QString _BAUD_RATE = "baud_rate";
@@ -243,4 +248,25 @@ bool Settings::isStatsShown() const {
 }
 void Settings::setStatsShown(bool value) {
     settings.setValue(STATS_SHOWN, value);
+}
+
+bool Settings::isPlotFixedScale() const {
+    return settings.value(FIXED_SCALE, TimePlot::FIXED_SCALE_DEFAULT).toBool();
+}
+void Settings::setPlotFixedScale(bool value) {
+    settings.setValue(FIXED_SCALE, value);
+}
+
+int Settings::plotFixedScaleMax() const {
+    return settings.value(FIXED_SCALE_MAX, TimePlot::FIXED_SCALE_MAX_DEFAULT).toInt();
+}
+void Settings::setPlotFixedScaleMax(int value) {
+    settings.setValue(FIXED_SCALE_MAX, value);
+}
+
+int Settings::plotHistorySecs() const {
+    return settings.value(HISTORY_SECS, TimePlot::HISTORY_SECONDS_DEFAULT).toInt();
+}
+void Settings::setPlotHistorySecs(int value) {
+    settings.setValue(HISTORY_SECS, value);
 }

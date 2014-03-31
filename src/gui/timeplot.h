@@ -54,10 +54,26 @@ public slots:
      * @param items - a new portion of data items
      */
     void receiveData(TimeStampsVector timestamps, DataVector items);
-    
+
+    // Settings
+
+    void setHistorySecs(double secs);
+    int  historySecs() { return historySeconds; }
+    void setFixedScaleY(bool fixed);
+    bool isFixedScaleY() { return fixedScale; }
+    void setFixedScaleYMax(double max);
+    int  fixedScaleYMax() { return fixedScaleMax; }
+
+public:
+    constexpr static const double HISTORY_SECONDS_DEFAULT = 5;
+    constexpr static const int    POINTS_PER_SEC_DEFAULT  = 200;
+    constexpr static const double FIXED_SCALE_MAX_DEFAULT = 10000000;
+    constexpr static const bool   FIXED_SCALE_DEFAULT     = false;
+
 private:
     void initGrid();
     void initCurve();
+    void setTimeRange(QVector<QPointF> points);
 
     /**
      * @brief The size depends on HISTORY_SECONDS constant and on pointsPerSec
@@ -71,6 +87,9 @@ private:
 
     unsigned channel;
     int pointsPerSec;
+    double historySeconds;
+    double fixedScaleMax;
+    bool fixedScale;
     QVector<QPointF> buffer;
 };
 

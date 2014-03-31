@@ -97,7 +97,22 @@ void MainWindow::setup() {
         plots[ch]->setChannel(ch);
     }
 
-    // TODO: get from settings
+    // Plot settings
+    void (QSpinBox:: *valueChangedSignal)(int) = &QSpinBox::valueChanged; // resolve overloaded function
+    connect(ui->fixedScaleMax, valueChangedSignal, [=](){ui->fixedScale->setChecked(true);});
+    for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+        connect(ui->fixedScale,    &QAbstractButton::toggled, plots[ch], &TimePlot::setFixedScaleY);
+        connect(ui->fixedScaleMax, valueChangedSignal,        plots[ch], &TimePlot::setFixedScaleYMax);
+        connect(ui->timeInterval,  valueChangedSignal,        plots[ch], &TimePlot::setHistorySecs);
+
+        plots[ch]->setFixedScaleYMax(settings.plotFixedScaleMax());
+        plots[ch]->setFixedScaleY(settings.isPlotFixedScale());
+        plots[ch]->setHistorySecs(settings.plotHistorySecs());
+    }
+    (settings.isPlotFixedScale() ? ui->fixedScale : ui->autoScale)->setChecked(true);
+    ui->fixedScaleMax->setValue( settings.plotFixedScaleMax() );
+    ui->timeInterval->setValue(  settings.plotHistorySecs()   );
+
     portSettingsADC = settings.portSettigns(Settings::PortADC);
     portSettingsGPS = settings.portSettigns(Settings::PortGPS);
     initPortSettingsAction(ui->actionADCPortSettings, ui->actionADCPortSettings->text(), portSettingsADC, ui->portSettingsADC);
@@ -321,6 +336,9 @@ void MainWindow::saveSettings() {
     settings.setTableShown(ui->actionShowTable->isChecked());
     settings.setSettingsShown(ui->actionShowSettings->isChecked());
     settings.setStatsShown(ui->actionShowStats->isChecked());
+    settings.setPlotFixedScale(ui->fixedScale->isChecked());
+    settings.setPlotFixedScaleMax(ui->fixedScaleMax->value());
+    settings.setPlotHistorySecs(ui->timeInterval->value());
 }
 
 MainWindow::~MainWindow()

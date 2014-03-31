@@ -72,6 +72,15 @@ public:
 
     bool isStatsShown() const;
     void setStatsShown(bool value);
+
+    bool isPlotFixedScale() const;
+    void setPlotFixedScale(bool value);
+
+    int  plotFixedScaleMax() const;
+    void setPlotFixedScaleMax(int value);
+
+    int  plotHistorySecs() const;
+    void setPlotHistorySecs(int value);
     
 signals:
     

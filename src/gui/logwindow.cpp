@@ -28,7 +28,6 @@ LogWindow::LogWindow(QWidget *parent) :
     setReadOnly(true);
     setLineWrapMode(super::WidgetWidth);
     setTextInteractionFlags(Qt::NoTextInteraction|Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
-    setCenterOnScroll(true);
 }
 
 void LogWindow::contextMenuEvent(QContextMenuEvent *e) {
@@ -56,6 +55,7 @@ void LogWindow::sl_messageAdded(Logger::Level level, QString message) {
     }
 
     appendHtml(formattedMessage);
+    ensureCursorVisible();
 }
 
 QString LogWindow::levelName(Logger::Level level) {

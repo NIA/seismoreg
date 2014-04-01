@@ -9,8 +9,8 @@
 
 FileWriter::FileWriter(QString fileName, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false),
-    deviceID(0), latitude("???"), longitude("???"),
-    samplingFreq(0), filterFreq(0)
+    deviceID(0), samplingFreq(0), filterFreq(0),
+    latitude("???"), longitude("???")
 {
     setFileName(fileName); // will also init `file` instance variable
 }

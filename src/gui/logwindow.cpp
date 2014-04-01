@@ -26,8 +26,7 @@ LogWindow::LogWindow(QWidget *parent) :
     connect(Logger::instance(), &Logger::si_messageAdded, this, &LogWindow::sl_messageAdded);
 
     Settings settings;
-    for (int i = 0; i < Logger::_levelsCount; ++i) {
-        Logger::Level lev = static_cast<Logger::Level>(i);
+    Logger::forEachLevel([=,&settings](Logger::Level lev) {
         bool enabled = settings.isLevelEnabled(lev);
         Logger::instance()->setLevelEnabled(lev, enabled);
 
@@ -37,8 +36,8 @@ LogWindow::LogWindow(QWidget *parent) :
         connect(action, &QAction::triggered, [=](bool value) {
            Logger::instance()->setLevelEnabled(lev, value);
         });
-        actionsEnableLevel[i] = action;
-    }
+        actionsEnableLevel[lev] = action;
+    });
 
     setUndoRedoEnabled(false);
     setReadOnly(true);
@@ -49,9 +48,9 @@ LogWindow::LogWindow(QWidget *parent) :
 void LogWindow::contextMenuEvent(QContextMenuEvent *e) {
     QMenu * menu = createStandardContextMenu();
     menu->addSeparator();
-    for (int i = 0; i < Logger::_levelsCount; ++i) {
-        menu->addAction(actionsEnableLevel[i]);
-    }
+    Logger::forEachLevel([=](Logger::Level lev) {
+        menu->addAction(actionsEnableLevel[lev]);
+    });
     menu->addAction(actionClearLog);
     menu->exec(e->globalPos());
     delete menu;
@@ -114,7 +113,7 @@ void LogWindow::closeEvent(QCloseEvent *) {
 
 LogWindow::~LogWindow() {
     Settings settings;
-    for (int i = 0; i < Logger::_levelsCount; ++i) {
-        settings.setLevelEnabled(static_cast<Logger::Level>(i), actionsEnableLevel[i]->isChecked());
-    }
+    Logger::forEachLevel([=,&settings](Logger::Level lev) {
+        settings.setLevelEnabled(lev, actionsEnableLevel[lev]->isChecked());
+    });
 }

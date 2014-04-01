@@ -93,6 +93,8 @@ public slots:
 
 private:
     QSettings settings;
+
+    Q_DISABLE_COPY(Settings)
 };
 
 #endif // SETTINGS_H

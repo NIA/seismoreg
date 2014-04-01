@@ -43,6 +43,13 @@ public:
     bool isLevelEnabled(Level level) const { return levelEnabled[level]; }
     void setLevelEnabled(Level level, bool value) { levelEnabled[level] = value; }
 
+    template<typename _Function>
+    static void forEachLevel(_Function f) {
+        for (int i = 0; i < _levelsCount; ++i) {
+            f( static_cast<Logger::Level>(i) );
+        }
+    }
+
 signals:
     void si_messageAdded(Level level, QString message);
     

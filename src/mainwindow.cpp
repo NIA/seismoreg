@@ -84,6 +84,7 @@ void MainWindow::setup() {
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_1}), settings.samplingFrequency());
     initFreqChooser(ui->filterFreq,   QList<int>({FREQ_200, FREQ_50}),         settings.filterFrequency());
     fileWriter->setFileName(settings.saveFileNameOrDefault(fileWriter->fileName()));
+    fileWriter->setDeviceID(settings.deviceId());
     initFileHandlers();
     disableOnConnect << ui->portChooser << ui->portChooserGPS
                      << ui->samplingFreq << ui->filterFreq
@@ -152,6 +153,7 @@ void MainWindow::setup() {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             plots[ch]->setPointsPerSec(samplingFrequency);
         }
+        fileWriter->setFrequencies(samplingFrequency, filterFrequency);
 
         QString portNameADC = ui->portChooser->currentText();
         QString portNameGPS = ui->portChooserGPS->currentText();
@@ -180,6 +182,8 @@ void MainWindow::initWorkerHandlers() {
     connect(worker->protocolGPS(), &Protocol::checkedGPS, [=](bool success){
         ui->ledGPS->setOnColor( success ? QLed::Green : QLed::Red);
         ui->ledGPS->setValue(true);
+        // TODO: use actual coordinates
+        fileWriter->setCoordinates(ui->currentLatitude->text(), ui->currentLongitude->text());
     });
     connect(worker, &Worker::prepareFinished, [=](Worker::PrepareResult res){
         if(res == Worker::PrepareSuccess) {

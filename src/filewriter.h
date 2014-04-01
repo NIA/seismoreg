@@ -75,9 +75,23 @@ public slots:
      * \brief Opens file, writes all data currently in queue, closes file
      */
     void writeOnce();
+
+    // Settings for header:
+
+    void setDeviceID(int id) { deviceID = id; }
+    void setCoordinates(QString latitude, QString longitude) {
+        this->latitude  = latitude;
+        this->longitude = longitude;
+    }
+    void setFrequencies(int samplingFreq, int filterFreq) {
+        this->samplingFreq = samplingFreq;
+        this->filterFreq   = filterFreq;
+    }
+
 private:
 
     void writeNow();
+    void writeHeader();
 
     void openIfClosed();
     void closeIfOpened();
@@ -85,6 +99,12 @@ private:
     QString saveFileName;
     QFile * file;
     bool autoWrite;
+
+    int deviceID;
+    int samplingFreq;
+    int filterFreq;
+    QString latitude;
+    QString longitude;
 
     QQueue<QString> waitingQueue;
 };

@@ -8,7 +8,9 @@
 #include <QDateTime>
 
 FileWriter::FileWriter(QString fileName, QObject *parent) :
-    QObject(parent), file(NULL), autoWrite(false)
+    QObject(parent), file(NULL), autoWrite(false),
+    deviceID(0), latitude("???"), longitude("???"),
+    samplingFreq(0), filterFreq(0)
 {
     setFileName(fileName); // will also init `file` instance variable
 }
@@ -91,14 +93,29 @@ void FileWriter::openIfClosed() {
     if (file == NULL) { return; } // TODO: report internal error
 
     if ( ! file->isOpen()) {
+        bool newFile = ! file->exists();
         bool success = file->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
         if ( ! success ) {
             Logger::error(tr("Failed to open file %1: %2").arg(file->fileName()).arg(file->errorString()));
             return; // TODO: report error
         } else {
             Logger::info(tr("Opened file %1").arg(file->fileName()));
+            if (newFile) {
+                writeHeader();
+            }
         }
     }
+}
+
+void FileWriter::writeHeader() {
+    QTextStream out(file);
+    out << QString("[Description]\nDevice ID=%1\n").arg(deviceID);
+    out << QString("[Frequency]\nSamples=%1 Hz\nFilter=%2 Hz\n").arg(samplingFreq).arg(filterFreq);
+    QDateTime now = QDateTime::currentDateTime();
+    out << QString("[Date]\n%1\n").arg(now.toString("yyyy-MM-dd"));
+    out << QString("[Time]\n%1\n").arg(now.toString("hh:mm:ss"));
+    out << QString("[Coordinates]\nLatitude=%1\nLongitude=%2\n").arg(latitude).arg(longitude);
+    out << QString("[Values]\n");
 }
 
 void FileWriter::closeIfOpened() {

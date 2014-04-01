@@ -3,6 +3,7 @@
 
 #include "../protocol.h"
 #include "qextserialport.h"
+#include <QDateTime>
 
 class QTimer;
 

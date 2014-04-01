@@ -23,6 +23,8 @@ class LogWindow : public QPlainTextEdit
 public:
     explicit LogWindow(QWidget *parent = 0);
 
+    virtual ~LogWindow();
+
 signals:
     void si_closed();
 
@@ -38,6 +40,7 @@ private:
     QString levelColor(Logger::Level level);
 
     QAction * actionClearLog;
+    QAction * actionsEnableLevel[Logger::_levelsCount];
 };
 
 #endif // LOGWINDOW_H

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSettings>
 #include "protocols/serialprotocol.h"
+#include "logger.h"
 
 class Settings : public QObject
 {
@@ -61,6 +62,10 @@ public:
     // a convenience: get/set all params above in one call
     PortSettingsEx portSettigns(WhichPort port) const;
     void setPortSettings(WhichPort port, PortSettingsEx value);
+
+    // Log settings
+    bool isLevelEnabled(Logger::Level level) const;
+    void setLevelEnabled(Logger::Level level, bool value);
 
     // GUI settings
 

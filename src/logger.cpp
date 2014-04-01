@@ -15,6 +15,9 @@
 Logger * Logger::logger = NULL;
 
 Logger::Logger() {
+    for (int i = 0; i < _levelsCount; ++i) {
+        levelEnabled[i] = true;
+    }
 }
 
 Logger * Logger::instance() {
@@ -22,4 +25,10 @@ Logger * Logger::instance() {
         logger = new Logger;
     }
     return logger;
+}
+
+void Logger::addMessage(Logger::Level level, QString message) {
+    if (levelEnabled[level]) {
+        emit si_messageAdded(level, message);
+    }
 }

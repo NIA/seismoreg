@@ -16,6 +16,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QDebug>
+#include "../settings.h"
 
 LogWindow::LogWindow(QWidget *parent) :
     super(parent)
@@ -23,6 +24,21 @@ LogWindow::LogWindow(QWidget *parent) :
     actionClearLog = new QAction(QIcon(":/icons/images/remove.ico"), tr("Clear log"), this);
     connect(actionClearLog, &QAction::triggered, this, &LogWindow::clear);
     connect(Logger::instance(), &Logger::si_messageAdded, this, &LogWindow::sl_messageAdded);
+
+    Settings settings;
+    for (int i = 0; i < Logger::_levelsCount; ++i) {
+        Logger::Level lev = static_cast<Logger::Level>(i);
+        bool enabled = settings.isLevelEnabled(lev);
+        Logger::instance()->setLevelEnabled(lev, enabled);
+
+        QAction * action = new QAction(levelName(lev), this);
+        action->setCheckable(true);
+        action->setChecked(enabled);
+        connect(action, &QAction::triggered, [=](bool value) {
+           Logger::instance()->setLevelEnabled(lev, value);
+        });
+        actionsEnableLevel[i] = action;
+    }
 
     setUndoRedoEnabled(false);
     setReadOnly(true);
@@ -32,6 +48,10 @@ LogWindow::LogWindow(QWidget *parent) :
 
 void LogWindow::contextMenuEvent(QContextMenuEvent *e) {
     QMenu * menu = createStandardContextMenu();
+    menu->addSeparator();
+    for (int i = 0; i < Logger::_levelsCount; ++i) {
+        menu->addAction(actionsEnableLevel[i]);
+    }
     menu->addAction(actionClearLog);
     menu->exec(e->globalPos());
     delete menu;
@@ -90,4 +110,11 @@ QString LogWindow::levelColor(Logger::Level level) {
 
 void LogWindow::closeEvent(QCloseEvent *) {
     emit si_closed();
+}
+
+LogWindow::~LogWindow() {
+    Settings settings;
+    for (int i = 0; i < Logger::_levelsCount; ++i) {
+        settings.setLevelEnabled(static_cast<Logger::Level>(i), actionsEnableLevel[i]->isChecked());
+    }
 }

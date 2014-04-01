@@ -17,6 +17,7 @@ namespace {
     const QString ADC_PORT_PREFIX  = "port_adc/";
     const QString GPS_PORT_PREFIX  = "port_gps/";
     const QString GUI_PREFIX  = "gui/";
+    const QString LOG_PREFIX  = "log/";
 
     QString prefixFor(Settings::WhichPort port) {
         return (port == Settings::PortADC) ? ADC_PORT_PREFIX : GPS_PORT_PREFIX;
@@ -33,6 +34,8 @@ namespace {
     const QString FIXED_SCALE    = GUI_PREFIX + "fixed_scale";
     const QString FIXED_SCALE_MAX= GUI_PREFIX + "fixed_scale_max";
     const QString HISTORY_SECS   = GUI_PREFIX + "history_secs";
+    // Parameterized key: use with .arg(levelToStr[level])
+    const QString LOG_LEV_ENABLED= LOG_PREFIX + "%1_enabled";
     // Incomplete keys (should be combined with either ADC_PORT_PREFIX or GPS_PORT_PREFIX)
     const QString _PORT =  "port";
     const QString _BAUD_RATE = "baud_rate";
@@ -50,6 +53,9 @@ namespace {
     const bool TABLE_SHOWN_DEFAULT    = false;
     const bool SETTINGS_SHOWN_DEFAULT = true;
     const bool STATS_SHOWN_DEFAULT    = true;
+    const bool LOG_LEV_ENABLED_DEFAULT= true;
+
+    const QString levelToStr[Logger::_levelsCount] = {"trace", "info", "warning", "error"};
 
     template<class T>
     QHash<T,QString> stringMap();
@@ -225,6 +231,16 @@ void Settings::setPortSettings(Settings::WhichPort port, PortSettingsEx value) {
     setFlowControl(port, value.FlowControl);
     setDebugMode  (port, value.debug);
     // TODO: add timeout setting?
+}
+
+// Log settings
+
+bool Settings::isLevelEnabled(Logger::Level level) const {
+    return settings.value(LOG_LEV_ENABLED.arg(levelToStr[level]),
+                          LOG_LEV_ENABLED_DEFAULT).toBool();
+}
+void Settings::setLevelEnabled(Logger::Level level, bool value) {
+    settings.setValue(LOG_LEV_ENABLED.arg(levelToStr[level]), value);
 }
 
 // GUI settings

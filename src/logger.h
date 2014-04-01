@@ -37,9 +37,11 @@ public:
     static void error(QString message) { instance()->addMessage(Error, message); }
 
     // A common way for adding log messages
-    void addMessage(Level level, QString message) {
-        emit si_messageAdded(level, message);
-    }
+    void addMessage(Level level, QString message);
+
+    // Enable or disable levels:
+    bool isLevelEnabled(Level level) const { return levelEnabled[level]; }
+    void setLevelEnabled(Level level, bool value) { levelEnabled[level] = value; }
 
 signals:
     void si_messageAdded(Level level, QString message);
@@ -47,6 +49,7 @@ signals:
 private:
     explicit Logger();
     static Logger * logger;
+    bool levelEnabled[_levelsCount];
 };
 
 #endif // LOGGER_H

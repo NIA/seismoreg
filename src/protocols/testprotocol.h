@@ -18,12 +18,12 @@ public:
     explicit TestProtocol(int dataSize = 100, int amp = 100,  QObject *parent = 0);
     QString description();
 
-    virtual bool open();
-    virtual void checkADC();
-    virtual void checkGPS();
-    virtual void startReceiving();
-    virtual void stopReceiving();
-    virtual void close();
+    bool open() override;
+    void checkADC() override;
+    void checkGPS() override;
+    void startReceiving() override;
+    void stopReceiving() override;
+    void close() override;
 
     ~TestProtocol();
 

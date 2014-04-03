@@ -15,7 +15,7 @@ class PortSettingsDialog : public QDialog
     
 public:
     explicit PortSettingsDialog(QString title, PortSettingsEx portSettings, QWidget *parent = 0);
-    virtual void accept();
+    void accept() override;
     PortSettingsEx portSettings() const { return settings; }
     ~PortSettingsDialog();
     

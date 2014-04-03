@@ -31,12 +31,12 @@ public:
     explicit SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings = DEFAULT_PORT_SETTINGS, QObject * parent = 0);
     QString description();
 
-    virtual bool open();
-    virtual void checkADC();
-    virtual void checkGPS();
-    virtual void startReceiving();
-    virtual void stopReceiving();
-    virtual void close();
+    bool open() override;
+    void checkADC() override;
+    void checkGPS() override;
+    void startReceiving() override;
+    void stopReceiving() override;
+    void close() override;
 
     ~SerialProtocol();
 

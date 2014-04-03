@@ -32,8 +32,8 @@ public slots:
     void sl_messageAdded(Logger::Level level, QString message);
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent *e);
-    virtual void closeEvent(QCloseEvent *);
+    void contextMenuEvent(QContextMenuEvent *e) override;
+    void closeEvent(QCloseEvent *) override;
 
 private:
     QString levelName(Logger::Level level);

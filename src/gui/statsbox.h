@@ -34,7 +34,7 @@ public:
      */
     void setStats(DataVector items, int ch);
 
-    ~StatsBox();
+    virtual ~StatsBox();
     
 private:
     Ui::StatsBox *ui;

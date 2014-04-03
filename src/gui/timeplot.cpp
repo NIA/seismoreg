@@ -15,14 +15,14 @@ namespace {
 
     class RoundedScaleDraw : public QwtScaleDraw {
     public:
-        virtual QwtText label(double value) const {
+        QwtText label(double value) const override {
             return QLocale().toString(value, 'f', 0);
         }
     };
 
     class TimeScaleDraw : public QwtDateScaleDraw {
     protected:
-        virtual QString dateFormatOfDate(const QDateTime &, QwtDate::IntervalType) const {
+        QString dateFormatOfDate(const QDateTime &, QwtDate::IntervalType) const override {
             // Same format for all
             // TODO: too wide plots
             return "hh:mm:ss";

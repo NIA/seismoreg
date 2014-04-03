@@ -15,8 +15,8 @@
 Logger * Logger::logger = NULL;
 
 Logger::Logger() {
-    for (int i = 0; i < _levelsCount; ++i) {
-        levelEnabled[i] = true;
+    for (auto & item: levelEnabled) {
+        item = true;
     }
 }
 

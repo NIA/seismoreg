@@ -7,9 +7,11 @@
 #include "qwt_date_scale_engine.h"
 #include "../logger.h"
 
+#define RENDER_ANTIALISED 0
+
 namespace {
     const QColor GRID_COLOR(128, 128, 128);
-    const QColor CURVE_COLOR(40, 90, 180);
+    const QColor CURVE_COLOR(30, 80, 160);
     const QColor CURVE_FILL = Qt::transparent; // may be some color, but currently disabled
     const qreal  CURVE_WIDTH = 2;
 
@@ -110,16 +112,18 @@ void TimePlot::initCurve() {
     curve->setBrush(CURVE_FILL);
     curve->setPen(CURVE_COLOR, CURVE_WIDTH);
     curve->setOrientation(Qt::Vertical);
+#if RENDER_ANTIALISED
     curve->setRenderHint(QwtPlotCurve::RenderAntialiased);
+#endif
     curve->attach(this);
 
 }
 
 int TimePlot::maxBufferSize() {
     /* How many points should we store to be able to plot last historySeconds seconds?
-     * It is historySeconds*pointsPerSec, but reserve two times of this just to have some margin.
+     * It is historySeconds*pointsPerSec, but reserve one more second just to have some margin.
      */
-    return 2*historySeconds*pointsPerSec;
+    return (historySeconds+1)*pointsPerSec;
 }
 
 

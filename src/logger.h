@@ -35,6 +35,7 @@ public:
     static void info (QString message) { instance()->addMessage(Info, message); }
     static void warning(QString message) { instance()->addMessage(Warning, message); }
     static void error(QString message) { instance()->addMessage(Error, message); }
+    static void message(Level level, QString message) { instance()->addMessage(level, message); }
 
     // A common way for adding log messages
     void addMessage(Level level, QString message);

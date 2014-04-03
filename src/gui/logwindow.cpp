@@ -15,7 +15,6 @@
 #include <QIcon>
 #include <QAction>
 #include <QMenu>
-#include <QDebug>
 #include "../settings.h"
 
 LogWindow::LogWindow(QWidget *parent) :
@@ -65,13 +64,6 @@ void LogWindow::sl_messageAdded(Logger::Level level, QString message) {
     formattedMessage += (levelName(level) + ":</b> ");
     formattedMessage += message.toHtmlEscaped();
     formattedMessage += "</font>";
-
-    QString plainTextMessage = QString("[%1] %2: %3").arg(dateTime).arg(levelName(level)).arg(message);
-    if ( level == Logger::Error ) {
-        qCritical() << plainTextMessage;
-    } else {
-        qDebug() << plainTextMessage;
-    }
 
     appendHtml(formattedMessage);
     ensureCursorVisible();

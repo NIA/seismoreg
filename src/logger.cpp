@@ -11,6 +11,7 @@
  */
 
 #include "logger.h"
+#include <QDebug>
 
 Logger * Logger::logger = NULL;
 
@@ -27,8 +28,15 @@ Logger * Logger::instance() {
     return logger;
 }
 
-void Logger::addMessage(Logger::Level level, QString message) {
+void Logger::addMessage(Level level, QString message) {
     if (levelEnabled[level]) {
+
+        if ( level == Error ) {
+            qCritical() << message;
+        } else {
+            qDebug() << message;
+        }
+
         emit si_messageAdded(level, message);
     }
 }

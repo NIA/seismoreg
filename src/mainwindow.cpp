@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QList>
+#include <QElapsedTimer>
 
 #include "protocols/testprotocol.h"
 #include "protocols/serialprotocol.h"
@@ -64,7 +65,8 @@ namespace {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0)
+    ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0),
+    perfPlotting(tr("Plotting")), perfWritting(tr("Writing")), perfTotal(tr("Total"))
 {
     ui->setupUi(this);
     worker = new Worker(NULL, NULL, this);
@@ -215,6 +217,8 @@ void MainWindow::initWorkerHandlers() {
         }
     });
     connect(worker, &Worker::dataUpdated, [=](TimeStampsVector t, DataVector d){
+        QElapsedTimer timerTotal; timerTotal.start();
+
         Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
         QStringList items;
         foreach(DataItem item, d) {
@@ -234,11 +238,22 @@ void MainWindow::initWorkerHandlers() {
             // Update stats
             stats[ch]->setStats(d, ch);
         }
+
+        // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
+        // Currently it is like that for performance measurements.
+        QElapsedTimer timerWriting; timerWriting.start();
+        fileWriter->receiveData(t, d);
+        perfWritting.addMeasurement(timerWriting.elapsed());
+
+        QElapsedTimer timerPlotting; timerPlotting.start();
+        for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+            plots[ch]->receiveData(t, d);
+        }
+        perfPlotting.addMeasurement(timerPlotting.elapsed());
+
+        perfTotal.addMeasurement(timerTotal.elapsed());
     });
-    connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
-    for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-        connect(worker, &Worker::dataUpdated, plots[ch], &TimePlot::receiveData);
-    }
+
 
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
@@ -348,6 +363,12 @@ void MainWindow::saveSettings() {
 MainWindow::~MainWindow()
 {
     clockTimer->stop();
+
+    perfPlotting.reportResults();
+    perfWritting.reportResults();
+    perfTotal.reportResults();
+    perfTotal.flushDebug();
+
     saveSettings();
     delete worker;
     delete fileWriter;

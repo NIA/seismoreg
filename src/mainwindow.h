@@ -8,6 +8,7 @@
 #include "protocols/serialprotocol.h"
 #include "worker.h"
 #include "filewriter.h"
+#include "performancereporter.h"
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +55,11 @@ private:
     StatsBox * stats[CHANNELS_NUM];
 
     QVector<QWidget*> disableOnConnect;
+
+    // Debugging and profiling:
+    PerformanceReporter perfPlotting;
+    PerformanceReporter perfWritting;
+    PerformanceReporter perfTotal;
 };
 
 #endif // MAINWINDOW_H

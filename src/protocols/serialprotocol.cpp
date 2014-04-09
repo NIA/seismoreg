@@ -8,7 +8,6 @@
 
 namespace {
     const QByteArray CHECK_ADC = "\x03";
-    const QByteArray CHECK_GPS = "\x04";
     const QByteArray START_RECEIVE_50 = "\x01";
     const QByteArray START_RECEIVE_200 = "\x02";
     const QByteArray STOP_RECEIVE("\x00", 1); // simply = "\x00" won't work: will be empty string
@@ -17,6 +16,7 @@ namespace {
     // GPS packets:
     const QByteArray GPS_PREFIX_TIME = "\x10\x41";
     const QByteArray GPS_PREFIX_POS  = "\x10\x4A";
+    const QByteArray GPS_REQUEST_TIME = "\x10\x21\x10\x03";
     // GPS packets sizes:
     const int GPS_PSIZE_TIME = 10;
     const int GPS_PSIZE_POS  = 20;
@@ -63,8 +63,8 @@ namespace {
         return u.flt;
     }
     // TODO: remove on update to Qt >= 5.1
-    float radiansToDegrees(float radians) {
-        return radians / M_PI * 180.0f;
+    double radiansToDegrees(double radians) {
+        return radians / M_PI * 180.0;
     }
 }
 
@@ -77,7 +77,8 @@ PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, Par
 const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10, false);
 
 SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL), samplingFrequency(samplingFreq), filterFrequency(filterFreq), debugMode(settings.debug)
+    Protocol(parent), portName(portName), port(NULL), samplingFrequency(samplingFreq), filterFrequency(filterFreq),
+    debugMode(settings.debug), packetStateGPS(GPSNoPacket)
 {
     port = new QextSerialPort(portName);
     port->setBaudRate(settings.BaudRate);
@@ -115,11 +116,13 @@ bool SerialProtocol::open() {
 }
 
 void SerialProtocol::checkADC() {
+    addState(ADCWaiting);
     port->write(CHECK_ADC);
 }
 
 void SerialProtocol::checkGPS() {
-    port->write(CHECK_GPS);
+    addState(GPSWaiting); // Note that this state will not be removed: will always wait for future GPS updates
+    port->write(GPS_REQUEST_TIME);
 }
 
 void SerialProtocol::startReceiving() {
@@ -213,45 +216,65 @@ void SerialProtocol::onDataReceived() {
             // notify
             emit dataAvailable(timeStamps, packetData);
         }
-    } else {
+    // If not receiving, then waiting either for ADC or for GPS
+    } else if (hasState(ADCWaiting)) {
         if(rawData.startsWith(CHECKED_ADC)) {
             addState(ADCReady);
+            removeState(ADCWaiting);
             emit checkedADC(true);
-        } else if(rawData.startsWith(GPS_PREFIX_TIME)) {
+        }
+    } else /* if (hasState(GPSWaiting)) */ {
+        if (packetStateGPS != GPSNoPacket) {
+            // If already in packet, just add data
+            buffer += rawData;
+        } else {
+            // Try to detect packet
+            // Packet 0x41 (time) is more valuable, so try to find it first
+            int startPos = rawData.indexOf(GPS_PREFIX_TIME);
+            if (startPos >= 0) {
+                packetStateGPS = GPSTime;
+                // Take all data (except header) to buffer
+                buffer = rawData.mid(startPos + GPS_PREFIX_TIME.size());
+            } else {
+                startPos = rawData.indexOf(GPS_PREFIX_POS);
+                // TODO: copypaste!
+                if (startPos >= 0) {
+                    packetStateGPS = GPSPosition;
+                    // Take all data (except header) to buffer
+                    buffer = rawData.mid(startPos + GPS_PREFIX_TIME.size());
+                }
+            }
             // TODO: support more GPS packets
-            int offset = GPS_PREFIX_TIME.size();
-            if (rawData.size() > GPS_PSIZE_TIME + offset) {
-                // TODO: support accumulation
+        }
+        if(packetStateGPS == GPSTime) {
+            if (buffer.size() > GPS_PSIZE_TIME) {
                 // enough bytes, parse the packet
-                const char * packet = rawData.constData() + offset;
+                const char * packet = buffer.constData();
                 // note that each unpack* function moves `packet` pointer forward
                 float timeOfWeek   = unpackFloat(packet);
                 quint16 weekNumber = unpackUINT<quint16>(packet);
                 float offsetUTC    = unpackFloat(packet);
-                // TODO: millisecond precision... or not needed?
-                QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addSecs(timeOfWeek - offsetUTC);
-                Logger::info(tr("Received time update: [%1;%2;%3]=%4UTC")
-                             .arg(timeOfWeek)
-                             .arg(weekNumber)
-                             .arg(offsetUTC)
-                             .arg(dateTime.toString("yyyy-MM-dd hh:mm")));
+                QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
+                emit timeAvailable(dateTime);
+
                 addState(GPSReady);
-                // TODO: pass new time and set it as system time
-                emit checkedGPS(true);
-            } else {
-                // TODO: accumulate bytes in buffer (not yet implemented)
+                emit checkedGPS(true); // TODO: also check 0x46 packet status
+
+                packetStateGPS = GPSNoPacket;
+                buffer.clear(); // TODO: remove only parsed bytes and try again
             }
-        } else if (rawData.startsWith(GPS_PREFIX_POS)) {
+        } else if (packetStateGPS == GPSPosition) {
             // TODO: avoid copypaste from above! all issues inherited
-            int offset = GPS_PREFIX_POS.size();
-            if (rawData.size() > GPS_PSIZE_POS + offset) {
-                const char* packet = rawData.constData() + offset;
+            if (buffer.size() > GPS_PSIZE_POS) {
+                const char* packet = buffer.constData();
                 // note that each unpack* function moves `packet` pointer forward
-                float latitude  = radiansToDegrees( unpackFloat(packet) );
-                float longitude = radiansToDegrees( unpackFloat(packet) );
-                Logger::info(tr("Received position update: %1, %2").arg(latitude).arg(longitude));
-            } else {
-                // TODO: accumulate bytes in buffer (not yet implemented)
+                double latitude  = radiansToDegrees( unpackFloat(packet) );
+                double longitude = radiansToDegrees( unpackFloat(packet) );
+                double altitude  = unpackFloat(packet);
+                emit positionAvailable(latitude, longitude, altitude);
+
+                packetStateGPS = GPSNoPacket;
+                buffer.clear(); // TODO: remove only parsed bytes and try again
             }
         }
     }

@@ -37,18 +37,22 @@ bool TestProtocol::open() {
 }
 
 void TestProtocol::checkADC() {
+    addState(ADCWaiting);
     checkADCTimer->setSingleShot(true);
     connect(checkADCTimer, &QTimer::timeout, [=](){
         addState(ADCReady);
+        removeState(ADCWaiting);
         emit checkedADC(true);
     });
     checkADCTimer->start(1100);
 }
 
 void TestProtocol::checkGPS() {
+    addState(GPSWaiting);
     checkGPSTimer->setSingleShot(true);
     connect(checkGPSTimer, &QTimer::timeout, [=](){
         addState(GPSReady);
+        removeState(GPSWaiting);
         emit checkedGPS(true);
     });
     checkGPSTimer->start(2000);

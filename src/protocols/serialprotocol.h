@@ -66,6 +66,13 @@ private:
     QByteArray buffer;
 
     bool debugMode;
+
+    // GPS packet parser state:
+    enum GPSPacketState {
+        GPSNoPacket, /*!< Currently not inside known packet (no data yet or unknown packet) */
+        GPSTime,     /*!< Currently inside GPS Time packet  */
+        GPSPosition  /*!< Currently inside GPS Position packet  */
+    } packetStateGPS;
 };
 
 #endif // SERIALPROTOCOL_H

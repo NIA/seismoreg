@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>622</height>
+    <height>643</height>
    </rect>
   </property>
   <property name="font">
@@ -550,7 +550,7 @@
       <item row="0" column="5">
        <widget class="QLineEdit" name="currentLatitude">
         <property name="text">
-         <string notr="true">45°02'00&quot;</string>
+         <string notr="true"/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -563,7 +563,7 @@
       <item row="1" column="5">
        <widget class="QLineEdit" name="currentLongitude">
         <property name="text">
-         <string notr="true">38°59'00&quot;</string>
+         <string notr="true"/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

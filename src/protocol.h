@@ -36,9 +36,11 @@ public:
     enum SingleState {
         NoState   = 0,      /*!< Initial state: just created, nothing done */
         Open      = 1 << 0, /*!< Established connection, now can transmit and receive data */
-        ADCReady  = 1 << 1, /*!< Validated ADC */
-        GPSReady  = 1 << 2, /*!< Validated GPS */
-        Receiving = 1 << 3  /*!< Listening for incoming data. Possible when: (1) connected, (2) validated ADC, (3) validated GPS */
+        ADCWaiting= 1 << 1, /*!< Requested ADC confirmation, waiting for response */
+        ADCReady  = 1 << 2, /*!< Validated ADC */
+        GPSWaiting= 1 << 3, /*!< Requested GPS time/position, waiting for response */
+        GPSReady  = 1 << 4, /*!< Validated GPS */
+        Receiving = 1 << 5  /*!< Listening for incoming data. Possible when: (1) connected, (2) validated ADC, (3) validated GPS */
     };
     Q_DECLARE_FLAGS(State, SingleState)
 
@@ -131,6 +133,22 @@ signals:
      * \see Protocol::checkGPS
      */
     void checkedGPS(bool success);
+
+    /*!
+     * \brief emitted when received current precise time from GPS
+     * \param timeGPS - current time
+     * \see Protocol::checkGPS
+     */
+    void timeAvailable(QDateTime timeGPS);
+
+    /*!
+     * \brief emitted when received current position from GPS
+     * \param latitiude - latitude in degrees
+     * \param longitude - longitude in degrees
+     * \param altitude  - altitude in meters
+     * \see Protocol::checkGPS
+     */
+    void positionAvailable(double latitiude, double longitude, double altitude);
 
     /*!
      * \brief emitted when new data from ADC is available

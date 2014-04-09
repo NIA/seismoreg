@@ -13,13 +13,20 @@ namespace {
     const QByteArray STOP_RECEIVE("\x00", 1); // simply = "\x00" won't work: will be empty string
     const QByteArray CHECKED_ADC = CHECK_ADC;
     const QByteArray DATA_PREFIX(5, '\xF0');
-    // GPS packets:
-    const QByteArray GPS_PREFIX_TIME = "\x10\x41";
-    const QByteArray GPS_PREFIX_POS  = "\x10\x4A";
+    // GPS commands:
     const QByteArray GPS_REQUEST_TIME = "\x10\x21\x10\x03";
-    // GPS packets sizes:
-    const int GPS_PSIZE_TIME = 10;
-    const int GPS_PSIZE_POS  = 20;
+    // GPS packets:
+    struct KnownPacket {
+        SerialProtocol::GPSPacketType kind;
+        QByteArray prefix;
+        int size;
+    };
+    const KnownPacket KNOWN_GPS_PACKETS[] = {
+        //               kind         preifx      size
+        {SerialProtocol::GPSHealth,   "\x10\x46", 2}, // More valuable packet fist: 0x41 is not trusted until 0x46 is received
+        {SerialProtocol::GPSTime,     "\x10\x41", 10},
+        {SerialProtocol::GPSPosition, "\x10\x4A", 20},
+    };
     // GPS constants
     const QDateTime GPS_BASE_TIME(QDate(1980, 1, 6), QTime(0, 0), Qt::UTC);
 
@@ -78,7 +85,7 @@ const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, P
 
 SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings, QObject *parent) :
     Protocol(parent), portName(portName), port(NULL), samplingFrequency(samplingFreq), filterFrequency(filterFreq),
-    debugMode(settings.debug), packetStateGPS(GPSNoPacket)
+    debugMode(settings.debug), currentPacketGPS(GPSNoPacket)
 {
     port = new QextSerialPort(portName);
     port->setBaudRate(settings.BaudRate);
@@ -184,7 +191,7 @@ void SerialProtocol::onDataReceived() {
         buffer += rawData;
         // if there is enough data in buffer to form and unwrap a packet, make it
         const int packetSize = CHANNELS_NUM*POINTS_IN_PACKET*sizeof(DataType);
-        while(buffer.size() >= packetSize) {
+        while(buffer.size() >= packetSize) { // TODO: this is actually not correct way to handle two subsequent packets (header not removed)
             // allocate space for data array
             DataVector packetData(samplingFrequency);
             // Unwrap data:
@@ -224,60 +231,91 @@ void SerialProtocol::onDataReceived() {
             emit checkedADC(true);
         }
     } else /* if (hasState(GPSWaiting)) */ {
-        if (packetStateGPS != GPSNoPacket) {
-            // If already in packet, just add data
-            buffer += rawData;
-        } else {
-            // Try to detect packet
-            // Packet 0x41 (time) is more valuable, so try to find it first
-            int startPos = rawData.indexOf(GPS_PREFIX_TIME);
+        buffer += rawData;
+        bool isParsed;
+        do {
+            isParsed = takeGPSPacket();
+        } while (isParsed);
+    }
+}
+
+bool SerialProtocol::takeGPSPacket() {
+    if (currentPacketGPS == GPSNoPacket) {
+        // Try to detect packet
+        // NB: the order of KNOWN_GPS_PACKETS is important in current implementation:
+        // may skip some packet if there is more prioritized packet after it
+        for (const KnownPacket &packetInfo: KNOWN_GPS_PACKETS) {
+            int startPos = buffer.indexOf(packetInfo.prefix);
             if (startPos >= 0) {
-                packetStateGPS = GPSTime;
-                // Take all data (except header) to buffer
-                buffer = rawData.mid(startPos + GPS_PREFIX_TIME.size());
-            } else {
-                startPos = rawData.indexOf(GPS_PREFIX_POS);
-                // TODO: copypaste!
-                if (startPos >= 0) {
-                    packetStateGPS = GPSPosition;
-                    // Take all data (except header) to buffer
-                    buffer = rawData.mid(startPos + GPS_PREFIX_TIME.size());
-                }
-            }
-            // TODO: support more GPS packets
-        }
-        if(packetStateGPS == GPSTime) {
-            if (buffer.size() > GPS_PSIZE_TIME) {
-                // enough bytes, parse the packet
-                const char * packet = buffer.constData();
-                // note that each unpack* function moves `packet` pointer forward
-                float timeOfWeek   = unpackFloat(packet);
-                quint16 weekNumber = unpackUINT<quint16>(packet);
-                float offsetUTC    = unpackFloat(packet);
-                QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
-                emit timeAvailable(dateTime);
-
-                addState(GPSReady);
-                emit checkedGPS(true); // TODO: also check 0x46 packet status
-
-                packetStateGPS = GPSNoPacket;
-                buffer.clear(); // TODO: remove only parsed bytes and try again
-            }
-        } else if (packetStateGPS == GPSPosition) {
-            // TODO: avoid copypaste from above! all issues inherited
-            if (buffer.size() > GPS_PSIZE_POS) {
-                const char* packet = buffer.constData();
-                // note that each unpack* function moves `packet` pointer forward
-                double latitude  = radiansToDegrees( unpackFloat(packet) );
-                double longitude = radiansToDegrees( unpackFloat(packet) );
-                double altitude  = unpackFloat(packet);
-                emit positionAvailable(latitude, longitude, altitude);
-
-                packetStateGPS = GPSNoPacket;
-                buffer.clear(); // TODO: remove only parsed bytes and try again
+                currentPacketGPS = packetInfo.kind;
+                // Cut everything before packet (and header as well)
+                buffer = buffer.mid(startPos + packetInfo.prefix.size());
+                break;
             }
         }
     }
+    if (currentPacketGPS != GPSNoPacket) {
+        // Try to parse packet. First, find which is the current packet
+        // TODO: use QMap?
+        for (const KnownPacket &packetInfo: KNOWN_GPS_PACKETS) {
+            if(packetInfo.kind == currentPacketGPS) {
+                if (buffer.size() > packetInfo.size) {
+                    // enough bytes, parse the packet
+                    parseGPSPacket();
+                    // remove packet from buffer
+                    buffer.remove(0, packetInfo.size);
+                    return true;
+                }
+                // Not enough, wait for the next sending
+                break;
+            }
+        }
+    } else {
+        // All that's left is parts of unsupported packets: clear the buffer
+        buffer.clear();
+        // NB: we may still lose some meaningful packet if its header gets
+        // split between sendings, but this is quite unlikely
+    }
+    return false;
+}
+
+void SerialProtocol::parseGPSPacket() {
+    // NB: assume we have enough bytes in buffer to parse packet: check this before!
+    const char * packet = buffer.constData();
+    // note that each unpack* function moves `packet` pointer forward
+    switch (currentPacketGPS) {
+    case GPSTime: {
+        // Check if we previously received 0x46 Health packet with success code
+        if (hasState(GPSReady)) {
+            float timeOfWeek   = unpackFloat(packet);
+            quint16 weekNumber = unpackUINT<quint16>(packet);
+            float offsetUTC    = unpackFloat(packet);
+            QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
+            emit timeAvailable(dateTime);
+        }
+        break;
+    }
+    case GPSPosition: {
+        double latitude  = radiansToDegrees( unpackFloat(packet) );
+        double longitude = radiansToDegrees( unpackFloat(packet) );
+        double altitude  = unpackFloat(packet);
+        emit positionAvailable(latitude, longitude, altitude);
+        break;
+    }
+    case GPSHealth: {
+        // First byte 0x00 means OK
+        if (packet[0] == 0) {
+            addState(GPSReady);
+            emit checkedGPS(true);
+        }
+        break;
+    }
+    default:
+        // This is actually an internal error
+        Logger::warning(tr("GPS packet not yet supported"));
+        break;
+    }
+    currentPacketGPS = GPSNoPacket;
 }
 
 QList<QString> SerialProtocol::portNames() {

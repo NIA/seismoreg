@@ -53,11 +53,26 @@ public:
      */
     static TimeStampsVector generateTimeStamps(double periodMsecs, int count);
 
+    enum GPSPacketType {
+        GPSNoPacket, /*!< Currently not inside known packet (no data yet or unknown packet) */
+        GPSTime,     /*!< Currently inside GPS Time packet (0x41)  */
+        GPSHealth,   /*!< Currently inside GPS Health packet (0x46) */
+        GPSPosition  /*!< Currently inside GPS Position packet (0x4A)  */
+    };
+
 private slots:
     void onDataReceived();
 
 private:
-    DataVector generateRandom();
+    /**
+     * @brief Find, detect, take and parse *one* GPS packet from \a buffer
+     *
+     * Should be invoked subsequently until returns false
+     * @return true if found and parsed a packet, false otherwise
+     */
+    bool takeGPSPacket();
+
+    void parseGPSPacket();
 
     QString portName;
     QextSerialPort * port;
@@ -68,11 +83,7 @@ private:
     bool debugMode;
 
     // GPS packet parser state:
-    enum GPSPacketState {
-        GPSNoPacket, /*!< Currently not inside known packet (no data yet or unknown packet) */
-        GPSTime,     /*!< Currently inside GPS Time packet  */
-        GPSPosition  /*!< Currently inside GPS Position packet  */
-    } packetStateGPS;
+    GPSPacketType currentPacketGPS;
 };
 
 #endif // SERIALPROTOCOL_H

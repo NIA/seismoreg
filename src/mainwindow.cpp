@@ -99,7 +99,7 @@ void MainWindow::setup() {
 
         plots[ch]->setChannel(ch);
     }
-
+    ui->connectBtn->setFocus();
     // Plot settings
     void (QSpinBox:: *valueChangedSignal)(int) = &QSpinBox::valueChanged; // resolve overloaded function
     connect(ui->fixedScaleMax, valueChangedSignal, [=](){ui->fixedScale->setChecked(true);});
@@ -145,7 +145,6 @@ void MainWindow::setup() {
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
         ui->connectBtn->setDisabled(true);
         ui->disconnectBtn->setEnabled(true);
-        ui->portChooser->setFocus(); // TODO: control focus somehow another way
         foreach(QWidget * w, disableOnConnect) {
             w->setDisabled(true);
         }
@@ -173,6 +172,51 @@ void MainWindow::setup() {
         initWorkerHandlers();
         worker->prepare();
     });
+    connect(ui->startBtn, &QPushButton::clicked, [=](){
+        ui->startBtn->setDisabled(true);
+        ui->stopBtn->setEnabled(true);
+        ui->stopBtn->setFocus();
+
+        startedAt = QDateTime::currentDateTime();
+        ui->timeStart->setDateTime(startedAt);
+        ui->timeElapsed->setTime(QTime(0,0,0));
+
+        // TODO: do not call Worker and FileWriter methods, send signals instead
+        // (for future parallel implementation)
+        if(worker->isStarted()) {
+            worker->unpause();
+        } else {
+            worker->start();
+            setFileControlsState();
+        }
+    });
+    connect(ui->stopBtn, &QPushButton::clicked, [=](){
+        ui->stopBtn->setDisabled(true);
+        ui->startBtn->setEnabled(true);
+        ui->startBtn->setFocus();
+
+        worker->pause();
+        setFileControlsState();
+    });
+    connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
+        worker->finish();
+        for(TimePlot * plot: plots) {
+            plot->clearHistory();
+        }
+        setReceivedItems(0);
+        ui->ledADC->setValue(false);
+        ui->ledGPS->setValue(false);
+        ui->disconnectBtn->setDisabled(true);
+        ui->stopBtn->setDisabled(true);
+        ui->startBtn->setDisabled(true);
+        ui->connectBtn->setEnabled(true);
+        foreach(QWidget * w, disableOnConnect) {
+            w->setEnabled(true);
+        }
+        ui->portChooser->setFocus();
+        setFileControlsState();
+    });
+    connect(ui->disconnectBtn, &QPushButton::clicked, fileWriter, &FileWriter::finishFile);
 }
 
 void MainWindow::initWorkerHandlers() {
@@ -209,62 +253,17 @@ void MainWindow::initWorkerHandlers() {
             foreach(QWidget * w, disableOnConnect) {
                 w->setEnabled(true);
             }
-            ui->portChooser->setFocus();
-        }
-    });
-    connect(ui->startBtn, &QPushButton::clicked, [=](){
-        ui->startBtn->setDisabled(true);
-        ui->stopBtn->setEnabled(true);
-        ui->stopBtn->setFocus();
-
-        startedAt = QDateTime::currentDateTime();
-        ui->timeStart->setDateTime(startedAt);
-        ui->timeElapsed->setTime(QTime(0,0,0));
-
-        if(worker->isStarted()) {
-            worker->unpause();
-        } else {
-            worker->start();
-            setFileControlsState();
+            ui->connectBtn->setFocus();
         }
     });
     connect(worker, &Worker::dataUpdated, this, &MainWindow::onDataReceived);
-    // TODO: the following connects can be called multiple times. Is this OK? Should this be done outside of initWorkerHandlers?
-    connect(ui->stopBtn, &QPushButton::clicked, [=](){
-        ui->stopBtn->setDisabled(true);
-        ui->startBtn->setEnabled(true);
-        ui->startBtn->setFocus();
-
-        worker->pause();
-        setFileControlsState();
-    });
-    connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
-        worker->finish();
-        // TODO: connect these slots separately
-        fileWriter->finishFile();
-        for(TimePlot * plot: plots) {
-            plot->clearHistory();
-        }
-
-        ui->ledADC->setValue(false);
-        ui->ledGPS->setValue(false);
-        ui->disconnectBtn->setDisabled(true);
-        ui->stopBtn->setDisabled(true);
-        ui->startBtn->setDisabled(true);
-        ui->connectBtn->setEnabled(true);
-        foreach(QWidget * w, disableOnConnect) {
-            w->setEnabled(true);
-        }
-        ui->portChooser->setFocus();
-        setFileControlsState();
-    });
 }
 
 void MainWindow::initFileHandlers() {
 
     connect(this,               &MainWindow::autoWriteChanged, fileWriter, &FileWriter::setAutoWriteEnabled);
-    connect(ui->saveFilePrefix, &QLineEdit::textChanged,       this,       &MainWindow::onFileNameChanged);
-    connect(ui->saveFileSuffix, &QLineEdit::textChanged,       this,       &MainWindow::onFileNameChanged);
+    connect(ui->saveFilePrefix, &QLineEdit::editingFinished,   this,       &MainWindow::onFileNameChanged);
+    connect(ui->saveFileSuffix, &QLineEdit::editingFinished,       this,       &MainWindow::onFileNameChanged);
     connect(ui->writeNowBtn,    &QPushButton::clicked,         fileWriter, &FileWriter::writeOnce);
     // connecting to Worker::dataUpdated is made in initWorkerHandlers
     connect(fileWriter, &FileWriter::queueSizeChanged, [=](unsigned size){
@@ -300,8 +299,7 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
 
     Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
 
-    receivedItems += d.size()*CHANNELS_NUM;
-    ui->samplesRcvd->setText(QString::number(receivedItems));
+    setReceivedItems(receivedItems + d.size()*CHANNELS_NUM);
 //        TODO: dataView is currently disabled! Find a way to enable it without lags
 //        QStringList items;
 //        foreach(DataItem item, d) {
@@ -332,6 +330,11 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     perfPlotting.addMeasurement(timerPlotting.elapsed());
 
     perfTotal.addMeasurement(timerTotal.elapsed());
+}
+
+void MainWindow::setReceivedItems(int received) {
+    receivedItems = received;
+    ui->samplesRcvd->setText(QString::number(receivedItems));
 }
 
 void MainWindow::onFileNameChanged() {

@@ -26,7 +26,6 @@ namespace {
     protected:
         QString dateFormatOfDate(const QDateTime &, QwtDate::IntervalType) const override {
             // Same format for all
-            // TODO: too wide plots
             return "hh:mm:ss";
         }
     };

@@ -13,7 +13,7 @@ const QString FileWriter::DEFAULT_FILENAME_SUFFIX = ".dat";
 FileWriter::FileWriter(QString fileNamePrefix, QString fileNameSuffix, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false),
     deviceID(0), samplingFreq(0), filterFreq(0),
-    latitude("???"), longitude("???")
+    latitude("???"), longitude("???"), itemsInQueue(0)
 {
     setFileName(fileNamePrefix, fileNameSuffix); // will also init `file` instance variable
 }
@@ -52,8 +52,9 @@ void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
         allData += '\n';
     }
     waitingQueue.enqueue(allData);
+    itemsInQueue += d.size()*CHANNELS_NUM;
 
-    emit queueSizeChanged(waitingQueue.size());
+    emit queueSizeChanged(itemsInQueue);
 
     if (autoWrite) {
         writeNow();
@@ -89,14 +90,15 @@ void FileWriter::writeNow() {
 
     if ( openIfClosed() == false ) { return; } // Failed to open
 
-    // Swap existing queue with empty one to move all from waiting queue to writeQueue
+    // Swap existing queue with empty one to quickly move all from waiting queue to writeQueue and clear writeQueue
     QQueue<QString> writeQueue;
     writeQueue.swap(waitingQueue);
-    emit queueSizeChanged(waitingQueue.size());
+    int itemsWritten = itemsInQueue;
+    itemsInQueue = 0;
+    emit queueSizeChanged(itemsInQueue);
 
     // And write everything from writeQueue
     QTextStream out(file);
-    int itemsWritten = writeQueue.size();
     foreach (auto str, writeQueue) {
         out << str;
     }
@@ -136,13 +138,15 @@ void FileWriter::writeHeader() {
 
 void FileWriter::closeIfOpened() {
     waitingQueue.clear();
+    itemsInQueue = 0;
+    emit queueSizeChanged(itemsInQueue);
     startTime = TimeStampType(); // set null datetime so that it will be reset next time
     if(file != NULL && file->isOpen()) {
         file->close();
         Logger::info(tr("Closed file %1").arg(file->fileName()));
-        delete file;
-        file = NULL;
     }
+    delete file;
+    file = NULL;
 }
 
 FileWriter::~FileWriter() {

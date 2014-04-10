@@ -40,6 +40,7 @@ private:
     void setFileControlsState();
     void setCurrentTime();
     void log(QString text);
+    void setReceivedItems(int received);
 
     void saveSettings();
 

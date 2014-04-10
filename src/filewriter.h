@@ -133,6 +133,7 @@ private:
     TimeStampType startTime;
 
     QQueue<QString> waitingQueue;
+    int itemsInQueue; // Since multiple date items are in one waitingQueue item, a separate count is needed
 };
 
 #endif // FILEWRITER_H

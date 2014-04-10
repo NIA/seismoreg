@@ -4,7 +4,6 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <QStringList>
 #include <QDateTime>
 
 FileWriter::FileWriter(QString fileName, QObject *parent) :
@@ -37,13 +36,16 @@ void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
         startTime = t.first();
     }
 
-    for(int i = 0; i < count; ++i) {
-        QStringList itemStr;
+    QString allData;
+    foreach(const DataItem & item, d) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            itemStr << QString::number(d[i].byChannel[ch]);
+            allData += QString::number(item.byChannel[ch]);
+            allData += '\t';
         }
-        waitingQueue.enqueue( itemStr.join("\t") + "\n" );
+        allData += '\n';
     }
+    waitingQueue.enqueue(allData);
+
     emit queueSizeChanged(waitingQueue.size());
 
     if (autoWrite) {
@@ -85,10 +87,9 @@ void FileWriter::writeNow() {
 
     // And write everything from writeQueue
     QTextStream out(file);
-    int itemsWritten = 0;
-    while ( ! writeQueue.isEmpty() ) {
-        out << writeQueue.dequeue();
-        itemsWritten += CHANNELS_NUM;
+    int itemsWritten = writeQueue.size();
+    foreach (auto str, writeQueue) {
+        out << str;
     }
     Logger::trace(tr("Written %1 items to file %2").arg(itemsWritten).arg(file->fileName()));
 }

@@ -1,5 +1,5 @@
 #include "performancereporter.h"
-#include <qglobal.h>]
+#include <qglobal.h>
 
 #include <QDebug>  // for flushDebug
 #include <QThread> // for flushDebug

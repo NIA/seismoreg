@@ -49,9 +49,7 @@ public:
      * it can not be more than MAX_POINTS_PER_SEC
      * (for performance reasons)
      */
-    void setPointsPerSec(int value) {
-        pointsPerSec = qMin(value, MAX_POINTS_PER_SEC);
-    }
+    void setPointsPerSec(int value);
 
 public slots:
     /**

@@ -70,6 +70,14 @@ void TimePlot::setHistorySecs(double secs) {
     setTimeRange(buffer); // TODO: need to pass buffer or not?
 }
 
+void TimePlot::setPointsPerSec(int value) {
+    if (value <= MAX_POINTS_PER_SEC) {
+        pointsPerSec = value;
+    } else {
+        pointsPerSec = MAX_POINTS_PER_SEC;
+    }
+}
+
 void TimePlot::setFixedScaleY(bool fixed) {
     fixedScale = fixed;
     setAxisAutoScale(yLeft, ! fixed);

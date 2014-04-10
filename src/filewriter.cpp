@@ -30,11 +30,15 @@ void FileWriter::setFileName(QString fileName) {
 }
 
 void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
-    int count = qMin(t.size(), d.size()); // TODO: warn if different
+    int count = qMin(t.size(), d.size()); // TODO: warn if different or empty
+    if (count == 0) { return; }
+
+    if (startTime.isNull()) { // Not set yet
+        startTime = t.first();
+    }
+
     for(int i = 0; i < count; ++i) {
-        // TODO: actual formatting
         QStringList itemStr;
-        itemStr << t[i].toString("hh:mm:ss.zzz");
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             itemStr << QString::number(d[i].byChannel[ch]);
         }
@@ -111,9 +115,8 @@ void FileWriter::writeHeader() {
     QTextStream out(file);
     out << QString("[Description]\nDevice ID=%1\n").arg(deviceID);
     out << QString("[Frequency]\nSamples=%1 Hz\nFilter=%2 Hz\n").arg(samplingFreq).arg(filterFreq);
-    QDateTime now = QDateTime::currentDateTime();
-    out << QString("[Date]\n%1\n").arg(now.toString("yyyy-MM-dd"));
-    out << QString("[Time]\n%1\n").arg(now.toString("hh:mm:ss"));
+    out << QString("[Date]\n%1\n").arg(startTime.toString("yyyy-MM-dd"));
+    out << QString("[Time]\n%1\n").arg(startTime.toString("hh:mm:ss.zzz"));
     out << QString("[Coordinates]\nLatitude=%1\nLongitude=%2\n").arg(latitude).arg(longitude);
     out << QString("[Values]\n");
 }

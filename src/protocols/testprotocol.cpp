@@ -16,6 +16,10 @@ namespace {
     const double OMEGA2 = OMEGA1/10;
     const double NOISE_VALUE = 0.1;
     const double PHASE_SHIFT = M_PI/8;
+
+    const double DEFAULT_LATITUDE  = 45.033333;
+    const double DEFAULT_LONGITUDE = 38.983333;
+    const double DEFAULT_ALTITUDE  = 30.0;
 }
 
 TestProtocol::TestProtocol(int dataSize, int amp, QObject *parent) :
@@ -53,6 +57,7 @@ void TestProtocol::checkGPS() {
     connect(checkGPSTimer, &QTimer::timeout, [=](){
         addState(GPSReady);
         removeState(GPSWaiting);
+        emit positionAvailable(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_ALTITUDE);
         emit checkedGPS(true);
     });
     checkGPSTimer->start(2000);

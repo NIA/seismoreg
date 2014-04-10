@@ -105,6 +105,7 @@ private:
     int filterFreq;
     QString latitude;
     QString longitude;
+    TimeStampType startTime;
 
     QQueue<QString> waitingQueue;
 };

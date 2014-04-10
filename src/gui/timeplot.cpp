@@ -135,9 +135,17 @@ QVector<QPointF> TimePlot::itemsToPoints(TimeStampsVector timestamps, DataVector
         itemsCount = qMin(itemsCount, timestampsCount);
     }
 
-    QVector<QPointF> data(itemsCount);
-    for(int i = 0; i < itemsCount; ++i) {
-        data[i] = QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
+    int pointsCount = itemsCount;
+    int skip = 1;
+    if (itemsCount > pointsPerSec) {
+        skip = qCeil( double(itemsCount) / pointsPerSec);
+        pointsCount = qCeil( double(itemsCount) / skip );
+        Logger::trace(QString("skip = %1, pc = %2").arg(skip).arg(pointsCount));
+    }
+
+    QVector<QPointF> data(pointsCount);
+    for(int i = 0, p = 0; (i < itemsCount) && (p < pointsCount); ++p, i += skip) {
+        data[p] = QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
     }
 
     return data;

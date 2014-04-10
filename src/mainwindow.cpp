@@ -48,7 +48,7 @@ namespace {
         widgets[1] = w1;
         widgets[2] = w2;
         // TODO: avoid this limitation
-        Q_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::initWidgetsArray", "MainWindow implementation assumes CHANNELS_NUM == 3");
+        Q_STATIC_ASSERT_X(CHANNELS_NUM == 3, "MainWindow::initWidgetsArray implementation assumes CHANNELS_NUM == 3");
     }
 
     // "Protocol factory"
@@ -232,20 +232,21 @@ void MainWindow::initWorkerHandlers() {
         QElapsedTimer timerTotal; timerTotal.start();
 
         Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
-        QStringList items;
-        foreach(DataItem item, d) {
-            // TODO: use table instead of list
-            QStringList itemStr;
-            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-                itemStr << QString::number(item.byChannel[ch]);
-            }
-            items << itemStr.join("; ");
-        }
+
         receivedItems += d.size()*CHANNELS_NUM;
         ui->samplesRcvd->setText(QString::number(receivedItems));
-        // TODO: dataView is currently disabled! Find a way to enable it without lags
-        //ui->dataView->addItems(items);
-        //ui->dataView->scrollToBottom();
+//        TODO: dataView is currently disabled! Find a way to enable it without lags
+//        QStringList items;
+//        foreach(DataItem item, d) {
+//            // TODO: use table instead of list
+//            QStringList itemStr;
+//            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+//                itemStr << QString::number(item.byChannel[ch]);
+//            }
+//            items << itemStr.join("; ");
+//        }
+//        ui->dataView->addItems(items);
+//        ui->dataView->scrollToBottom();
         for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             // Update stats
             stats[ch]->setStats(d, ch);

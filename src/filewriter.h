@@ -34,12 +34,16 @@ class FileWriter : public QObject
 {
     Q_OBJECT
 public:
-    explicit FileWriter(QString fileName, QObject *parent = 0);
+    explicit FileWriter(QString fileNamePrefix = DEFAULT_FILENAME_PREFIX, QString fileNameSuffix = DEFAULT_FILENAME_SUFFIX, QObject *parent = 0);
 
-    QString fileName() { return saveFileName; }
+    QString fileNamePrefix() { return filePrefix; }
+    QString fileNameSuffix() { return fileSuffix; }
+    static const QString DEFAULT_FILENAME_PREFIX;
+    static const QString DEFAULT_FILENAME_SUFFIX;
+
     bool autoWriteEnabled() { return autoWrite; }
 
-    static QString defaultFileName();
+    QString buildFileName();
 
     ~FileWriter();
 signals:
@@ -47,16 +51,23 @@ signals:
     
 public slots:
     /*!
-     * \brief Sets current file name that will be used for writing.
+     * \brief Sets file name pattern for file that will be used for writing.
+     *
+     * Filename will be prefix+datetime+suffix, where datetime is
+     * the start time of receiving data.
+     *
+     * If suffix is empty (or not specified), the default (e.g. ".dat")
+     * will be used.
      *
      * \warning This slot only sets file name, it doesn't
      *          actually write to file!
      * \see Worker::setAutoWriteEnabled, Worker::writeOnce
-     * \param fileName name of file to write to
+     * \param prefix - beginning of file name, before datetime
+     * \param suffix - ending of file name, usually extension
      *
      * \todo return success or failure
      */
-    void setFileName(QString fileName);
+    void setFileName(QString prefix, QString suffix = DEFAULT_FILENAME_SUFFIX);
 
     /*!
      * \brief Adds new data to queue of data waiting to be written to disk
@@ -76,6 +87,14 @@ public slots:
      */
     void writeOnce();
 
+    /*!
+     * \brief Finishes and closes file: newly received data will cause a new file to be opened.
+     *
+     * Useful after closing protocol before opening it with another settings,
+     * or when the size of file exceeds some limit
+     */
+    void finishFile() { closeIfOpened(); }
+
     // Settings for header:
 
     void setDeviceID(int id) { deviceID = id; }
@@ -93,10 +112,16 @@ private:
     void writeNow();
     void writeHeader();
 
-    void openIfClosed();
+    /**
+     * @brief Opens file if it is not opened yet
+     * @return true if succesfully opened (or already opened) and ready to write,
+     *         false if failed to open and cannot write
+     */
+    bool openIfClosed();
     void closeIfOpened();
 
-    QString saveFileName;
+    QString filePrefix;
+    QString fileSuffix;
     QFile * file;
     bool autoWrite;
 

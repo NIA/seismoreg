@@ -28,6 +28,10 @@ public:
 signals:
     void autoWriteChanged(bool enabled);
 
+private slots:
+    void onDataReceived(TimeStampsVector t, DataVector d);
+    void onFileNameChanged();
+
 private:
     void setup();
     void initWorkerHandlers();

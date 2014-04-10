@@ -23,12 +23,11 @@ public:
     int filterFrequency() const;
     void setFilterFrequency(int value);
 
-    /**
-     * This setting has no predefined default value and normally is not saved between sessions.
-     * It is useful only for command-line usage.
-     */
-    QString saveFileNameOrDefault(const QString &defaultFileName) const;
-    void setSaveFileName(const QString &value);
+    QString fileNamePrefix() const;
+    void setFileNamePrefix(const QString &value);
+
+    QString fileNameSuffix() const;
+    void setFileNameSuffix(const QString &value);
 
     // Ports settings
 

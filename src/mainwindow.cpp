@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     worker = new Worker(NULL, NULL, this);
-    fileWriter = new FileWriter(FileWriter::defaultFileName(), this);
+    fileWriter = new FileWriter(FileWriter::DEFAULT_FILENAME_PREFIX, FileWriter::DEFAULT_FILENAME_SUFFIX, this);
 
     initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
     initWidgetsArray(stats, ui->stats, ui->stats2, ui->stats3);
@@ -85,7 +85,7 @@ void MainWindow::setup() {
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_1}), settings.samplingFrequency());
     initFreqChooser(ui->filterFreq,   QList<int>({FREQ_200, FREQ_50}),         settings.filterFrequency());
-    fileWriter->setFileName(settings.saveFileNameOrDefault(fileWriter->fileName()));
+    fileWriter->setFileName(settings.fileNamePrefix(), settings.fileNameSuffix());
     fileWriter->setDeviceID(settings.deviceId());
     initFileHandlers();
     disableOnConnect << ui->portChooser << ui->portChooserGPS
@@ -103,14 +103,14 @@ void MainWindow::setup() {
     // Plot settings
     void (QSpinBox:: *valueChangedSignal)(int) = &QSpinBox::valueChanged; // resolve overloaded function
     connect(ui->fixedScaleMax, valueChangedSignal, [=](){ui->fixedScale->setChecked(true);});
-    for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-        connect(ui->fixedScale,    &QAbstractButton::toggled, plots[ch], &TimePlot::setFixedScaleY);
-        connect(ui->fixedScaleMax, valueChangedSignal,        plots[ch], &TimePlot::setFixedScaleYMax);
-        connect(ui->timeInterval,  valueChangedSignal,        plots[ch], &TimePlot::setHistorySecs);
+    for (TimePlot *plot:  plots) {
+        connect(ui->fixedScale,    &QAbstractButton::toggled, plot, &TimePlot::setFixedScaleY);
+        connect(ui->fixedScaleMax, valueChangedSignal,        plot, &TimePlot::setFixedScaleYMax);
+        connect(ui->timeInterval,  valueChangedSignal,        plot, &TimePlot::setHistorySecs);
 
-        plots[ch]->setFixedScaleYMax(settings.plotFixedScaleMax());
-        plots[ch]->setFixedScaleY(settings.isPlotFixedScale());
-        plots[ch]->setHistorySecs(settings.plotHistorySecs());
+        plot->setFixedScaleYMax(settings.plotFixedScaleMax());
+        plot->setFixedScaleY(settings.isPlotFixedScale());
+        plot->setHistorySecs(settings.plotHistorySecs());
     }
     (settings.isPlotFixedScale() ? ui->fixedScale : ui->autoScale)->setChecked(true);
     ui->fixedScaleMax->setValue( settings.plotFixedScaleMax() );
@@ -152,8 +152,8 @@ void MainWindow::setup() {
 
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
         int filterFrequency   = ui->filterFreq->currentText().toInt();
-        for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            plots[ch]->setPointsPerSec(samplingFrequency);
+        for(TimePlot * plot: plots) {
+            plot->setPointsPerSec(samplingFrequency);
         }
         fileWriter->setFrequencies(samplingFrequency, filterFrequency);
 
@@ -228,46 +228,8 @@ void MainWindow::initWorkerHandlers() {
             setFileControlsState();
         }
     });
-    connect(worker, &Worker::dataUpdated, [=](TimeStampsVector t, DataVector d){
-        QElapsedTimer timerTotal; timerTotal.start();
-
-        Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
-
-        receivedItems += d.size()*CHANNELS_NUM;
-        ui->samplesRcvd->setText(QString::number(receivedItems));
-//        TODO: dataView is currently disabled! Find a way to enable it without lags
-//        QStringList items;
-//        foreach(DataItem item, d) {
-//            // TODO: use table instead of list
-//            QStringList itemStr;
-//            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-//                itemStr << QString::number(item.byChannel[ch]);
-//            }
-//            items << itemStr.join("; ");
-//        }
-//        ui->dataView->addItems(items);
-//        ui->dataView->scrollToBottom();
-        for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            // Update stats
-            stats[ch]->setStats(d, ch);
-        }
-
-        // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
-        // Currently it is like that for performance measurements.
-        QElapsedTimer timerWriting; timerWriting.start();
-        fileWriter->receiveData(t, d);
-        perfWritting.addMeasurement(timerWriting.elapsed());
-
-        QElapsedTimer timerPlotting; timerPlotting.start();
-        for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            plots[ch]->receiveData(t, d);
-        }
-        perfPlotting.addMeasurement(timerPlotting.elapsed());
-
-        perfTotal.addMeasurement(timerTotal.elapsed());
-    });
-
-
+    connect(worker, &Worker::dataUpdated, this, &MainWindow::onDataReceived);
+    // TODO: the following connects can be called multiple times. Is this OK? Should this be done outside of initWorkerHandlers?
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
         ui->startBtn->setEnabled(true);
@@ -278,6 +240,11 @@ void MainWindow::initWorkerHandlers() {
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
         worker->finish();
+        // TODO: connect these slots separately
+        fileWriter->finishFile();
+        for(TimePlot * plot: plots) {
+            plot->clearHistory();
+        }
 
         ui->ledADC->setValue(false);
         ui->ledGPS->setValue(false);
@@ -295,9 +262,10 @@ void MainWindow::initWorkerHandlers() {
 
 void MainWindow::initFileHandlers() {
 
-    connect(this,             &MainWindow::autoWriteChanged, fileWriter, &FileWriter::setAutoWriteEnabled);
-    connect(ui->saveFileName, &QLineEdit::textChanged,       fileWriter, &FileWriter::setFileName);
-    connect(ui->writeNowBtn,  &QPushButton::clicked,         fileWriter, &FileWriter::writeOnce);
+    connect(this,               &MainWindow::autoWriteChanged, fileWriter, &FileWriter::setAutoWriteEnabled);
+    connect(ui->saveFilePrefix, &QLineEdit::textChanged,       this,       &MainWindow::onFileNameChanged);
+    connect(ui->saveFileSuffix, &QLineEdit::textChanged,       this,       &MainWindow::onFileNameChanged);
+    connect(ui->writeNowBtn,    &QPushButton::clicked,         fileWriter, &FileWriter::writeOnce);
     // connecting to Worker::dataUpdated is made in initWorkerHandlers
     connect(fileWriter, &FileWriter::queueSizeChanged, [=](unsigned size){
         ui->samplesInQueue->setText(QString::number(size));
@@ -310,19 +278,64 @@ void MainWindow::initFileHandlers() {
         setFileControlsState();
     });
 
-    connect(ui->browseBtn, &QPushButton::clicked, [=](){
+    /* TODO: return Browse button!
+     connect(ui->browseBtn, &QPushButton::clicked, [=](){
         QString file = QFileDialog::getSaveFileName(this, tr("Choose file for writing data"), ui->saveFileName->text());
         if( ! file.isEmpty()) {
             ui->saveFileName->setText(file);
             // this will automatically notify fileWriter: changing ui->saveFileName text
             // will trigger textChanged, which is connected to setFileName of FileWriter (see above)
         }
-    });
+    });*/
 
     // Set initial values
-    ui->saveFileName->setText(fileWriter->fileName());
+    ui->saveFilePrefix->setText(fileWriter->fileNamePrefix());
+    ui->saveFileSuffix->setText(fileWriter->fileNameSuffix());
     emit autoWriteChanged(ui->writeToFileEnabled->isChecked());
     setFileControlsState();
+}
+
+void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
+    QElapsedTimer timerTotal; timerTotal.start();
+
+    Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
+
+    receivedItems += d.size()*CHANNELS_NUM;
+    ui->samplesRcvd->setText(QString::number(receivedItems));
+//        TODO: dataView is currently disabled! Find a way to enable it without lags
+//        QStringList items;
+//        foreach(DataItem item, d) {
+//            // TODO: use table instead of list
+//            QStringList itemStr;
+//            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+//                itemStr << QString::number(item.byChannel[ch]);
+//            }
+//            items << itemStr.join("; ");
+//        }
+//        ui->dataView->addItems(items);
+//        ui->dataView->scrollToBottom();
+    for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+        // Update stats
+        stats[ch]->setStats(d, ch);
+    }
+
+    // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
+    // Currently it is like that for performance measurements.
+    QElapsedTimer timerWriting; timerWriting.start();
+    fileWriter->receiveData(t, d);
+    perfWritting.addMeasurement(timerWriting.elapsed());
+
+    QElapsedTimer timerPlotting; timerPlotting.start();
+    for(TimePlot * plot: plots) {
+        plot->receiveData(t, d);
+    }
+    perfPlotting.addMeasurement(timerPlotting.elapsed());
+
+    perfTotal.addMeasurement(timerTotal.elapsed());
+}
+
+void MainWindow::onFileNameChanged() {
+    fileWriter->setFileName(ui->saveFilePrefix->text(), ui->saveFileSuffix->text());
 }
 
 void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton * btn) {
@@ -338,8 +351,10 @@ void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSet
 void MainWindow::setFileControlsState() {
     bool disableChangingFile = (ui->writeToFileEnabled->isChecked() && worker->isStarted());
     // If running and auto-saving => cannot change file name
-    ui->saveFileName->setDisabled(disableChangingFile);
-    ui->browseBtn->setDisabled(disableChangingFile);
+    ui->saveFilePrefix->setDisabled(disableChangingFile);
+    ui->saveFileSuffix->setDisabled(disableChangingFile);
+    /* TODO: return Browse button
+    ui->browseBtn->setDisabled(disableChangingFile); */
 
     bool disableWriteNow = (ui->writeToFileEnabled->isChecked());
     // If auto-saving => cannot write now
@@ -361,10 +376,14 @@ void MainWindow::saveSettings() {
     Settings settings;
     settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
     settings.setFilterFrequency(ui->filterFreq->currentText().toInt());
+    settings.setFileNamePrefix(ui->saveFilePrefix->text());
+    settings.setFileNameSuffix(ui->saveFileSuffix->text());
+
     settings.setPortName(Settings::PortADC, ui->portChooser->currentText());
     settings.setPortSettings(Settings::PortADC, portSettingsADC);
     settings.setPortName(Settings::PortGPS, ui->portChooserGPS->currentText());
     settings.setPortSettings(Settings::PortGPS, portSettingsGPS);
+
     settings.setTableShown(ui->actionShowTable->isChecked());
     settings.setSettingsShown(ui->actionShowSettings->isChecked());
     settings.setStatsShown(ui->actionShowStats->isChecked());

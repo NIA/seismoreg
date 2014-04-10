@@ -1,7 +1,8 @@
 #include "settings.h"
 #include <QHash>
 
-#include "gui/timeplot.h"
+#include "gui/timeplot.h" // for timeplot defaults
+#include "filewriter.h"   // for filewriter defaults
 
 namespace {
     const QString SETTINGS_FILE = "seismoreg.ini";
@@ -27,7 +28,8 @@ namespace {
     const QString DEVICE_ID  = CORE_PREFIX + "device_id";
     const QString SAMPL_FREQ = CORE_PREFIX + "sampling_frequency";
     const QString FILTR_FREQ = CORE_PREFIX + "filter_frequency";
-    const QString FILE_NAME  = CORE_PREFIX + "save_file"; // note that this setting has no default value
+    const QString FILE_PREFIX= CORE_PREFIX + "file_prefix";
+    const QString FILE_SUFFIX= CORE_PREFIX + "file_suffix";
     const QString TABLE_SHOWN    = GUI_PREFIX + "table_shown";
     const QString SETTINGS_SHOWN = GUI_PREFIX + "settings_shown";
     const QString STATS_SHOWN    = GUI_PREFIX + "stats_shown";
@@ -148,11 +150,18 @@ void Settings::setFilterFrequency(int value) {
     settings.setValue(FILTR_FREQ, value);
 }
 
-QString Settings::saveFileNameOrDefault(const QString &defaultFileName) const {
-    return settings.value(FILE_NAME, defaultFileName).toString();
+QString Settings::fileNamePrefix() const {
+    return settings.value(FILE_PREFIX, FileWriter::DEFAULT_FILENAME_PREFIX).toString();
 }
-void Settings::setSaveFileName(const QString &value) {
-    settings.setValue(FILE_NAME, value);
+void Settings::setFileNamePrefix(const QString &value) {
+    settings.setValue(FILE_PREFIX, value);
+}
+
+QString Settings::fileNameSuffix() const {
+    return settings.value(FILE_SUFFIX, FileWriter::DEFAULT_FILENAME_SUFFIX).toString();
+}
+void Settings::setFileNameSuffix(const QString &value) {
+    settings.setValue(FILE_SUFFIX, value);
 }
 
 // Ports settings

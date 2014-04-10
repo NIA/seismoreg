@@ -65,6 +65,16 @@ public slots:
      */
     void receiveData(TimeStampsVector timestamps, DataVector items);
 
+    /**
+     * @brief Clears what is currently stored in history buffer.
+     *
+     * This is useful when a new data series is initiated (e.g.
+     * when protocol is closed and reopened)
+     */
+    void clearHistory() {
+        buffer.clear();
+    }
+
     // Settings
 
     void setHistorySecs(double secs);

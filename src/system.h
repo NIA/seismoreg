@@ -12,7 +12,12 @@ class System : public QObject
 {
     Q_OBJECT
 public:
-    static void setSystemTime(QDateTime t);
+    /**
+     * @brief Sets system time to given QDateTime
+     * @param t - the date/time to be set
+     * @return true if success, false if failed (error will be reported to Logger)
+     */
+    static bool setSystemTime(QDateTime t);
 };
 
 #endif // SYSTEM_H

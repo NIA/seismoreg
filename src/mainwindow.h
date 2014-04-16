@@ -54,6 +54,7 @@ private:
 
     QDateTime startedAt;
     QTimer * clockTimer;
+    QDateTime synchronizedAt;
     int receivedItems;
 
     TimePlot * plots[CHANNELS_NUM];

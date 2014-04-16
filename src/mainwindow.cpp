@@ -21,6 +21,8 @@ namespace {
     const int FREQ_50  = 50;
     const int FREQ_1   = 1;
 
+    const int TIME_SYNC_PERIOD_SECS = 60; // sync time every minute
+
     void initPortChooser(QComboBox * chooser, QString initialValue) {
         chooser->addItem(TEST_PROTOCOL);
         chooser->addItems(SerialProtocol::portNames());
@@ -232,7 +234,10 @@ void MainWindow::initWorkerHandlers() {
     });
     connect(worker->protocolGPS(), &Protocol::timeAvailable, [=](QDateTime time){
         Logger::info(tr("Received time update: %1UTC").arg(time.toString("yyyy-MM-dd hh:mm:ss.zzz")));
-        System::setSystemTime(time);
+        if (synchronizedAt.isNull() || synchronizedAt.secsTo(time) > TIME_SYNC_PERIOD_SECS) {
+            System::setSystemTime(time);
+            synchronizedAt = time;
+        }
         ui->ledGPS->blinkOnce();
     });
     connect(worker->protocolGPS(), &Protocol::positionAvailable, [=](double latitude, double longitude, double altitude){

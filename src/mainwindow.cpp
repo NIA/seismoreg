@@ -232,6 +232,7 @@ void MainWindow::initWorkerHandlers() {
     connect(worker->protocolGPS(), &Protocol::timeAvailable, [=](QDateTime time){
         Logger::info(tr("Received time update: %1UTC").arg(time.toString("yyyy-MM-dd hh:mm:ss.zzz")));
         // TODO: set as system time
+        ui->ledGPS->blinkOnce();
     });
     connect(worker->protocolGPS(), &Protocol::positionAvailable, [=](double latitude, double longitude, double altitude){
         Logger::info(tr("Received position update: %1, %2, %3m").arg(latitude).arg(longitude).arg(altitude));
@@ -242,6 +243,7 @@ void MainWindow::initWorkerHandlers() {
         ui->currentLatitude->setText(latitudeStr);
         ui->currentLongitude->setText(longitudeStr);
         fileWriter->setCoordinates(latitudeStr, longitudeStr);
+        ui->ledGPS->blinkOnce();
     });
     connect(worker, &Worker::prepareFinished, [=](Worker::PrepareResult res){
         if(res == Worker::PrepareSuccess) {
@@ -328,6 +330,8 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
         plot->receiveData(t, d);
     }
     perfPlotting.addMeasurement(timerPlotting.elapsed());
+
+    ui->ledADC->blinkOnce();
 
     perfTotal.addMeasurement(timerTotal.elapsed());
 }

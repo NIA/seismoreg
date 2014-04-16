@@ -44,11 +44,12 @@ public:
     ledShape shape() const { return m_shape; }
     
 public slots:
-	void setValue(bool);
+    void setValue(bool);
         void setOnColor(ledColor);
         void setOffColor(ledColor);
         void setShape(ledShape);       
 	void toggleValue();
+    void blinkOnce();
 
 protected:
     bool m_value;
@@ -57,6 +58,7 @@ protected:
     ledShape m_shape;
     QStringList shapes;
     QStringList colors;
+    bool blink;
     void paintEvent(QPaintEvent *event);
  private:
     QSvgRenderer *renderer ;

@@ -30,6 +30,7 @@ QLed::QLed(QWidget *parent)
     : QWidget(parent)
 {
    m_value=false;
+   blink=false;
    m_onColor=Red;
    m_offColor=Grey;
    m_shape=Circle;
@@ -56,7 +57,7 @@ void QLed::paintEvent(QPaintEvent *)
 
     ledShapeAndColor=shapes[m_shape];
 
-    if(m_value)
+    if(m_value != blink) // on color if m_value=false and blink=true, or m_value=true and blink=false
         ledShapeAndColor.append(colors[m_onColor]);
     else
         ledShapeAndColor.append(colors[m_offColor]);
@@ -64,6 +65,10 @@ void QLed::paintEvent(QPaintEvent *)
     renderer->load(ledShapeAndColor);
     renderer->render(&painter);
 
+    if (blink) {
+        blink = false;
+        QTimer::singleShot(50, this, SLOT(update()));
+    }
 }
 
 
@@ -124,5 +129,14 @@ void QLed::toggleValue()
 { 
 	m_value=!m_value;
 	update();
-	return; 
+    return;
+}
+
+/*!
+ * \brief blinkOnce: blinks the led once
+ */
+void QLed::blinkOnce()
+{
+    blink = true;
+    update();
 }

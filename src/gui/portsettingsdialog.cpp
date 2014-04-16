@@ -49,7 +49,9 @@ namespace {
     QString toString(StopBitsType value) {
         switch (value) {
         case STOP_1:   return "1";
+#ifdef Q_OS_WIN
         case STOP_1_5: return "1.5";
+#endif // Q_OS_WIN
         case STOP_2:   return "2";
         default:       return "";
         }
@@ -57,7 +59,9 @@ namespace {
     QString toString(ParityType value) {
         switch (value) {
         case PAR_SPACE: return PortSettingsDialog::tr("Space");
+#ifdef Q_OS_WIN
         case PAR_MARK:  return PortSettingsDialog::tr("Mark");
+#endif // Q_OS_WIN
         case PAR_NONE:  return PortSettingsDialog::tr("None");
         case PAR_EVEN:  return PortSettingsDialog::tr("Even");
         case PAR_ODD:   return PortSettingsDialog::tr("Odd");

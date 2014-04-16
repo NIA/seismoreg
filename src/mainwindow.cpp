@@ -10,6 +10,7 @@
 #include "protocols/serialprotocol.h"
 #include "logger.h"
 #include "settings.h"
+#include "system.h"
 #include "gui/statsbox.h"
 #include "gui/timeplot.h"
 #include "gui/portsettingsdialog.h"
@@ -231,7 +232,7 @@ void MainWindow::initWorkerHandlers() {
     });
     connect(worker->protocolGPS(), &Protocol::timeAvailable, [=](QDateTime time){
         Logger::info(tr("Received time update: %1UTC").arg(time.toString("yyyy-MM-dd hh:mm:ss.zzz")));
-        // TODO: set as system time
+        System::setSystemTime(time);
         ui->ledGPS->blinkOnce();
     });
     connect(worker->protocolGPS(), &Protocol::positionAvailable, [=](double latitude, double longitude, double altitude){

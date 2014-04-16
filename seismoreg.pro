@@ -22,7 +22,8 @@ SOURCES += src/main.cpp\
     src/gui/timeplot.cpp \
     src/settings.cpp \
     src/gui/portsettingsdialog.cpp \
-    src/performancereporter.cpp
+    src/performancereporter.cpp \
+    src/system.cpp
 
 HEADERS  += src/mainwindow.h \
     src/protocol.h \
@@ -37,7 +38,8 @@ HEADERS  += src/mainwindow.h \
     src/gui/timeplot.h \
     src/settings.h \
     src/gui/portsettingsdialog.h \
-    src/performancereporter.h
+    src/performancereporter.h \
+    src/system.h
 
 FORMS    += mainwindow.ui \
     src/gui/statsbox.ui \

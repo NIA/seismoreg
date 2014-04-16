@@ -23,7 +23,7 @@ namespace {
     };
     const KnownPacket KNOWN_GPS_PACKETS[] = {
         //               kind         preifx      size
-        {SerialProtocol::GPSHealth,   "\x10\x46", 2}, // More valuable packet fist: 0x41 is not trusted until 0x46 is received
+        {SerialProtocol::GPSHealth,   "\x10\x46", 2},
         {SerialProtocol::GPSTime,     "\x10\x41", 10},
         {SerialProtocol::GPSPosition, "\x10\x4A", 20},
     };
@@ -242,16 +242,24 @@ void SerialProtocol::onDataReceived() {
 bool SerialProtocol::takeGPSPacket() {
     if (currentPacketGPS == GPSNoPacket) {
         // Try to detect packet
-        // NB: the order of KNOWN_GPS_PACKETS is important in current implementation:
-        // may skip some packet if there is more prioritized packet after it
+        int startPos = -1;
+        KnownPacket detectedPacketInfo;
         for (const KnownPacket &packetInfo: KNOWN_GPS_PACKETS) {
-            int startPos = buffer.indexOf(packetInfo.prefix);
-            if (startPos >= 0) {
-                currentPacketGPS = packetInfo.kind;
-                // Cut everything before packet (and header as well)
-                buffer = buffer.mid(startPos + packetInfo.prefix.size());
-                break;
+            int newStartPos = buffer.indexOf(packetInfo.prefix);
+            if (newStartPos >= 0) {
+                // If found, then check if it is before previously detected:
+                // (or if there is no previously detected: startPos < 0)
+                if ((newStartPos < startPos) || (startPos < 0)) {
+                    detectedPacketInfo = packetInfo;
+                    startPos = newStartPos;
+                }
             }
+        }
+        // If successfully detected
+        if (startPos >= 0) {
+            // Cut everything before packet (and header as well)
+            currentPacketGPS = detectedPacketInfo.kind;
+            buffer = buffer.mid(startPos + detectedPacketInfo.prefix.size());
         }
     }
     if (currentPacketGPS != GPSNoPacket) {

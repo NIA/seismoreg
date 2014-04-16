@@ -40,7 +40,9 @@ public:
         ADCReady  = 1 << 2, /*!< Validated ADC */
         GPSWaiting= 1 << 3, /*!< Requested GPS time/position, waiting for response */
         GPSReady  = 1 << 4, /*!< Validated GPS */
-        Receiving = 1 << 5  /*!< Listening for incoming data. Possible when: (1) connected, (2) validated ADC, (3) validated GPS */
+        GPSHasTime= 1 << 5, /*!< Received GPS Time */
+        GPSHasPos = 1 << 6, /*!< Received GPS Position */
+        Receiving = 1 << 7  /*!< Listening for incoming data. Possible when: (1) connected, (2) validated ADC, (3) validated GPS */
     };
     Q_DECLARE_FLAGS(State, SingleState)
 

@@ -299,6 +299,7 @@ void SerialProtocol::parseGPSPacket() {
             quint16 weekNumber = unpackUINT<quint16>(packet);
             float offsetUTC    = unpackFloat(packet);
             QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
+            addState(GPSHasTime);
             emit timeAvailable(dateTime);
         }
         break;
@@ -307,6 +308,7 @@ void SerialProtocol::parseGPSPacket() {
         double latitude  = radiansToDegrees( unpackFloat(packet) );
         double longitude = radiansToDegrees( unpackFloat(packet) );
         double altitude  = unpackFloat(packet);
+        addState(GPSHasPos);
         emit positionAvailable(latitude, longitude, altitude);
         break;
     }
@@ -314,7 +316,6 @@ void SerialProtocol::parseGPSPacket() {
         // First byte 0x00 means OK
         if (packet[0] == 0) {
             addState(GPSReady);
-            emit checkedGPS(true);
         }
         break;
     }
@@ -324,6 +325,9 @@ void SerialProtocol::parseGPSPacket() {
         break;
     }
     currentPacketGPS = GPSNoPacket;
+    if (hasState(GPSHasPos) && hasState(GPSHasTime)) {
+        emit checkedGPS(true);
+    }
 }
 
 QList<QString> SerialProtocol::portNames() {

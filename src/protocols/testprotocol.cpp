@@ -56,6 +56,8 @@ void TestProtocol::checkGPS() {
     checkGPSTimer->setSingleShot(true);
     connect(checkGPSTimer, &QTimer::timeout, [=](){
         addState(GPSReady);
+        addState(GPSHasTime);
+        addState(GPSHasPos);
         removeState(GPSWaiting);
         emit positionAvailable(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_ALTITUDE);
         emit checkedGPS(true);

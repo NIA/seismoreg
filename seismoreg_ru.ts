@@ -4,28 +4,28 @@
 <context>
     <name>FileWriter</name>
     <message>
-        <location filename="src/filewriter.cpp" line="86"/>
+        <location filename="src/filewriter.cpp" line="87"/>
         <source>Nothing to write to file</source>
         <oldsource>Nothing to write in queue</oldsource>
         <translation>Нечего записать в файл</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="103"/>
+        <location filename="src/filewriter.cpp" line="105"/>
         <source>Written %1 items to file %2</source>
         <translation>Записано %1 данных в файл %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="114"/>
+        <location filename="src/filewriter.cpp" line="116"/>
         <source>Failed to open file %1: %2</source>
         <translation>Не удалось открыть файл %1: %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="117"/>
+        <location filename="src/filewriter.cpp" line="119"/>
         <source>Opened file %1</source>
         <translation>Открыт файл %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="141"/>
+        <location filename="src/filewriter.cpp" line="146"/>
         <source>Closed file %1</source>
         <translation>Закрыт файл %1</translation>
     </message>
@@ -293,32 +293,32 @@
         <translation type="obsolete">ТЕСТ</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="69"/>
+        <location filename="src/mainwindow.cpp" line="73"/>
         <source>Plotting</source>
         <translation>Графики</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="69"/>
+        <location filename="src/mainwindow.cpp" line="73"/>
         <source>Writing</source>
         <translation>Запись</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="69"/>
+        <location filename="src/mainwindow.cpp" line="73"/>
         <source>Total</source>
         <translation>Всего</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="189"/>
+        <location filename="src/mainwindow.cpp" line="234"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="193"/>
+        <location filename="src/mainwindow.cpp" line="242"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="301"/>
+        <location filename="src/mainwindow.cpp" line="307"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
@@ -403,38 +403,38 @@
         <translation>Включить</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="59"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="61"/>
         <source>Space</source>
         <translation>Всегда 0</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="60"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="63"/>
         <source>Mark</source>
         <translation>Всегда 1</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="61"/>
-        <location filename="src/gui/portsettingsdialog.cpp" line="69"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="65"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="73"/>
         <source>None</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="62"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="66"/>
         <source>Even</source>
         <translation>До четности</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="63"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="67"/>
         <source>Odd</source>
         <translation>До нечетности</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="70"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="74"/>
         <source>Hardware</source>
         <translation>Аппаратное</translation>
     </message>
     <message>
-        <location filename="src/gui/portsettingsdialog.cpp" line="71"/>
+        <location filename="src/gui/portsettingsdialog.cpp" line="75"/>
         <source>Software</source>
         <translation>Программное</translation>
     </message>
@@ -575,7 +575,7 @@
         <translation>Последовательный порт %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="315"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="324"/>
         <source>GPS packet not yet supported</source>
         <translation>GPS пакет пока не поддерживается</translation>
     </message>
@@ -614,6 +614,25 @@
     </message>
 </context>
 <context>
+    <name>System</name>
+    <message>
+        <location filename="src/system.cpp" line="24"/>
+        <source>Failed to set system time, error code %1</source>
+        <translation>Не удалось установить системное время, код ошибки %1</translation>
+    </message>
+    <message>
+        <location filename="src/system.cpp" line="27"/>
+        <location filename="src/system.cpp" line="45"/>
+        <source>System time set to %1</source>
+        <translation>Установлено системное время %1</translation>
+    </message>
+    <message>
+        <location filename="src/system.cpp" line="42"/>
+        <source>Failed to set system time, exit code %1 (maybe you are not root?)</source>
+        <translation>Не удалось установить системное время, код возврата %1 (возможно, вы не root?)</translation>
+    </message>
+</context>
+<context>
     <name>TestProtocol</name>
     <message>
         <location filename="src/protocols/testprotocol.cpp" line="35"/>
@@ -624,7 +643,7 @@
 <context>
     <name>TimePlot</name>
     <message>
-        <location filename="src/gui/timeplot.cpp" line="142"/>
+        <location filename="src/gui/timeplot.cpp" line="141"/>
         <source>Unequal size of timestamps and items: %1 vs %2</source>
         <translation>Неравный размер отсчётов времени и данных: %1 и %2</translation>
     </message>

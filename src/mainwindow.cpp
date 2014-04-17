@@ -22,6 +22,7 @@ namespace {
     const int FREQ_1   = 1;
 
     const int TIME_SYNC_PERIOD_SECS = 60; // sync time every minute
+    const int NEW_FILE_PERIOD_SECS  = 60*60; // reset file every hour
 
     void initPortChooser(QComboBox * chooser, QString initialValue) {
         chooser->addItem(TEST_PROTOCOL);
@@ -203,10 +204,7 @@ void MainWindow::setup() {
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
         worker->finish();
-        for(TimePlot * plot: plots) {
-            plot->clearHistory();
-        }
-        setReceivedItems(0);
+        resetHistory();
         ui->ledADC->setValue(false);
         ui->ledGPS->setValue(false);
         ui->disconnectBtn->setDisabled(true);
@@ -303,9 +301,17 @@ void MainWindow::initFileHandlers() {
 }
 
 void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
+    if (t.isEmpty() || d.isEmpty()) { return; }
     QElapsedTimer timerTotal; timerTotal.start();
 
     Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
+
+    if (startedAt.secsTo(t.last()) >= NEW_FILE_PERIOD_SECS) {
+        // Maximum time for file elapsed, close file and open new one then
+        fileWriter->finishFile();
+        resetHistory();
+        startedAt = t.last();
+    }
 
     setReceivedItems(receivedItems + d.size()*CHANNELS_NUM);
 //        TODO: dataView is currently disabled! Find a way to enable it without lags
@@ -345,6 +351,13 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
 void MainWindow::setReceivedItems(int received) {
     receivedItems = received;
     ui->samplesRcvd->setText(QString::number(receivedItems));
+}
+
+void MainWindow::resetHistory() {
+    for(TimePlot * plot: plots) {
+        plot->clearHistory();
+    }
+    setReceivedItems(0);
 }
 
 void MainWindow::onFileNameChanged() {

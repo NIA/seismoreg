@@ -41,6 +41,7 @@ private:
     void setCurrentTime();
     void log(QString text);
     void setReceivedItems(int received);
+    void resetHistory();
 
     void saveSettings();
 

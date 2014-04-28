@@ -99,6 +99,20 @@ void TestProtocol::close() {
     resetState();
 }
 
+int TestProtocol::samplingFrequency() {
+    return dataSize;
+}
+void TestProtocol::setSamplingFrequency(int value) {
+    dataSize = value;
+}
+
+int TestProtocol::filterFrequency() {
+    return 0;
+}
+void TestProtocol::setFilterFrequency(int) {
+    // ignore
+}
+
 TestProtocol::~TestProtocol() {
     close();
 }

@@ -62,6 +62,7 @@ private:
     StatsBox * stats[CHANNELS_NUM];
 
     QVector<QWidget*> disableOnConnect;
+    QVector<QWidget*> disableOnStart;
 
     // Debugging and profiling:
     PerformanceReporter perfPlotting;

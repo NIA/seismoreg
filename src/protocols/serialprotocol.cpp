@@ -84,7 +84,7 @@ PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, Par
 const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10, false);
 
 SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings, QObject *parent) :
-    Protocol(parent), portName(portName), port(NULL), samplingFrequency(samplingFreq), filterFrequency(filterFreq),
+    Protocol(parent), portName(portName), port(NULL), samplingFrequency_(samplingFreq), filterFrequency_(filterFreq),
     debugMode(settings.debug), currentPacketGPS(GPSNoPacket)
 {
     port = new QextSerialPort(portName);
@@ -95,13 +95,13 @@ SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFre
     port->setFlowControl(settings.FlowControl);
     // TODO: support timeout setting?
 
-    if (samplingFrequency < MIN_FREQUENCY) {
+    if (samplingFrequency_ < MIN_FREQUENCY) {
         Logger::error(tr("Incorrect frequency: cannot be less than %1").arg(MIN_FREQUENCY));
-        samplingFrequency = MIN_FREQUENCY;
+        samplingFrequency_ = MIN_FREQUENCY;
     }
-    if (POINTS_IN_PACKET % samplingFrequency != 0) { // and also if frequency > POINTS_IN_PACKET
+    if (POINTS_IN_PACKET % samplingFrequency_ != 0) { // and also if frequency > POINTS_IN_PACKET
         Logger::error(tr("Incorrect frequency: should be a divisor of %1").arg(POINTS_IN_PACKET));
-        samplingFrequency = POINTS_IN_PACKET;
+        samplingFrequency_ = POINTS_IN_PACKET;
     }
 }
 
@@ -142,7 +142,7 @@ void SerialProtocol::startReceiving() {
         // TODO: report warning: already receiving
         return;
     }
-    if (filterFrequency == DEFAULT_FILTER_FREQ) {
+    if (filterFrequency_ == DEFAULT_FILTER_FREQ) {
         port->write(START_RECEIVE_200);
     } else {
         port->write(START_RECEIVE_50);
@@ -166,6 +166,27 @@ void SerialProtocol::close() {
     port->close();
     resetState();
 }
+
+int SerialProtocol::samplingFrequency() {
+    return samplingFrequency_;
+}
+void SerialProtocol::setSamplingFrequency(int value) {
+    if (hasState(Receiving)) {
+        Logger::error(tr("Cannot change parameters when receiving data"));
+    }
+    samplingFrequency_ = value;
+}
+
+int SerialProtocol::filterFrequency() {
+    return filterFrequency_;
+}
+void SerialProtocol::setFilterFrequency(int value) {
+    if (hasState(Receiving)) {
+        Logger::error(tr("Cannot change parameters when receiving data"));
+    }
+    filterFrequency_ = value;
+}
+
 
 SerialProtocol::~SerialProtocol() {
     close();
@@ -193,16 +214,16 @@ void SerialProtocol::onDataReceived() {
         const int packetSize = CHANNELS_NUM*POINTS_IN_PACKET*sizeof(DataType);
         while(buffer.size() >= packetSize) { // TODO: this is actually not correct way to handle two subsequent packets (header not removed)
             // allocate space for data array
-            DataVector packetData(samplingFrequency);
+            DataVector packetData(samplingFrequency_);
             // Unwrap data:
-            if (samplingFrequency == POINTS_IN_PACKET) {
+            if (samplingFrequency_ == POINTS_IN_PACKET) {
                 // Easy case: just copy
                 memcpy(packetData.data(), buffer.constData(), packetSize);
             } else {
                 // Hard case: compute average of each avgSize items into one point
-                int avgSize = POINTS_IN_PACKET / samplingFrequency; // frequency must not be and must not be greater that POINTS_IN_PACKET: it is checked in constructor
+                int avgSize = POINTS_IN_PACKET / samplingFrequency_; // frequency must not be and must not be greater that POINTS_IN_PACKET: it is checked in constructor
                 const DataItem* curItem = reinterpret_cast<const DataItem*>(buffer.constData());
-                for (int i = 0; i < samplingFrequency; ++i) {
+                for (int i = 0; i < samplingFrequency_; ++i) {
                     double sums[CHANNELS_NUM];
                     for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) { sums[ch] = 0; }
                     for (int j = 0; j < avgSize; ++j) {

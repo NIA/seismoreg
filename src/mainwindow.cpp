@@ -92,9 +92,9 @@ void MainWindow::setup() {
     fileWriter->setFileName(settings.fileNamePrefix(), settings.fileNameSuffix());
     fileWriter->setDeviceID(settings.deviceId());
     initFileHandlers();
-    disableOnConnect << ui->portChooser << ui->portChooserGPS
-                     << ui->samplingFreq << ui->filterFreq
-                     << ui->portSettingsADC << ui->portSettingsGPS;
+    disableOnConnect = { ui->portChooser,     ui->portChooserGPS,
+                         ui->portSettingsADC, ui->portSettingsGPS };
+    disableOnStart   = { ui->samplingFreq,    ui->filterFreq };
 
     initShowHideAction(ui->actionShowTable,    ui->dataView, settings.isTableShown());
     initShowHideAction(ui->actionShowSettings, ui->settings, settings.isSettingsShown());
@@ -153,12 +153,9 @@ void MainWindow::setup() {
             w->setDisabled(true);
         }
 
+        // TODO: if frequencies are anyway set on start, do we need to pass them to constructor?
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
         int filterFrequency   = ui->filterFreq->currentText().toInt();
-        for(TimePlot * plot: plots) {
-            plot->setPointsPerSec(samplingFrequency);
-        }
-        fileWriter->setFrequencies(samplingFrequency, filterFrequency);
 
         QString portNameADC = ui->portChooser->currentText();
         QString portNameGPS = ui->portChooserGPS->currentText();
@@ -180,10 +177,22 @@ void MainWindow::setup() {
         ui->startBtn->setDisabled(true);
         ui->stopBtn->setEnabled(true);
         ui->stopBtn->setFocus();
+        foreach(QWidget * w, disableOnStart) {
+            w->setDisabled(true);
+        }
 
-        startedAt = QDateTime::currentDateTime();
-        ui->timeStart->setDateTime(startedAt);
-        ui->timeElapsed->setTime(QTime(0,0,0));
+        resetHistory();
+        setFileControlsState();
+
+        // Sampling frequency and filter frequency might have changed
+        int samplingFrequency = ui->samplingFreq->currentText().toInt();
+        int filterFrequency   = ui->filterFreq->currentText().toInt();
+        for(TimePlot * plot: plots) {
+            plot->setPointsPerSec(samplingFrequency);
+        }
+        fileWriter->setFrequencies(samplingFrequency, filterFrequency);
+        worker->protocolADC()->setSamplingFrequency(samplingFrequency);
+        worker->protocolADC()->setFilterFrequency(filterFrequency);
 
         // TODO: do not call Worker and FileWriter methods, send signals instead
         // (for future parallel implementation)
@@ -191,33 +200,36 @@ void MainWindow::setup() {
             worker->unpause();
         } else {
             worker->start();
-            setFileControlsState();
         }
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
         ui->startBtn->setEnabled(true);
         ui->startBtn->setFocus();
+        foreach(QWidget * w, disableOnStart) {
+            w->setEnabled(true);
+        }
 
         worker->pause();
         setFileControlsState();
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
         worker->finish();
-        resetHistory();
         ui->ledADC->setValue(false);
         ui->ledGPS->setValue(false);
         ui->disconnectBtn->setDisabled(true);
         ui->stopBtn->setDisabled(true);
         ui->startBtn->setDisabled(true);
         ui->connectBtn->setEnabled(true);
-        foreach(QWidget * w, disableOnConnect) {
+        foreach(QWidget * w, disableOnConnect+disableOnStart) {
             w->setEnabled(true);
         }
         ui->portChooser->setFocus();
         setFileControlsState();
     });
+    // Finish file both on stop and disconnect
     connect(ui->disconnectBtn, &QPushButton::clicked, fileWriter, &FileWriter::finishFile);
+    connect(ui->stopBtn,       &QPushButton::clicked, fileWriter, &FileWriter::finishFile);
 }
 
 void MainWindow::initWorkerHandlers() {
@@ -310,7 +322,6 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
         // Maximum time for file elapsed, close file and open new one then
         fileWriter->finishFile();
         resetHistory();
-        startedAt = t.last();
     }
 
     setReceivedItems(receivedItems + d.size()*CHANNELS_NUM);
@@ -358,6 +369,9 @@ void MainWindow::resetHistory() {
         plot->clearHistory();
     }
     setReceivedItems(0);
+    startedAt = QDateTime::currentDateTime();
+    ui->timeStart->setDateTime(startedAt);
+    ui->timeElapsed->setTime(QTime(0,0,0));
 }
 
 void MainWindow::onFileNameChanged() {

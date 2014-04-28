@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>FileWriter</name>
     <message>
@@ -308,17 +308,17 @@
         <translation>Всего</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="234"/>
+        <location filename="src/mainwindow.cpp" line="246"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="242"/>
+        <location filename="src/mainwindow.cpp" line="254"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="307"/>
+        <location filename="src/mainwindow.cpp" line="319"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
@@ -575,7 +575,13 @@
         <translation>Последовательный порт %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="324"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="175"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="185"/>
+        <source>Cannot change parameters when receiving data</source>
+        <translation>Невозможно изменить параметры во время приёма данных</translation>
+    </message>
+    <message>
+        <location filename="src/protocols/serialprotocol.cpp" line="345"/>
         <source>GPS packet not yet supported</source>
         <translation>GPS пакет пока не поддерживается</translation>
     </message>

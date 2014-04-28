@@ -25,6 +25,12 @@ public:
     void stopReceiving() override;
     void close() override;
 
+    // Conform to Protocol frequency setting API (while not completely implemented)
+    int  samplingFrequency() override;
+    void setSamplingFrequency(int value) override;
+    int  filterFrequency() override; // has no meaning, always returns 0
+    void setFilterFrequency(int value) override; // has no meaning, does nothing
+
     ~TestProtocol();
 
 private slots:

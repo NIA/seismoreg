@@ -38,6 +38,11 @@ public:
     void stopReceiving() override;
     void close() override;
 
+    int  samplingFrequency() override;
+    void setSamplingFrequency(int value) override;
+    int  filterFrequency() override;
+    void setFilterFrequency(int value) override;
+
     ~SerialProtocol();
 
     static QList<QString> portNames();
@@ -76,8 +81,8 @@ private:
 
     QString portName;
     QextSerialPort * port;
-    int samplingFrequency;
-    int filterFrequency;
+    int samplingFrequency_;
+    int filterFrequency_;
     QByteArray buffer;
 
     bool debugMode;

@@ -85,6 +85,12 @@ public:
      */
     virtual void checkGPS() = 0;
 
+    virtual int  samplingFrequency() = 0;
+    virtual void setSamplingFrequency(int value) = 0;
+
+    virtual int  filterFrequency() = 0;
+    virtual void setFilterFrequency(int value) = 0;
+
     /*!
      * \brief initiate data receiving
      *

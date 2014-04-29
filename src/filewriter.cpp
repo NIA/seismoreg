@@ -129,10 +129,10 @@ bool FileWriter::openIfClosed() {
 void FileWriter::writeHeader() {
     QTextStream out(file);
     out << QStringLiteral("[Description]\nDevice ID=%1\n").arg(deviceID);
-    out << QStringLiteral("[Frequency]\nSamples=%1 Hz\nFilter=%2 Hz\n").arg(samplingFreq).arg(filterFreq);
+    out << QStringLiteral("[Frequency]\n%1 Hz\n").arg(samplingFreq);
+    out << QStringLiteral("[Time]\n%1\n").arg(startTime.toString("hh:mm:ss"));
+    out << QStringLiteral("[Coordinates]\n%1\n%2\n").arg(latitude).arg(longitude);
     out << QStringLiteral("[Date]\n%1\n").arg(startTime.toString("yyyy-MM-dd"));
-    out << QStringLiteral("[Time]\n%1\n").arg(startTime.toString("hh:mm:ss.zzz"));
-    out << QStringLiteral("[Coordinates]\nLatitude=%1\nLongitude=%2\n").arg(latitude).arg(longitude);
     out << QStringLiteral("[Values]\n");
 }
 

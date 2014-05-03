@@ -23,6 +23,7 @@ namespace
 
 PerformanceReporter::PerformanceReporter(QString description, Logger::Level level, QObject *parent) :
     QObject(parent), description(description), logLevel(level), mode(releaseOrDebug()),
+    paused(false), beforePause(0),
     measurementsCount(0), minTime(0), maxTime(0), avgTime(0)
 {
 }

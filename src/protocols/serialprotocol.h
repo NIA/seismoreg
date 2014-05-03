@@ -2,6 +2,7 @@
 #define SERIALPROTOCOL_H
 
 #include "../protocol.h"
+#include "../performancereporter.h"
 #include "qextserialport.h"
 #include <QDateTime>
 
@@ -21,6 +22,8 @@ class SerialProtocol : public Protocol
     Q_OBJECT
 public:
     static const PortSettingsEx DEFAULT_PORT_SETTINGS;
+
+    static PerformanceReporter perfReporter; // Bad to be global variable :( but for easier development usage...
 
     /*!
      * \brief SerialProtocol

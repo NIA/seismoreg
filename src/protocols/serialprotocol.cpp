@@ -82,6 +82,7 @@ PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, Par
 
 
 const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10, false);
+PerformanceReporter  SerialProtocol::perfReporter("COM");
 
 SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings, QObject *parent) :
     Protocol(parent), portName(portName), port(NULL), samplingFrequency_(samplingFreq), filterFrequency_(filterFreq),
@@ -103,10 +104,11 @@ SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFre
         Logger::error(tr("Incorrect frequency: should be a divisor of %1").arg(POINTS_IN_PACKET));
         samplingFrequency_ = POINTS_IN_PACKET;
     }
+    perfReporter.setDescription(description());
 }
 
 QString SerialProtocol::description() {
-    return tr("Serial port %1").arg(portName);
+    return tr("Serial port %1 [%2->%3]").arg(portName).arg(POINTS_IN_PACKET).arg(samplingFrequency_);
 }
 
 bool SerialProtocol::open() {
@@ -202,11 +204,15 @@ void SerialProtocol::onDataReceived() {
 
     if (hasState(Receiving)) {
         if(rawData.startsWith(DATA_PREFIX)) {
+            perfReporter.start();
             // If we see packet start:
             // Drop buffer
             buffer.clear();
+            buffer.reserve(packetSize);
             // Remove prefix
             rawData.remove(0, DATA_PREFIX.size()); // TODO: optimize? (avoid removing from beginning here and below)
+        } else {
+            perfReporter.unpause();
         }
         // Add data to buffer
         buffer += rawData;
@@ -241,9 +247,11 @@ void SerialProtocol::onDataReceived() {
             buffer.remove(0, packetSize);
             // generate timestamps
             TimeStampsVector timeStamps = generateTimeStamps(1000, packetData.size());
+            perfReporter.stop();
             // notify
             emit dataAvailable(timeStamps, packetData);
         }
+        perfReporter.pause();
     // If not receiving, then waiting either for ADC or for GPS
     } else if (hasState(ADCWaiting)) {
         if(rawData.startsWith(CHECKED_ADC)) {

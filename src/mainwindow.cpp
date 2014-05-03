@@ -4,7 +4,6 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QList>
-#include <QElapsedTimer>
 
 #include "protocols/testprotocol.h"
 #include "protocols/serialprotocol.h"
@@ -314,7 +313,7 @@ void MainWindow::initFileHandlers() {
 
 void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     if (t.isEmpty() || d.isEmpty()) { return; }
-    QElapsedTimer timerTotal; timerTotal.start();
+    perfTotal.start();
 
     Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
 
@@ -344,19 +343,19 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
 
     // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
     // Currently it is like that for performance measurements.
-    QElapsedTimer timerWriting; timerWriting.start();
+    perfWritting.start();
     fileWriter->receiveData(t, d);
-    perfWritting.addMeasurement(timerWriting.elapsed());
+    perfWritting.stop();
 
-    QElapsedTimer timerPlotting; timerPlotting.start();
+    perfPlotting.start();
     for(TimePlot * plot: plots) {
         plot->receiveData(t, d);
     }
-    perfPlotting.addMeasurement(timerPlotting.elapsed());
+    perfPlotting.stop();
 
     ui->ledADC->blinkOnce();
 
-    perfTotal.addMeasurement(timerTotal.elapsed());
+    perfTotal.stop();
 }
 
 void MainWindow::setReceivedItems(int received) {
@@ -439,6 +438,8 @@ MainWindow::~MainWindow()
     perfPlotting.reportResults();
     perfWritting.reportResults();
     perfTotal.reportResults();
+    SerialProtocol::perfReporter.reportResults();
+    TestProtocol::perfReporter.reportResults();
     perfTotal.flushDebug();
 
     saveSettings();

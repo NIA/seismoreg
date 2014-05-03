@@ -2,6 +2,7 @@
 #define TESTPROTOCOL_H
 
 #include "../protocol.h"
+#include "../performancereporter.h"
 
 class QTimer;
 
@@ -32,6 +33,8 @@ public:
     void setFilterFrequency(int value) override; // has no meaning, does nothing
 
     ~TestProtocol();
+
+    static PerformanceReporter perfReporter; // Bad to be global variable :( but for easier development usage...
 
 private slots:
 

@@ -22,6 +22,8 @@ namespace {
     const double DEFAULT_ALTITUDE  = 30.0;
 }
 
+PerformanceReporter TestProtocol::perfReporter("TEST");
+
 TestProtocol::TestProtocol(int dataSize, int amp, QObject *parent) :
     Protocol(parent), dataSize(dataSize), amp(amp), dataTimer(NULL), checkADCTimer(NULL), checkGPSTimer(NULL)
 {
@@ -29,6 +31,7 @@ TestProtocol::TestProtocol(int dataSize, int amp, QObject *parent) :
     checkADCTimer = new QTimer(this);
     checkGPSTimer = new QTimer(this);
     dataTimer = new QTimer(this);
+    perfReporter.setDescription(description());
 }
 
 QString TestProtocol::description() {
@@ -118,6 +121,7 @@ TestProtocol::~TestProtocol() {
 }
 
 DataVector TestProtocol::generateRandom(TimeStampsVector ts) {
+    perfReporter.start();
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
@@ -127,5 +131,6 @@ DataVector TestProtocol::generateRandom(TimeStampsVector ts) {
                     qrand()*NOISE_VALUE*amp/RAND_MAX;
         }
     }
+    perfReporter.stop();
     return res;
 }

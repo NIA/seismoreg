@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QByteArray>
+#include <QDateTime>
 #include <qmath.h>
 
 namespace {
@@ -83,6 +84,8 @@ PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, Par
 
 const PortSettingsEx SerialProtocol::DEFAULT_PORT_SETTINGS(BAUD115200, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10, false);
 PerformanceReporter  SerialProtocol::perfReporter("COM");
+
+PerformanceReporter  SerialProtocol::generateTimestampsPerfReporter("generateTimestamps");
 
 SerialProtocol::SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings, QObject *parent) :
     Protocol(parent), portName(portName), port(NULL), samplingFrequency_(samplingFreq), filterFrequency_(filterFreq),
@@ -208,7 +211,6 @@ void SerialProtocol::onDataReceived() {
             // If we see packet start:
             // Drop buffer
             buffer.clear();
-            buffer.reserve(packetSize);
             // Remove prefix
             rawData.remove(0, DATA_PREFIX.size()); // TODO: optimize? (avoid removing from beginning here and below)
         } else {
@@ -217,7 +219,7 @@ void SerialProtocol::onDataReceived() {
         // Add data to buffer
         buffer += rawData;
         // if there is enough data in buffer to form and unwrap a packet, make it
-        const int packetSize = CHANNELS_NUM*POINTS_IN_PACKET*sizeof(DataType);
+        const int packetSize = CHANNELS_NUM*POINTS_IN_PACKET*sizeof(DataType); // TODO: make either global const or field
         while(buffer.size() >= packetSize) { // TODO: this is actually not correct way to handle two subsequent packets (header not removed)
             // allocate space for data array
             DataVector packetData(samplingFrequency_);
@@ -371,12 +373,14 @@ QList<QString> SerialProtocol::portNames() {
 }
 
 TimeStampsVector SerialProtocol::generateTimeStamps(double periodMsecs, int count) {
+    generateTimestampsPerfReporter.start();
     TimeStampsVector res(count);
 
-    TimeStampType start = TimeStampType::currentDateTime().addMSecs(-periodMsecs);
+    TimeStampType start = QDateTime::currentMSecsSinceEpoch() - periodMsecs;
     double deltaMsecs = periodMsecs / count;
     for (int i = 0; i < count; ++i) {
-        res[i] = start.addMSecs( i*deltaMsecs );
+        res[i] = start + i*deltaMsecs;
     }
+    generateTimestampsPerfReporter.stop();
     return res;
 }

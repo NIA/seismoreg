@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QQueue>
+#include <QDateTime>
 
 class QFile;
 
@@ -130,7 +131,7 @@ private:
     int filterFreq;
     QString latitude;
     QString longitude;
-    TimeStampType startTime;
+    QDateTime startTime;
 
     QQueue<QString> waitingQueue;
     int itemsInQueue; // Since multiple date items are in one waitingQueue item, a separate count is needed

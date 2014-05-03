@@ -12,7 +12,7 @@ struct DataItem {
 };
 typedef QVector<DataItem> DataVector;
 
-typedef QDateTime TimeStampType;
+typedef double TimeStampType; // Now use milliseconds from Epoch as TimeStampType for performance reasons
 typedef QVector<TimeStampType> TimeStampsVector;
 
 /*!

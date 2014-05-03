@@ -125,7 +125,7 @@ DataVector TestProtocol::generateRandom(TimeStampsVector ts) {
     DataVector res(dataSize);
     for(int i = 0; i < dataSize; ++i) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            double t = ts[i].toMSecsSinceEpoch();
+            double t = ts[i];
             res[i].byChannel[ch] =
                     amp*qSin(OMEGA1*t + PHASE_SHIFT*ch)*qCos(OMEGA2*t + PHASE_SHIFT*ch) +
                     qrand()*NOISE_VALUE*amp/RAND_MAX;

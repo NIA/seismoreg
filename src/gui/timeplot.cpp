@@ -152,7 +152,7 @@ QVector<QPointF> TimePlot::itemsToPoints(TimeStampsVector timestamps, DataVector
 
     QVector<QPointF> data(pointsCount);
     for(int i = 0, p = 0; (i < itemsCount) && (p < pointsCount); ++p, i += skip) {
-        data[p] = QPointF(QwtDate::toDouble(timestamps[i]), items[i].byChannel[ch]);
+        data[p] = QPointF(timestamps[i], items[i].byChannel[ch]);
     }
 
     return data;

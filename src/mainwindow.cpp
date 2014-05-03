@@ -69,7 +69,7 @@ namespace {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0),
-    perfPlotting(tr("Plotting")), perfWritting(tr("Writing")), perfTotal(tr("Total"))
+    perfPlotting(tr("Plotting")), perfWritting(tr("Writing")), perfTotal(tr("Total (MainWindow)"))
 {
     ui->setupUi(this);
     worker = new Worker(NULL, NULL, this);
@@ -317,7 +317,7 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
 
     Logger::trace(tr("Received %1 data items").arg(d.size()*CHANNELS_NUM));
 
-    if (startedAt.secsTo(t.last()) >= NEW_FILE_PERIOD_SECS) {
+    if (startedAt.secsTo(QDateTime::fromMSecsSinceEpoch(t.last())) >= NEW_FILE_PERIOD_SECS) {
         // Maximum time for file elapsed, close file and open new one then
         fileWriter->finishFile();
         resetHistory();
@@ -438,6 +438,7 @@ MainWindow::~MainWindow()
     perfPlotting.reportResults();
     perfWritting.reportResults();
     perfTotal.reportResults();
+    SerialProtocol::generateTimestampsPerfReporter.reportResults();
     SerialProtocol::perfReporter.reportResults();
     TestProtocol::perfReporter.reportResults();
     perfTotal.flushDebug();

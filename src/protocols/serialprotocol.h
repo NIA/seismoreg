@@ -24,6 +24,7 @@ public:
     static const PortSettingsEx DEFAULT_PORT_SETTINGS;
 
     static PerformanceReporter perfReporter; // Bad to be global variable :( but for easier development usage...
+    static PerformanceReporter generateTimestampsPerfReporter;
 
     /*!
      * \brief SerialProtocol

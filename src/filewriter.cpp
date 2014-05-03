@@ -19,7 +19,7 @@ FileWriter::FileWriter(QString fileNamePrefix, QString fileNameSuffix, QObject *
 }
 
 QString FileWriter::buildFileName() {
-    const TimeStampType &time = (startTime.isValid() ? startTime : TimeStampType::currentDateTime());
+    const QDateTime &time = (startTime.isValid() ? startTime : QDateTime::currentDateTime());
     return filePrefix + time.toString("yyyy-MM-dd-hh-mm-ss") + fileSuffix;
 }
 
@@ -40,7 +40,7 @@ void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
     if (count == 0) { return; }
 
     if (startTime.isNull()) { // Not set yet
-        startTime = t.first();
+        startTime = QDateTime::fromMSecsSinceEpoch(t.first());
     }
 
     QByteArray allData;
@@ -142,7 +142,7 @@ void FileWriter::closeIfOpened() {
     waitingQueue.clear();
     itemsInQueue = 0;
     emit queueSizeChanged(itemsInQueue);
-    startTime = TimeStampType(); // set null datetime so that it will be reset next time
+    startTime = QDateTime(); // set null datetime so that it will be reset next time
     if(file != NULL && file->isOpen()) {
         file->close();
         Logger::info(tr("Closed file %1").arg(file->fileName()));

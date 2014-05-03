@@ -43,13 +43,12 @@ void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
         startTime = t.first();
     }
 
-    QString allData;
-    char buffer[100];
+    QByteArray allData;
+    QByteArray number;
     foreach(const DataItem & item, d) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-            // TODO: using non-standard _itoa_s! but it is much faster than QString::number
-            _itoa_s(item.byChannel[ch], buffer, sizeof(buffer), 10);
-            allData += buffer;
+            number.setNum(item.byChannel[ch]);
+            allData += number;
             allData += '\t';
         }
         allData += '\n';

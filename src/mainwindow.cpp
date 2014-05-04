@@ -18,6 +18,7 @@ namespace {
     const QString TEST_PROTOCOL = "TEST";
     const int FREQ_200 = 200;
     const int FREQ_50  = 50;
+    const int FREQ_10  = 10;
     const int FREQ_1   = 1;
 
     const int TIME_SYNC_PERIOD_SECS = 60; // sync time every minute
@@ -86,7 +87,7 @@ void MainWindow::setup() {
     // Init GUI
     initPortChooser(ui->portChooser, settings.portName(Settings::PortADC));
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
-    initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_1}), settings.samplingFrequency());
+    initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_10, FREQ_1}), settings.samplingFrequency());
     initFreqChooser(ui->filterFreq,   QList<int>({FREQ_200, FREQ_50}),         settings.filterFrequency());
     fileWriter->setFileName(settings.fileNamePrefix(), settings.fileNameSuffix());
     fileWriter->setDeviceID(settings.deviceId());
@@ -252,8 +253,8 @@ void MainWindow::initWorkerHandlers() {
     connect(worker->protocolGPS(), &Protocol::positionAvailable, [=](double latitude, double longitude, double altitude){
         Logger::info(tr("Received position update: %1, %2, %3m").arg(latitude).arg(longitude).arg(altitude));
         // TODO: convert to minutes/seconds format?
-        QString latitudeStr  = QString::number(latitude);
-        QString longitudeStr = QString::number(longitude);
+        QString latitudeStr  = QString::number(latitude, 'f', 6);
+        QString longitudeStr = QString::number(longitude, 'f', 6);
 
         ui->currentLatitude->setText(latitudeStr);
         ui->currentLongitude->setText(longitudeStr);

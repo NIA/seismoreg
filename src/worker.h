@@ -29,9 +29,9 @@ public:
      */
     enum PrepareResult {
         PrepareSuccess,  /*! Worker is ready to be started and receive data */
-        PrepareFail,     /*! Preparation failed and Worker::prepare should be called again after fixing errors. */
+        PrepareFailADC,  /*! Preparation failed because of ADC and Worker::prepare should be called again after fixing errors. */
+        PrepareFailGPS,  /*! Preparation failed because of GPS and Worker::prepare should be called again after fixing errors. */
         PrepareAlready   /*! Preparation not needed: already prepared */
-        // TODO: PrepareFail expanded variants
     };
 
     /*!

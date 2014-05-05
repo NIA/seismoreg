@@ -152,6 +152,8 @@ void MainWindow::setup() {
         foreach(QWidget * w, disableOnConnect) {
             w->setDisabled(true);
         }
+        ui->ledADC->setValue(false);
+        ui->ledGPS->setValue(false);
 
         // TODO: if frequencies are anyway set on start, do we need to pass them to constructor?
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
@@ -180,6 +182,8 @@ void MainWindow::setup() {
         foreach(QWidget * w, disableOnStart) {
             w->setDisabled(true);
         }
+        ui->ledWorking->setOnColor(QLed::Green);
+        ui->ledWorking->setValue(true);
 
         resetHistory();
         setFileControlsState();
@@ -209,6 +213,7 @@ void MainWindow::setup() {
         foreach(QWidget * w, disableOnStart) {
             w->setEnabled(true);
         }
+        ui->ledWorking->setValue(false);
 
         worker->pause();
         setFileControlsState();
@@ -226,6 +231,9 @@ void MainWindow::setup() {
         }
         ui->portChooser->setFocus();
         setFileControlsState();
+
+        ui->ledReady->setValue(false);
+        ui->ledWorking->setValue(false);
     });
     // Finish file both on stop and disconnect
     connect(ui->disconnectBtn, &QPushButton::clicked, fileWriter, &FileWriter::finishFile);
@@ -265,6 +273,10 @@ void MainWindow::initWorkerHandlers() {
         if(res == Worker::PrepareSuccess) {
             ui->startBtn->setEnabled(true);
             ui->startBtn->setFocus();
+
+            // TODO: avoid repetition in working with LEDs
+            ui->ledReady->setOnColor(QLed::Green);
+            ui->ledReady->setValue(true);
         } else {
             ui->connectBtn->setEnabled(true);
             ui->disconnectBtn->setDisabled(true);
@@ -272,6 +284,14 @@ void MainWindow::initWorkerHandlers() {
                 w->setEnabled(true);
             }
             ui->connectBtn->setFocus();
+
+            if (res == Worker::PrepareFailADC) {
+                ui->ledADC->setOnColor(QLed::Red);
+                ui->ledADC->setValue(true);
+            } else if (res == Worker::PrepareFailGPS) {
+                ui->ledGPS->setOnColor(QLed::Red);
+                ui->ledGPS->setValue(true);
+            }
         }
     });
     connect(worker, &Worker::dataUpdated, this, &MainWindow::onDataReceived);

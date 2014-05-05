@@ -4,28 +4,28 @@
 <context>
     <name>FileWriter</name>
     <message>
-        <location filename="src/filewriter.cpp" line="87"/>
+        <location filename="src/filewriter.cpp" line="89"/>
         <source>Nothing to write to file</source>
         <oldsource>Nothing to write in queue</oldsource>
         <translation>Нечего записать в файл</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="105"/>
+        <location filename="src/filewriter.cpp" line="107"/>
         <source>Written %1 items to file %2</source>
         <translation>Записано %1 данных в файл %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="116"/>
+        <location filename="src/filewriter.cpp" line="118"/>
         <source>Failed to open file %1: %2</source>
         <translation>Не удалось открыть файл %1: %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="119"/>
+        <location filename="src/filewriter.cpp" line="121"/>
         <source>Opened file %1</source>
         <translation>Открыт файл %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="146"/>
+        <location filename="src/filewriter.cpp" line="149"/>
         <source>Closed file %1</source>
         <translation>Закрыт файл %1</translation>
     </message>
@@ -244,47 +244,57 @@
         <translation>Широта</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="720"/>
+        <location filename="mainwindow.ui" line="734"/>
+        <source>Ready</source>
+        <translation>ЭВМ готова</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="763"/>
+        <source>Working</source>
+        <translation>Программа работает</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="795"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="726"/>
+        <location filename="mainwindow.ui" line="801"/>
         <source>View</source>
         <translation>Вид</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="734"/>
+        <location filename="mainwindow.ui" line="809"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="767"/>
+        <location filename="mainwindow.ui" line="842"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="779"/>
+        <location filename="mainwindow.ui" line="854"/>
         <source>Show table</source>
         <translation>Показать таблицу</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="794"/>
+        <location filename="mainwindow.ui" line="869"/>
         <source>Show settings</source>
         <translation>Показать настройки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="809"/>
+        <location filename="mainwindow.ui" line="884"/>
         <source>Show stats</source>
         <translation>Показать статистику</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="818"/>
+        <location filename="mainwindow.ui" line="893"/>
         <source>ADC port settings</source>
         <translation>Настройки порта АЦП</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="827"/>
+        <location filename="mainwindow.ui" line="902"/>
         <source>GPS port settings</source>
         <translation>Настройки порта GPS</translation>
     </message>
@@ -303,22 +313,26 @@
         <translation>Запись</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="73"/>
         <source>Total</source>
-        <translation>Всего</translation>
+        <translation type="vanished">Всего</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="246"/>
+        <location filename="src/mainwindow.cpp" line="73"/>
+        <source>Total (MainWindow)</source>
+        <translation>Всего (MainWindow)</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="254"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="254"/>
+        <location filename="src/mainwindow.cpp" line="262"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="319"/>
+        <location filename="src/mainwindow.cpp" line="339"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
@@ -340,27 +354,27 @@
         <translation>Релиз</translation>
     </message>
     <message>
-        <location filename="src/performancereporter.cpp" line="51"/>
+        <location filename="src/performancereporter.cpp" line="52"/>
         <source>Performance for %1 in %2</source>
         <translation>Производительность для %1 в режиме %2</translation>
     </message>
     <message>
-        <location filename="src/performancereporter.cpp" line="52"/>
+        <location filename="src/performancereporter.cpp" line="53"/>
         <source>AVG</source>
         <translation>AVG</translation>
     </message>
     <message>
-        <location filename="src/performancereporter.cpp" line="53"/>
+        <location filename="src/performancereporter.cpp" line="54"/>
         <source>MAX</source>
         <translation>MAX</translation>
     </message>
     <message>
-        <location filename="src/performancereporter.cpp" line="54"/>
+        <location filename="src/performancereporter.cpp" line="55"/>
         <source>MIN</source>
         <translation>MIN</translation>
     </message>
     <message>
-        <location filename="src/performancereporter.cpp" line="59"/>
+        <location filename="src/performancereporter.cpp" line="60"/>
         <source>%1: %2 ms</source>
         <translation>%1: %2 мс</translation>
     </message>
@@ -560,28 +574,38 @@
 <context>
     <name>SerialProtocol</name>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="99"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="103"/>
         <source>Incorrect frequency: cannot be less than %1</source>
         <translation>Неверная частота: должна быть не меньше %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="103"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="107"/>
         <source>Incorrect frequency: should be a divisor of %1</source>
         <translation>Неверная частота: должна быть делителем чилса %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="109"/>
-        <source>Serial port %1</source>
-        <translation>Последовательный порт %1</translation>
+        <location filename="src/protocols/serialprotocol.cpp" line="114"/>
+        <source>Serial port %1 [%2-&gt;%3]</source>
+        <translation>Последовательный порт%1 [%2-&gt;%3]</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="175"/>
-        <location filename="src/protocols/serialprotocol.cpp" line="185"/>
+        <source>Serial port %1</source>
+        <translation type="vanished">Последовательный порт %1</translation>
+    </message>
+    <message>
+        <location filename="src/protocols/serialprotocol.cpp" line="180"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="190"/>
         <source>Cannot change parameters when receiving data</source>
         <translation>Невозможно изменить параметры во время приёма данных</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="345"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="334"/>
+        <source>GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3</source>
+        <translatorcomment>do not need to translate, actually</translatorcomment>
+        <translation>GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3</translation>
+    </message>
+    <message>
+        <location filename="src/protocols/serialprotocol.cpp" line="356"/>
         <source>GPS packet not yet supported</source>
         <translation>GPS пакет пока не поддерживается</translation>
     </message>
@@ -641,7 +665,7 @@
 <context>
     <name>TestProtocol</name>
     <message>
-        <location filename="src/protocols/testprotocol.cpp" line="35"/>
+        <location filename="src/protocols/testprotocol.cpp" line="38"/>
         <source>Test protocol x%1@%2</source>
         <translation>Тестовый протокол x%1@%2</translation>
     </message>
@@ -649,7 +673,7 @@
 <context>
     <name>TimePlot</name>
     <message>
-        <location filename="src/gui/timeplot.cpp" line="141"/>
+        <location filename="src/gui/timeplot.cpp" line="143"/>
         <source>Unequal size of timestamps and items: %1 vs %2</source>
         <translation>Неравный размер отсчётов времени и данных: %1 и %2</translation>
     </message>

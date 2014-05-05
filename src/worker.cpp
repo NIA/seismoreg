@@ -46,7 +46,7 @@ void Worker::prepare(bool autostart) {
                 // all ok, continue
             } else {
                 Logger::error(tr("Failed to open GPS protocol: %1").arg(protocolGPS_->description()));
-                setPrepared(PrepareFail);
+                setPrepared(PrepareFailGPS);
                 // not ok, interrupt
                 return;
             }
@@ -62,7 +62,7 @@ void Worker::prepare(bool autostart) {
         protocolADC_->checkADC();
     } else {
         Logger::error(tr("Failed to open ADC protocol: %1").arg(protocolADC_->description()));
-        setPrepared(PrepareFail);
+        setPrepared(PrepareFailADC);
     }
 }
 
@@ -83,7 +83,7 @@ void Worker::onCheckedADC(bool success) {
         }
     } else {
         Logger::error(tr("ADC check failed!"));
-        setPrepared(PrepareFail);
+        setPrepared(PrepareFailADC);
     }
 }
 
@@ -104,7 +104,7 @@ void Worker::onCheckedGPS(bool success) {
         }
     } else {
         Logger::error(tr("GPS check failed!"));
-        setPrepared(PrepareFail);
+        setPrepared(PrepareFailGPS);
     }
 }
 

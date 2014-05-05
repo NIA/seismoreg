@@ -331,6 +331,7 @@ void SerialProtocol::parseGPSPacket() {
             float offsetUTC    = unpackFloat(packet);
             QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
             addState(GPSHasTime);
+            Logger::trace(tr("GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC));
             emit timeAvailable(dateTime);
         }
         break;

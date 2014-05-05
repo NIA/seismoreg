@@ -10,8 +10,9 @@
 #define RENDER_ANTIALISED 0
 
 namespace {
-    const QColor GRID_COLOR(128, 128, 128);
-    const QColor CURVE_COLOR(30, 80, 160);
+    const QColor GRID_COLOR(192, 192, 192);
+    const QColor CURVE_COLOR(20, 20, 100);
+    const QColor BG_COLOR = Qt::white;
     const QColor CURVE_FILL = Qt::transparent; // may be some color, but currently disabled
     const qreal  CURVE_WIDTH = 2;
 
@@ -112,6 +113,7 @@ void TimePlot::initGrid() {
     grid->setMajorPen(QPen(GRID_COLOR));
     grid->setMinorPen(QPen(GRID_COLOR, 1, Qt::DashLine));
     grid->attach(this);
+    setCanvasBackground(BG_COLOR);
 }
 
 void TimePlot::initCurve() {

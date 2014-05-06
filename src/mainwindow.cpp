@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QList>
+#include <qwt_scale_div.h>
 
 #include "protocols/testprotocol.h"
 #include "protocols/serialprotocol.h"
@@ -37,6 +38,15 @@ namespace {
                 chooser->setCurrentIndex(chooser->count() - 1);
             }
         }
+    }
+    void initFreqSlider(QwtSlider * slider, int minValue, int maxValue, int initialValue) {
+        slider->setLowerBound(minValue);
+        slider->setUpperBound(maxValue);
+        // Actually allow only two positions: min and max
+        slider->setTotalSteps(1);
+        // Therefore, only two major ticks
+        slider->setScale(QwtScaleDiv(minValue, maxValue, QList<double>(), QList<double>(), QList<double>({FREQ_50, FREQ_200})));
+        slider->setValue(initialValue);
     }
 
     void initShowHideAction(QAction * action, QWidget * widgetToHide, bool initiallyShown) {
@@ -88,13 +98,13 @@ void MainWindow::setup() {
     initPortChooser(ui->portChooser, settings.portName(Settings::PortADC));
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_10, FREQ_1}), settings.samplingFrequency());
-    initFreqChooser(ui->filterFreq,   QList<int>({FREQ_200, FREQ_50}),         settings.filterFrequency());
+    initFreqSlider(ui->filterFreqSlider, FREQ_50, FREQ_200, settings.filterFrequency());
     fileWriter->setFileName(settings.fileNamePrefix(), settings.fileNameSuffix());
     fileWriter->setDeviceID(settings.deviceId());
     initFileHandlers();
     disableOnConnect = { ui->portChooser,     ui->portChooserGPS,
                          ui->portSettingsADC, ui->portSettingsGPS };
-    disableOnStart   = { ui->samplingFreq,    ui->filterFreq };
+    disableOnStart   = { ui->samplingFreq,    ui->filterFreqSlider };
 
     initShowHideAction(ui->actionShowTable,    ui->dataView, settings.isTableShown());
     initShowHideAction(ui->actionShowSettings, ui->settings, settings.isSettingsShown());
@@ -157,7 +167,7 @@ void MainWindow::setup() {
 
         // TODO: if frequencies are anyway set on start, do we need to pass them to constructor?
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
-        int filterFrequency   = ui->filterFreq->currentText().toInt();
+        int filterFrequency   = ui->filterFreqSlider->value();
 
         QString portNameADC = ui->portChooser->currentText();
         QString portNameGPS = ui->portChooserGPS->currentText();
@@ -190,7 +200,7 @@ void MainWindow::setup() {
 
         // Sampling frequency and filter frequency might have changed
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
-        int filterFrequency   = ui->filterFreq->currentText().toInt();
+        int filterFrequency   = ui->filterFreqSlider->value();
         for(TimePlot * plot: plots) {
             plot->setPointsPerSec(samplingFrequency);
         }
@@ -435,7 +445,7 @@ void MainWindow::log(QString text) {
 void MainWindow::saveSettings() {
     Settings settings;
     settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
-    settings.setFilterFrequency(ui->filterFreq->currentText().toInt());
+    settings.setFilterFrequency(ui->filterFreqSlider->value());
     settings.setFileNamePrefix(ui->saveFilePrefix->text());
     settings.setFileNameSuffix(ui->saveFileSuffix->text());
 

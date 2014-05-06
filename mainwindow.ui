@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>680</height>
+    <height>725</height>
    </rect>
   </property>
   <property name="font">
@@ -223,15 +223,31 @@
               </property>
              </widget>
             </item>
-            <item row="7" column="0" colspan="3">
+            <item row="7" column="0" rowspan="2" colspan="3">
              <widget class="QLabel" name="label_12">
               <property name="text">
                <string>Filter frequency</string>
               </property>
              </widget>
             </item>
-            <item row="7" column="3">
-             <widget class="QComboBox" name="filterFreq"/>
+            <item row="7" column="3" rowspan="2">
+             <widget class="QwtSlider" name="filterFreqSlider">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>70</height>
+               </size>
+              </property>
+              <property name="groove">
+               <bool>true</bool>
+              </property>
+              <property name="handleSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -905,6 +921,11 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>QwtSlider</class>
+   <extends>QWidget</extends>
+   <header>qwt_slider.h</header>
+  </customwidget>
   <customwidget>
    <class>QLed</class>
    <extends>QWidget</extends>

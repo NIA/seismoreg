@@ -1,5 +1,6 @@
 #include "settings.h"
 #include <QHash>
+#include <QDir>
 
 #include "gui/timeplot.h" // for timeplot defaults
 #include "filewriter.h"   // for filewriter defaults
@@ -28,8 +29,8 @@ namespace {
     const QString DEVICE_ID  = CORE_PREFIX + "device_id";
     const QString SAMPL_FREQ = CORE_PREFIX + "sampling_frequency";
     const QString FILTR_FREQ = CORE_PREFIX + "filter_frequency";
-    const QString FILE_PREFIX= CORE_PREFIX + "file_prefix";
-    const QString FILE_SUFFIX= CORE_PREFIX + "file_suffix";
+    const QString OUTPUT_DIR = CORE_PREFIX + "output_dir";
+    const QString FILE_FORMAT= CORE_PREFIX + "filename_format";
     const QString TABLE_SHOWN    = GUI_PREFIX + "table_shown";
     const QString SETTINGS_SHOWN = GUI_PREFIX + "settings_shown";
     const QString STATS_SHOWN    = GUI_PREFIX + "stats_shown";
@@ -150,18 +151,24 @@ void Settings::setFilterFrequency(int value) {
     settings.setValue(FILTR_FREQ, value);
 }
 
-QString Settings::fileNamePrefix() const {
-    return settings.value(FILE_PREFIX, FileWriter::DEFAULT_FILENAME_PREFIX).toString();
+QString Settings::outputDirectory() const {
+    QString dir = settings.value(OUTPUT_DIR, FileWriter::DEFAULT_OUTPUT_DIR).toString();
+    if (dir == ".") {
+        return QDir::currentPath();
+    } else {
+        return dir;
+    }
 }
-void Settings::setFileNamePrefix(const QString &value) {
-    settings.setValue(FILE_PREFIX, value);
+void Settings::setOutputDirectry(const QString &value) {
+    QString dir = (value == QDir::currentPath()) ? "." : value;
+    settings.setValue(OUTPUT_DIR, dir);
 }
 
-QString Settings::fileNameSuffix() const {
-    return settings.value(FILE_SUFFIX, FileWriter::DEFAULT_FILENAME_SUFFIX).toString();
+QString Settings::fileNameFormat() const {
+    return settings.value(FILE_FORMAT, FileWriter::DEFAULT_FILENAME_FORMAT).toString();
 }
-void Settings::setFileNameSuffix(const QString &value) {
-    settings.setValue(FILE_SUFFIX, value);
+void Settings::setFileNameFormat(const QString &value) {
+    settings.setValue(FILE_FORMAT, value);
 }
 
 // Ports settings

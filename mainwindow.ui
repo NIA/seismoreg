@@ -231,17 +231,17 @@
              </widget>
             </item>
             <item row="7" column="3" rowspan="2">
-             <widget class="QwtSlider" name="filterFreqSlider">
+             <widget class="QwtSlider" name="filterFreqSlider" native="true">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>70</height>
+                <height>60</height>
                </size>
               </property>
-              <property name="groove">
+              <property name="groove" stdset="0">
                <bool>true</bool>
               </property>
-              <property name="handleSize">
+              <property name="handleSize" stdset="0">
                <size>
                 <width>30</width>
                 <height>30</height>
@@ -259,29 +259,71 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,0,1">
-              <property name="sizeConstraint">
-               <enum>QLayout::SetDefaultConstraint</enum>
-              </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
-               <widget class="QLineEdit" name="saveFilePrefix">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Directory</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="outputDir">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>10</width>
-                  <height>0</height>
-                 </size>
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                 </font>
                 </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="browseBtn">
                 <property name="maximumSize">
                  <size>
-                  <width>100</width>
+                  <width>30</width>
                   <height>16777215</height>
                  </size>
+                </property>
+                <property name="toolTip">
+                 <string>Browse</string>
+                </property>
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,2,0">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Filename</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="saveFileFormat">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                 </font>
                 </property>
                 <property name="toolTip">
                  <string>Prefix</string>
@@ -289,34 +331,18 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>&lt;time&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="saveFileSuffix">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>10</width>
-                  <height>0</height>
-                 </size>
-                </property>
+               <widget class="QPushButton" name="formatHelpBtn">
                 <property name="maximumSize">
                  <size>
-                  <width>60</width>
+                  <width>30</width>
                   <height>16777215</height>
                  </size>
                 </property>
                 <property name="toolTip">
-                 <string>Suffix (usually extension)</string>
+                 <string>Filename format help</string>
+                </property>
+                <property name="text">
+                 <string>?</string>
                 </property>
                </widget>
               </item>
@@ -803,7 +829,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

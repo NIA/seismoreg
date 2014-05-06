@@ -35,12 +35,30 @@ class FileWriter : public QObject
 {
     Q_OBJECT
 public:
-    explicit FileWriter(QString fileNamePrefix = DEFAULT_FILENAME_PREFIX, QString fileNameSuffix = DEFAULT_FILENAME_SUFFIX, QObject *parent = 0);
+    explicit FileWriter(QString outputDirectory = DEFAULT_OUTPUT_DIR, QString fileNameFormat = DEFAULT_FILENAME_FORMAT, QObject *parent = 0);
 
-    QString fileNamePrefix() { return filePrefix; }
-    QString fileNameSuffix() { return fileSuffix; }
-    static const QString DEFAULT_FILENAME_PREFIX;
-    static const QString DEFAULT_FILENAME_SUFFIX;
+    QString outputDirectory() { return outputDir; }
+
+    /*!
+     * \brief String that describes filename format.
+     *
+     * Possible fields:
+     * - %Y : year
+     * - %M : month
+     * - %D : day
+     * - %h : hours
+     * - %m : minutes
+     * - %s : seconds
+     * - %f : filter frequency
+     * - %r : sampling frequency (rate)
+     * - %i : device id
+     *
+     * Default is %D%M%Y-%h%m%s-%f.w%i
+     * \return current filename format
+     */
+    QString fileNameFormat() { return fileFormat; }
+    static const QString DEFAULT_OUTPUT_DIR;
+    static const QString DEFAULT_FILENAME_FORMAT;
 
     bool autoWriteEnabled() { return autoWrite; }
 
@@ -52,23 +70,17 @@ signals:
     
 public slots:
     /*!
-     * \brief Sets file name pattern for file that will be used for writing.
-     *
-     * Filename will be prefix+datetime+suffix, where datetime is
-     * the start time of receiving data.
-     *
-     * If suffix is empty (or not specified), the default (e.g. ".dat")
-     * will be used.
+     * \brief Sets file name pattern and output dir for file that will be used for writing.
      *
      * \warning This slot only sets file name, it doesn't
      *          actually write to file!
      * \see Worker::setAutoWriteEnabled, Worker::writeOnce
-     * \param prefix - beginning of file name, before datetime
-     * \param suffix - ending of file name, usually extension
+     * \param outputDirectory - path to the directory where files will be created
+     * \param fileNameFormat - pattern of filename, \see fileNameFormat() for info about format fields
      *
      * \todo return success or failure
      */
-    void setFileName(QString prefix, QString suffix = DEFAULT_FILENAME_SUFFIX);
+    void setFileName(QString outputDirectory, QString fileNameFormat);
 
     /*!
      * \brief Adds new data to queue of data waiting to be written to disk
@@ -121,8 +133,8 @@ private:
     bool openIfClosed();
     void closeIfOpened();
 
-    QString filePrefix;
-    QString fileSuffix;
+    QString outputDir;
+    QString fileFormat;
     QFile * file;
     bool autoWrite;
 

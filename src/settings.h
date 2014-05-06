@@ -23,11 +23,11 @@ public:
     int filterFrequency() const;
     void setFilterFrequency(int value);
 
-    QString fileNamePrefix() const;
-    void setFileNamePrefix(const QString &value);
+    QString outputDirectory() const;
+    void setOutputDirectry(const QString &value);
 
-    QString fileNameSuffix() const;
-    void setFileNameSuffix(const QString &value);
+    QString fileNameFormat() const;
+    void setFileNameFormat(const QString &value);
 
     // Ports settings
 

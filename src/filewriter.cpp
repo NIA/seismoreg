@@ -6,32 +6,42 @@
 #include <QTextStream>
 #include <QDateTime>
 
+const QString FileWriter::DEFAULT_OUTPUT_DIR = ".";
+const QString FileWriter::DEFAULT_FILENAME_FORMAT = "%D%M%Y-%h%m%s-%f.w%i";
 
-const QString FileWriter::DEFAULT_FILENAME_PREFIX = "data-";
-const QString FileWriter::DEFAULT_FILENAME_SUFFIX = ".dat";
-
-FileWriter::FileWriter(QString fileNamePrefix, QString fileNameSuffix, QObject *parent) :
+FileWriter::FileWriter(QString outputDirectory, QString fileNameFormat, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false),
     deviceID(0), samplingFreq(0), filterFreq(0),
     latitude("???"), longitude("???"), itemsInQueue(0)
 {
-    setFileName(fileNamePrefix, fileNameSuffix); // will also init `file` instance variable
+    setFileName(outputDirectory, fileNameFormat); // will also init `file` instance variable
+}
+
+inline QString twoDigitStr(int value) {
+    return QString::number(value).rightJustified(2, '0');
 }
 
 QString FileWriter::buildFileName() {
     const QDateTime &time = (startTime.isValid() ? startTime : QDateTime::currentDateTime());
-    return filePrefix + time.toString("yyyy-MM-dd-hh-mm-ss") + fileSuffix;
+    QString fileName = fileNameFormat();
+    fileName.replace("%Y", QString::number(time.date().year()));
+    fileName.replace("%M", twoDigitStr(time.date().month()));
+    fileName.replace("%D", twoDigitStr(time.date().day()));
+    fileName.replace("%h", twoDigitStr(time.time().hour()));
+    fileName.replace("%m", twoDigitStr(time.time().minute()));
+    fileName.replace("%s", twoDigitStr(time.time().second()));
+    fileName.replace("%f", QString::number(filterFreq));
+    fileName.replace("%r", QString::number(samplingFreq));
+    fileName.replace("%i", QString::number(deviceID));
+    return outputDir + "/" + fileName;
 }
 
-void FileWriter::setFileName(QString prefix, QString suffix) {
-    if (suffix.isEmpty()) {
-        suffix = DEFAULT_FILENAME_SUFFIX;
-    }
-    if ((prefix == filePrefix) && (suffix == fileSuffix)) {
+void FileWriter::setFileName(QString outputDirectory, QString fileNameFormat) {
+    if ((outputDirectory == outputDir) && (fileNameFormat == fileFormat)) {
         return; // Nothing changed
     }
-    filePrefix = prefix;
-    fileSuffix = suffix;
+    outputDir = outputDirectory;
+    fileFormat = fileNameFormat;
     closeIfOpened();
 }
 

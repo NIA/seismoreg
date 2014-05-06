@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     worker = new Worker(NULL, NULL, this);
-    fileWriter = new FileWriter(FileWriter::DEFAULT_FILENAME_PREFIX, FileWriter::DEFAULT_FILENAME_SUFFIX, this);
+    fileWriter = new FileWriter(FileWriter::DEFAULT_OUTPUT_DIR, FileWriter::DEFAULT_FILENAME_FORMAT, this);
 
     initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
     initWidgetsArray(stats, ui->stats, ui->stats2, ui->stats3);
@@ -99,7 +99,7 @@ void MainWindow::setup() {
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_10, FREQ_1}), settings.samplingFrequency());
     initFreqSlider(ui->filterFreqSlider, FREQ_50, FREQ_200, settings.filterFrequency());
-    fileWriter->setFileName(settings.fileNamePrefix(), settings.fileNameSuffix());
+    fileWriter->setFileName(settings.outputDirectory(), settings.fileNameFormat());
     fileWriter->setDeviceID(settings.deviceId());
     initFileHandlers();
     disableOnConnect = { ui->portChooser,     ui->portChooserGPS,
@@ -196,7 +196,6 @@ void MainWindow::setup() {
         ui->ledWorking->setValue(true);
 
         resetHistory();
-        setFileControlsState();
 
         // Sampling frequency and filter frequency might have changed
         int samplingFrequency = ui->samplingFreq->currentText().toInt();
@@ -215,6 +214,7 @@ void MainWindow::setup() {
         } else {
             worker->start();
         }
+        setFileControlsState();
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
@@ -310,8 +310,8 @@ void MainWindow::initWorkerHandlers() {
 void MainWindow::initFileHandlers() {
 
     connect(this,               &MainWindow::autoWriteChanged, fileWriter, &FileWriter::setAutoWriteEnabled);
-    connect(ui->saveFilePrefix, &QLineEdit::editingFinished,   this,       &MainWindow::onFileNameChanged);
-    connect(ui->saveFileSuffix, &QLineEdit::editingFinished,       this,       &MainWindow::onFileNameChanged);
+    connect(ui->outputDir,      &QLineEdit::editingFinished,   this,       &MainWindow::onFileNameChanged);
+    connect(ui->saveFileFormat, &QLineEdit::editingFinished,   this,       &MainWindow::onFileNameChanged);
     connect(ui->writeNowBtn,    &QPushButton::clicked,         fileWriter, &FileWriter::writeOnce);
     // connecting to Worker::dataUpdated is made in initWorkerHandlers
     connect(fileWriter, &FileWriter::queueSizeChanged, [=](unsigned size){
@@ -336,8 +336,8 @@ void MainWindow::initFileHandlers() {
     });*/
 
     // Set initial values
-    ui->saveFilePrefix->setText(fileWriter->fileNamePrefix());
-    ui->saveFileSuffix->setText(fileWriter->fileNameSuffix());
+    ui->outputDir->setText(fileWriter->outputDirectory());
+    ui->saveFileFormat->setText(fileWriter->fileNameFormat());
     emit autoWriteChanged(ui->writeToFileEnabled->isChecked());
     setFileControlsState();
 }
@@ -405,7 +405,7 @@ void MainWindow::resetHistory() {
 }
 
 void MainWindow::onFileNameChanged() {
-    fileWriter->setFileName(ui->saveFilePrefix->text(), ui->saveFileSuffix->text());
+    fileWriter->setFileName(ui->outputDir->text(), ui->saveFileFormat->text());
 }
 
 void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton * btn) {
@@ -421,10 +421,9 @@ void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSet
 void MainWindow::setFileControlsState() {
     bool disableChangingFile = (ui->writeToFileEnabled->isChecked() && worker->isStarted());
     // If running and auto-saving => cannot change file name
-    ui->saveFilePrefix->setDisabled(disableChangingFile);
-    ui->saveFileSuffix->setDisabled(disableChangingFile);
-    /* TODO: return Browse button
-    ui->browseBtn->setDisabled(disableChangingFile); */
+    ui->outputDir->setDisabled(disableChangingFile);
+    ui->saveFileFormat->setDisabled(disableChangingFile);
+    ui->browseBtn->setDisabled(disableChangingFile);
 
     bool disableWriteNow = (ui->writeToFileEnabled->isChecked());
     // If auto-saving => cannot write now
@@ -446,8 +445,8 @@ void MainWindow::saveSettings() {
     Settings settings;
     settings.setSamplingFrequency(ui->samplingFreq->currentText().toInt());
     settings.setFilterFrequency(ui->filterFreqSlider->value());
-    settings.setFileNamePrefix(ui->saveFilePrefix->text());
-    settings.setFileNameSuffix(ui->saveFileSuffix->text());
+    settings.setOutputDirectry(ui->outputDir->text());
+    settings.setFileNameFormat(ui->saveFileFormat->text());
 
     settings.setPortName(Settings::PortADC, ui->portChooser->currentText());
     settings.setPortSettings(Settings::PortADC, portSettingsADC);

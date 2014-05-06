@@ -36,6 +36,18 @@ QString FileWriter::buildFileName() {
     return outputDir + "/" + fileName;
 }
 
+QString FileWriter::fileNameFormatHelp() {
+    return tr("%Y - year\n"
+              "%M - month\n"
+              "%D - day\n"
+              "%h - hours\n"
+              "%m - minutes\n"
+              "%s - seconds\n"
+              "%f - filter frequency\n"
+              "%r - sampling frequency (rate)\n"
+              "%i - device id");
+}
+
 void FileWriter::setFileName(QString outputDirectory, QString fileNameFormat) {
     if ((outputDirectory == outputDir) && (fileNameFormat == fileFormat)) {
         return; // Nothing changed

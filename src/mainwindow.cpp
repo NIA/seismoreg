@@ -2,8 +2,9 @@
 #include "ui_mainwindow.h"
 
 #include <QTimer>
-#include <QFileDialog>
 #include <QList>
+#include <QFileDialog>
+#include <QMessageBox>
 #include <qwt_scale_div.h>
 
 #include "protocols/testprotocol.h"
@@ -325,15 +326,17 @@ void MainWindow::initFileHandlers() {
         setFileControlsState();
     });
 
-    /* TODO: return Browse button!
-     connect(ui->browseBtn, &QPushButton::clicked, [=](){
-        QString file = QFileDialog::getSaveFileName(this, tr("Choose file for writing data"), ui->saveFileName->text());
-        if( ! file.isEmpty()) {
-            ui->saveFileName->setText(file);
+    connect(ui->browseBtn, &QPushButton::clicked, [=](){
+        QString dir = QFileDialog::getExistingDirectory(this, tr("Choose output directory for data files"), ui->outputDir->text());
+        if( ! dir.isEmpty()) {
+            ui->outputDir->setText(dir);
             // this will automatically notify fileWriter: changing ui->saveFileName text
             // will trigger textChanged, which is connected to setFileName of FileWriter (see above)
         }
-    });*/
+    });
+    connect(ui->formatHelpBtn, &QPushButton::clicked, [=](){
+        QMessageBox::information(this, tr("Filename format help"), FileWriter::fileNameFormatHelp());
+    });
 
     // Set initial values
     ui->outputDir->setText(fileWriter->outputDirectory());

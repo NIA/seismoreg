@@ -54,11 +54,15 @@ public:
      * - %i : device id
      *
      * Default is %D%M%Y-%h%m%s-%f.w%i
+     *
+     * \see fileNameFormatHelp() to show same help text in application
      * \return current filename format
      */
     QString fileNameFormat() { return fileFormat; }
     static const QString DEFAULT_OUTPUT_DIR;
     static const QString DEFAULT_FILENAME_FORMAT;
+
+    static QString fileNameFormatHelp();
 
     bool autoWriteEnabled() { return autoWrite; }
 

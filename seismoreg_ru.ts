@@ -4,28 +4,49 @@
 <context>
     <name>FileWriter</name>
     <message>
-        <location filename="src/filewriter.cpp" line="89"/>
+        <location filename="src/filewriter.cpp" line="40"/>
+        <source>%Y - year
+%M - month
+%D - day
+%h - hours
+%m - minutes
+%s - seconds
+%f - filter frequency
+%r - sampling frequency (rate)
+%i - device id</source>
+        <translation>%Y - год
+%M - месяц
+%D - день
+%h - час
+%m - минуты
+%s - секунды
+%f - частота фильтра
+%r - частота выборки
+%i - ID устройства</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="111"/>
         <source>Nothing to write to file</source>
         <oldsource>Nothing to write in queue</oldsource>
         <translation>Нечего записать в файл</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="107"/>
+        <location filename="src/filewriter.cpp" line="129"/>
         <source>Written %1 items to file %2</source>
         <translation>Записано %1 данных в файл %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="118"/>
+        <location filename="src/filewriter.cpp" line="140"/>
         <source>Failed to open file %1: %2</source>
         <translation>Не удалось открыть файл %1: %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="121"/>
+        <location filename="src/filewriter.cpp" line="143"/>
         <source>Opened file %1</source>
         <translation>Открыт файл %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="149"/>
+        <location filename="src/filewriter.cpp" line="171"/>
         <source>Closed file %1</source>
         <translation>Закрыт файл %1</translation>
     </message>
@@ -88,12 +109,12 @@
         <translation type="obsolete">Число точек</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="443"/>
+        <location filename="mainwindow.ui" line="485"/>
         <source>Connect</source>
         <translation>Подключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="459"/>
+        <location filename="mainwindow.ui" line="501"/>
         <source>Disconnect</source>
         <translation>Отключить</translation>
     </message>
@@ -102,33 +123,65 @@
         <translation type="obsolete">Приём данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="691"/>
+        <location filename="mainwindow.ui" line="733"/>
         <source>Start</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="678"/>
+        <location filename="mainwindow.ui" line="720"/>
         <source>Start time</source>
         <translation>Время начала</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="472"/>
+        <location filename="mainwindow.ui" line="266"/>
+        <source>Directory</source>
+        <translation>Папка</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="294"/>
+        <source>Browse...</source>
+        <oldsource>Browse</oldsource>
+        <translation>Найти...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="297"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="311"/>
+        <source>Filename</source>
+        <translation>Имя файла</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="342"/>
+        <location filename="src/mainwindow.cpp" line="338"/>
+        <source>Filename format help</source>
+        <translation>Справка по формату имени файла</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="345"/>
+        <source>?</source>
+        <translation>?</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="514"/>
         <source>Time elapsed</source>
         <translation>Прошло времени</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="488"/>
+        <location filename="mainwindow.ui" line="530"/>
         <source>Samples received</source>
         <translation>Получено данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="701"/>
+        <location filename="mainwindow.ui" line="743"/>
         <source>Stop</source>
         <translation>Стоп</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="430"/>
-        <location filename="mainwindow.ui" line="665"/>
+        <location filename="mainwindow.ui" line="472"/>
+        <location filename="mainwindow.ui" line="707"/>
         <source>H:mm:ss</source>
         <translation>HH:mm:ss</translation>
     </message>
@@ -148,18 +201,18 @@
         <translation>Частота выборки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="546"/>
-        <location filename="mainwindow.ui" line="637"/>
+        <location filename="mainwindow.ui" line="588"/>
+        <location filename="mainwindow.ui" line="679"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="585"/>
+        <location filename="mainwindow.ui" line="627"/>
         <source>Awaiting writing</source>
         <translation>Ожидают записи</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="242"/>
+        <location filename="mainwindow.ui" line="258"/>
         <source>Save to file</source>
         <translation>Сохранять в файл</translation>
     </message>
@@ -169,132 +222,126 @@
         <translation>Частота фильтра</translation>
     </message>
     <message>
-        <source>Browse...</source>
-        <translation type="obsolete">Найти...</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="314"/>
+        <location filename="mainwindow.ui" line="356"/>
         <source>Write automatically</source>
         <translation>Писать автоматически</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="324"/>
+        <location filename="mainwindow.ui" line="366"/>
         <source>Write now</source>
         <translation>Записать</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="336"/>
+        <location filename="mainwindow.ui" line="378"/>
         <source>Plot settings</source>
         <translation>Настройки графиков</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="349"/>
+        <location filename="mainwindow.ui" line="391"/>
         <source>Auto scale</source>
         <translation>Авто масштаб</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="342"/>
+        <location filename="mainwindow.ui" line="384"/>
         <source>Fixed scale:</source>
         <translation>Фикс. масштаб:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="271"/>
+        <location filename="mainwindow.ui" line="329"/>
         <source>Prefix</source>
         <translation>Префикс</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="278"/>
         <source>&lt;time&gt;</source>
         <oldsource>&lt;date&gt;</oldsource>
-        <translation>&lt;время&gt;</translation>
+        <translation type="vanished">&lt;время&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="303"/>
         <source>Suffix (usually extension)</source>
-        <translation>Суффикс (обычно расширение)</translation>
+        <translation type="vanished">Суффикс (обычно расширение)</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="369"/>
+        <location filename="mainwindow.ui" line="411"/>
         <source>Time interval:</source>
         <translation>Интервал времени:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="376"/>
+        <location filename="mainwindow.ui" line="418"/>
         <source> sec.</source>
         <translation> с.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="504"/>
+        <location filename="mainwindow.ui" line="546"/>
         <source>Date</source>
         <translation>Дата</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="520"/>
+        <location filename="mainwindow.ui" line="562"/>
         <source>Time</source>
         <translation>Время</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="536"/>
+        <location filename="mainwindow.ui" line="578"/>
         <source>Longitude</source>
         <translation>Долгота</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="601"/>
+        <location filename="mainwindow.ui" line="643"/>
         <source>Latitude</source>
         <translation>Широта</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="734"/>
+        <location filename="mainwindow.ui" line="776"/>
         <source>Ready</source>
         <translation>ЭВМ готова</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="763"/>
+        <location filename="mainwindow.ui" line="805"/>
         <source>Working</source>
         <translation>Программа работает</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="795"/>
+        <location filename="mainwindow.ui" line="837"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="801"/>
+        <location filename="mainwindow.ui" line="843"/>
         <source>View</source>
         <translation>Вид</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="809"/>
+        <location filename="mainwindow.ui" line="851"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="842"/>
+        <location filename="mainwindow.ui" line="884"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="854"/>
+        <location filename="mainwindow.ui" line="896"/>
         <source>Show table</source>
         <translation>Показать таблицу</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="869"/>
+        <location filename="mainwindow.ui" line="911"/>
         <source>Show settings</source>
         <translation>Показать настройки</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="884"/>
+        <location filename="mainwindow.ui" line="926"/>
         <source>Show stats</source>
         <translation>Показать статистику</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="893"/>
+        <location filename="mainwindow.ui" line="935"/>
         <source>ADC port settings</source>
         <translation>Настройки порта АЦП</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="902"/>
+        <location filename="mainwindow.ui" line="944"/>
         <source>GPS port settings</source>
         <translation>Настройки порта GPS</translation>
     </message>
@@ -303,12 +350,12 @@
         <translation type="obsolete">ТЕСТ</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="73"/>
+        <location filename="src/mainwindow.cpp" line="84"/>
         <source>Plotting</source>
         <translation>Графики</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="73"/>
+        <location filename="src/mainwindow.cpp" line="84"/>
         <source>Writing</source>
         <translation>Запись</translation>
     </message>
@@ -317,22 +364,27 @@
         <translation type="vanished">Всего</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="73"/>
+        <location filename="src/mainwindow.cpp" line="84"/>
         <source>Total (MainWindow)</source>
         <translation>Всего (MainWindow)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="254"/>
+        <location filename="src/mainwindow.cpp" line="265"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="262"/>
+        <location filename="src/mainwindow.cpp" line="273"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="339"/>
+        <location filename="src/mainwindow.cpp" line="330"/>
+        <source>Choose output directory for data files</source>
+        <translation>Выберите директорию для записи файлов данных</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="352"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>

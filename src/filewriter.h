@@ -58,7 +58,7 @@ public:
      * \see fileNameFormatHelp() to show same help text in application
      * \return current filename format
      */
-    QString fileNameFormat() { return fileFormat; }
+    QString fileNameFormat() const { return fileFormat; }
     static const QString DEFAULT_OUTPUT_DIR;
     static const QString DEFAULT_FILENAME_FORMAT;
 
@@ -66,7 +66,7 @@ public:
 
     bool autoWriteEnabled() { return autoWrite; }
 
-    QString buildFileName();
+    QString buildFileName() const;
 
     ~FileWriter();
 signals:

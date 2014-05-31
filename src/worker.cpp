@@ -122,15 +122,17 @@ void Worker::setPrepared(PrepareResult res) {
     }
 }
 
-Worker::StartResult Worker::start() {
+void Worker::start() {
     Q_ASSERT_X(protocolADC_ != 0, "Worker::start", "ADC protocol not set");
     if( ! prepared ) {
         Logger::error(tr("Trying to start not prepared worker!"));
-        return StartFailNotPrepared;
+        emit triedToStart(StartFailNotPrepared);
+        return;
     }
     if( started ) {
         Logger::error(tr("Trying to start already started worker!"));
-        return StartFailAlreadyStarted;
+        emit triedToStart(StartFailAlreadyStarted);
+        return;
     }
 
     started = true;
@@ -139,7 +141,7 @@ Worker::StartResult Worker::start() {
     Logger::trace(tr("Starting receiving data..."));
     protocolADC_->startReceiving();
 
-    return StartSuccess;
+    emit triedToStart(StartSuccess);
 }
 
 void Worker::pause() {

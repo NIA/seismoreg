@@ -56,6 +56,34 @@ public:
     explicit Worker(Protocol * protADC, Protocol * protGPS, QObject *parent = 0);
 
     /*!
+     * \brief Getter for connecting to signals of Protocol
+     * \return current protocol for ADC
+     */
+    Protocol * protocolADC() { return protocolADC_; }
+    /*!
+     * \brief Getter for connecting to signals of Protocol
+     * \return current protocol for GPS
+     */
+    Protocol * protocolGPS() { return protocolGPS_; }
+
+    bool isPrepared() { return prepared; }
+
+    /*!
+     * \brief Check if Worker is started
+     * \return true if Worker successfully started
+     *
+     * Consider using this getter to check if Worker is already started
+     * before invoking Worker::start since calling it twice is illegal
+     * \see Worker::start
+     */
+    bool isStarted() { return started; }
+
+    bool isPaused() { return paused; }
+
+    ~Worker() { finish(); }
+
+public slots:
+    /*!
      * \brief Reset worker to given protocols
      *
      * All operation with previous protocol is interrupted.
@@ -69,17 +97,6 @@ public:
     void reset(Protocol * protADC, Protocol * protGPS);
 
     /*!
-     * \brief Getter for connecting to signals of Protocol
-     * \return current protocol for ADC
-     */
-    Protocol * protocolADC() { return protocolADC_; }
-    /*!
-     * \brief Getter for connecting to signals of Protocol
-     * \return current protocol for GPS
-     */
-    Protocol * protocolGPS() { return protocolGPS_; }
-
-    /*!
      * \brief Prepare for data receiving
      *
      * Opens protocol, checks ADC and GPS and if all is OK and emits
@@ -89,24 +106,12 @@ public:
      */
     void prepare(bool autostart = false);
 
-    bool isPrepared() { return prepared; }
-
     /*!
      * \brief Start processing data.
      *
      * Will do it until Worker::finish is called
      */
-    StartResult start();
-
-    /*!
-     * \brief Check if Worker is started
-     * \return true if Worker successfully started
-     *
-     * Consider using this getter to check if Worker is already started
-     * before invoking Worker::start since calling it twice is illegal
-     * \see Worker::start
-     */
-    bool isStarted() { return started; }
+    void start();
 
     /*!
      * \brief Pause receiving data without closing protocol
@@ -118,8 +123,6 @@ public:
      */
     void unpause();
 
-    bool isPaused() { return paused; }
-
     /*!
      * \brief Finish processing data and close protocol
      *
@@ -128,8 +131,6 @@ public:
      */
     void finish();
 
-    ~Worker() { finish(); }
-
 signals:
     /*!
      * \brief emitted when preparation process finished, either succesfully or not
@@ -137,6 +138,13 @@ signals:
      * \param result preparation result, \see Worker::PrepareResult
      */
     void prepareFinished(PrepareResult result);
+
+    /*!
+     * \brief emitted after calling \a start to notify about whether it was successful
+     *
+     * \param result - result of starting, \see Worker::StartResult
+     */
+    void triedToStart(StartResult result);
 
     /*!
      * \brief emitted when new data has come

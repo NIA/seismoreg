@@ -21,7 +21,7 @@ inline QString twoDigitStr(int value) {
     return QString::number(value).rightJustified(2, '0');
 }
 
-QString FileWriter::buildFileName() {
+QString FileWriter::buildFileName() const {
     const QDateTime &time = (startTime.isValid() ? startTime : QDateTime::currentDateTime());
     QString fileName = fileNameFormat();
     fileName.replace("%Y", QString::number(time.date().year()));

@@ -16,7 +16,7 @@ public:
      * \param mean the mean value of random data that will be generated for testing
      * \param parent usual QObject parent argument
      */
-    explicit TestProtocol(int dataSize = 100, int amp = 100,  QObject *parent = 0);
+    explicit TestProtocol(int dataSize = 100, int amp = 100,  QObject *parent = nullptr);
     QString description();
 
     bool open() override;

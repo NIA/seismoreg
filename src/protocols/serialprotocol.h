@@ -32,7 +32,7 @@ public:
      *        while on *NIX it looks like path: i.e. /dev/ttyS0
      * \param samplingFrequency - number of points per second in result
      */
-    explicit SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings = DEFAULT_PORT_SETTINGS, QObject * parent = 0);
+    explicit SerialProtocol(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings = DEFAULT_PORT_SETTINGS, QObject * parent = nullptr);
     QString description();
 
     bool open() override;

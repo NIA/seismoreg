@@ -56,6 +56,7 @@ signals:
     
 private:
     explicit Logger();
+    Q_DISABLE_COPY(Logger)
     static Logger * logger;
     bool levelEnabled[_levelsCount];
 };

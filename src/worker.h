@@ -53,7 +53,7 @@ public:
      * \warning Worker takes ownership on protocols in order to prevent it from
      *          being deleted before Worker (and cause crash in destructor)
      */
-    explicit Worker(Protocol * protADC, Protocol * protGPS, QObject *parent = 0);
+    explicit Worker(Protocol * protADC, Protocol * protGPS, QObject *parent = nullptr);
 
     /*!
      * \brief Getter for connecting to signals of Protocol

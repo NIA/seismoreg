@@ -10,7 +10,7 @@ class PerformanceReporter : public QObject
 {
     Q_OBJECT
 public:
-    explicit PerformanceReporter(QString description, Logger::Level level = Logger::Info, QObject *parent = 0);
+    explicit PerformanceReporter(QString description, Logger::Level level = Logger::Info, QObject *parent = nullptr);
 
     /**
      * @brief Adds another time measurement and recomputes min/max/avg

@@ -54,7 +54,7 @@ public:
      *          to let QObject's memory management work properly
      * \param parent QObject parent
      */
-    explicit Protocol(QObject * parent = 0) : QObject(parent) { resetState(); }
+    explicit Protocol(QObject * parent = nullptr) : QObject(parent) { resetState(); }
 
     /*!
      * \brief Short description of protocol

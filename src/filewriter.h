@@ -35,7 +35,7 @@ class FileWriter : public QObject
 {
     Q_OBJECT
 public:
-    explicit FileWriter(QString outputDirectory = DEFAULT_OUTPUT_DIR, QString fileNameFormat = DEFAULT_FILENAME_FORMAT, QObject *parent = 0);
+    explicit FileWriter(QString outputDirectory = DEFAULT_OUTPUT_DIR, QString fileNameFormat = DEFAULT_FILENAME_FORMAT, QObject *parent = nullptr);
 
     QString outputDirectory() { return outputDir; }
 

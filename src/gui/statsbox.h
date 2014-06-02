@@ -14,7 +14,7 @@ class StatsBox : public QFrame
     Q_OBJECT
 
 public:
-    explicit StatsBox(QWidget *parent = 0);
+    explicit StatsBox(QWidget *parent = nullptr);
 
     /**
      * @brief Sets current stats:

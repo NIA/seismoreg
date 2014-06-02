@@ -21,7 +21,7 @@ class LogWindow : public QPlainTextEdit
     Q_OBJECT
     typedef QPlainTextEdit super;
 public:
-    explicit LogWindow(QWidget *parent = 0);
+    explicit LogWindow(QWidget *parent = nullptr);
 
     virtual ~LogWindow();
 

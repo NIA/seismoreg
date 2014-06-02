@@ -17,7 +17,7 @@ class TimePlot : public QwtPlot
 {
     Q_OBJECT
 public:
-    explicit TimePlot(QWidget *parent = 0);
+    explicit TimePlot(QWidget *parent = nullptr);
 
     /**
      * @brief Sets data for plot and replots it

@@ -81,6 +81,7 @@ namespace {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0),
+    perfStats(tr("Stats")), perfDataView(tr("DataView")),
     perfPlotting(tr("Plotting")), perfWritting(tr("Writing")), perfTotal(tr("Total (MainWindow)"))
 {
     ui->setupUi(this);
@@ -358,22 +359,32 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     }
 
     setReceivedItems(receivedItems + d.size()*CHANNELS_NUM);
-//        TODO: dataView is currently disabled! Find a way to enable it without lags
-//        QStringList items;
-//        foreach(DataItem item, d) {
-//            // TODO: use table instead of list
-//            QStringList itemStr;
-//            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
-//                itemStr << QString::number(item.byChannel[ch]);
-//            }
-//            items << itemStr.join("; ");
-//        }
-//        ui->dataView->addItems(items);
-//        ui->dataView->scrollToBottom();
+
+    if (ui->actionShowTable->isChecked()) {
+        perfDataView.start();
+        QStringList items;
+        QByteArray number;
+        foreach(const DataItem & item, d) {
+            QByteArray itemStr;
+            for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
+                number.setNum(item.byChannel[ch]);
+                itemStr += number;
+                itemStr += '\t';
+            }
+            items << itemStr;
+        }
+        ui->dataView->clear();
+        ui->dataView->addItems(items);
+        ui->dataView->scrollToBottom();
+        perfDataView.stop();
+    }
+
+    perfStats.start();
     for (unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
         // Update stats
         stats[ch]->setStats(d, ch);
     }
+    perfStats.stop();
 
     // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
     // Currently it is like that for performance measurements.
@@ -470,6 +481,8 @@ MainWindow::~MainWindow()
 
     perfPlotting.reportResults();
     perfWritting.reportResults();
+    perfStats.reportResults();
+    perfDataView.reportResults();
     perfTotal.reportResults();
     SerialProtocol::generateTimestampsPerfReporter.reportResults();
     SerialProtocol::perfReporter.reportResults();

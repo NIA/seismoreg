@@ -65,6 +65,8 @@ private:
     QVector<QWidget*> disableOnStart;
 
     // Debugging and profiling:
+    PerformanceReporter perfStats;
+    PerformanceReporter perfDataView;
     PerformanceReporter perfPlotting;
     PerformanceReporter perfWritting;
     PerformanceReporter perfTotal;

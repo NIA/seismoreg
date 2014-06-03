@@ -6,8 +6,6 @@
 #include "qextserialport.h"
 #include <QDateTime>
 
-class QTimer;
-
 struct PortSettingsEx : public PortSettings {
     // In addition to all its fields, one another:
     bool debug;

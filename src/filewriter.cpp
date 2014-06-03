@@ -8,6 +8,7 @@
 
 const QString FileWriter::DEFAULT_OUTPUT_DIR = ".";
 const QString FileWriter::DEFAULT_FILENAME_FORMAT = "%D%M%Y-%h%m%s-%f.w%i";
+PerformanceReporter  FileWriter::perfReporter("FileWriter");
 
 FileWriter::FileWriter(QString outputDirectory, QString fileNameFormat, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false),
@@ -58,6 +59,7 @@ void FileWriter::setFileName(QString outputDirectory, QString fileNameFormat) {
 }
 
 void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
+    perfReporter.start();
     int count = qMin(t.size(), d.size()); // TODO: warn if different or empty
     if (count == 0) { return; }
 
@@ -83,6 +85,7 @@ void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
     if (autoWrite) {
         writeNow();
     }
+    perfReporter.stop();
 }
 
 void FileWriter::setAutoWriteEnabled(bool enabled) {

@@ -2,6 +2,7 @@
 #define FILEWRITER_H
 
 #include "protocol.h"
+#include "performancereporter.h"
 
 #include <QObject>
 #include <QQueue>
@@ -36,6 +37,8 @@ class FileWriter : public QObject
     Q_OBJECT
 public:
     explicit FileWriter(QString outputDirectory = DEFAULT_OUTPUT_DIR, QString fileNameFormat = DEFAULT_FILENAME_FORMAT, QObject *parent = nullptr);
+
+    static PerformanceReporter perfReporter; // Bad to be global variable :( but for easier development usage...
 
     QString outputDirectory() { return outputDir; }
 

@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0),
     perfStats(tr("Stats")), perfDataView(tr("DataView")),
-    perfPlotting(tr("Plotting")), perfWritting(tr("Writing")), perfTotal(tr("Total (MainWindow)"))
+    perfPlotting(tr("Plotting")), perfTotal(tr("Total (MainWindow)"))
 {
     ui->setupUi(this);
     worker = new Worker(NULL, NULL, this);
@@ -307,6 +307,7 @@ void MainWindow::initWorkerHandlers() {
         }
     });
     connect(worker, &Worker::dataUpdated, this, &MainWindow::onDataReceived);
+    connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
 }
 
 void MainWindow::initFileHandlers() {
@@ -387,11 +388,6 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     perfStats.stop();
 
     // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
-    // Currently it is like that for performance measurements.
-    perfWritting.start();
-    fileWriter->receiveData(t, d);
-    perfWritting.stop();
-
     perfPlotting.start();
     for(TimePlot * plot: plots) {
         plot->receiveData(t, d);
@@ -480,7 +476,7 @@ MainWindow::~MainWindow()
     clockTimer->stop();
 
     perfPlotting.reportResults();
-    perfWritting.reportResults();
+    FileWriter::perfReporter.reportResults();
     perfStats.reportResults();
     perfDataView.reportResults();
     perfTotal.reportResults();

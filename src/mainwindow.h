@@ -68,7 +68,6 @@ private:
     PerformanceReporter perfStats;
     PerformanceReporter perfDataView;
     PerformanceReporter perfPlotting;
-    PerformanceReporter perfWritting;
     PerformanceReporter perfTotal;
 };
 

@@ -111,7 +111,7 @@ void FileWriter::writeOnce() {
 
 void FileWriter::writeNow() {
     if(waitingQueue.isEmpty()) {
-        Logger::warning(tr("Nothing to write to file"));
+//!!        Logger::warning(tr("Nothing to write to file"));
         return; // Nothing to write
     }
 
@@ -129,7 +129,7 @@ void FileWriter::writeNow() {
     foreach (auto str, writeQueue) {
         out << str;
     }
-    Logger::trace(tr("Written %1 items to file %2").arg(itemsWritten).arg(file->fileName()));
+//!!    Logger::trace(tr("Written %1 items to file %2").arg(itemsWritten).arg(file->fileName()));
 }
 
 bool FileWriter::openIfClosed() {
@@ -140,10 +140,10 @@ bool FileWriter::openIfClosed() {
         bool newFile = ! file->exists();
         bool success = file->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
         if ( ! success ) {
-            Logger::error(tr("Failed to open file %1: %2").arg(file->fileName()).arg(file->errorString()));
+//!!            Logger::error(tr("Failed to open file %1: %2").arg(file->fileName()).arg(file->errorString()));
             return false;
         } else {
-            Logger::info(tr("Opened file %1").arg(file->fileName()));
+//!!            Logger::info(tr("Opened file %1").arg(file->fileName()));
             if (newFile) {
                 writeHeader();
             }
@@ -171,7 +171,7 @@ void FileWriter::closeIfOpened() {
     startTime = QDateTime(); // set null datetime so that it will be reset next time
     if(file != NULL && file->isOpen()) {
         file->close();
-        Logger::info(tr("Closed file %1").arg(file->fileName()));
+//!!        Logger::info(tr("Closed file %1").arg(file->fileName()));
     }
     delete file;
     file = NULL;

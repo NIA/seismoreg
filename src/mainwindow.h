@@ -16,6 +16,7 @@ class MainWindow;
 class StatsBox;
 class TimePlot;
 class QToolButton;
+class QThread;
 
 class MainWindow : public QMainWindow
 {
@@ -52,6 +53,9 @@ private:
     PortSettingsEx portSettingsGPS;
     Worker * worker;
     FileWriter * fileWriter;
+
+    // Thread in which FileWriter works
+    QThread * threadFileWriter;
 
     QDateTime startedAt;
     QTimer * clockTimer;

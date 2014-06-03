@@ -5,6 +5,7 @@
 #include <QList>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QThread>
 #include <qwt_scale_div.h>
 
 #include "protocols/testprotocol.h"
@@ -86,7 +87,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     worker = new Worker(NULL, NULL, this);
-    fileWriter = new FileWriter(FileWriter::DEFAULT_OUTPUT_DIR, FileWriter::DEFAULT_FILENAME_FORMAT, this);
+    fileWriter = new FileWriter(FileWriter::DEFAULT_OUTPUT_DIR, FileWriter::DEFAULT_FILENAME_FORMAT);
+    /* TODO: this is the attempt to begin working on multithreading. There are still problems:
+     *  - all interaction should be through signals, not only receiveData
+     *  - using Logger from another thread causes crash (signal is not queued)
+     *  - some data may be lost (not written to file) when thread is finished
+     *  - ...
+     */
+    threadFileWriter = new QThread;
+    fileWriter->moveToThread(threadFileWriter);
+    threadFileWriter->start();
 
     initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
     initWidgetsArray(stats, ui->stats, ui->stats2, ui->stats3);
@@ -475,6 +485,11 @@ MainWindow::~MainWindow()
 {
     clockTimer->stop();
 
+    saveSettings();
+
+    threadFileWriter->quit();
+    threadFileWriter->wait();
+
     perfPlotting.reportResults();
     FileWriter::perfReporter.reportResults();
     perfStats.reportResults();
@@ -485,7 +500,6 @@ MainWindow::~MainWindow()
     TestProtocol::perfReporter.reportResults();
     perfTotal.flushDebug();
 
-    saveSettings();
     delete worker;
     delete fileWriter;
     delete ui;

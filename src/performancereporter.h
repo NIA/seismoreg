@@ -84,7 +84,7 @@ private:
 
     QElapsedTimer timer;
     bool paused;
-    qint64 beforePause;
+    double beforePause;
 
     int measurementsCount;
     double minTime;

@@ -377,7 +377,9 @@ TimeStampsVector SerialProtocol::generateTimeStamps(double periodMsecs, int coun
     generateTimestampsPerfReporter.start();
     TimeStampsVector res(count);
 
-    TimeStampType start = QDateTime::currentMSecsSinceEpoch() - periodMsecs;
+    // Round down to seconds (drop milliseconds)
+    qint64 seconds = qint64((QDateTime::currentMSecsSinceEpoch() - periodMsecs) / 1000);
+    TimeStampType start = seconds*1000;
     double deltaMsecs = periodMsecs / count;
     for (int i = 0; i < count; ++i) {
         res[i] = start + i*deltaMsecs;

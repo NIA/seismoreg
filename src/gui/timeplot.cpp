@@ -34,7 +34,8 @@ namespace {
 
 TimePlot::TimePlot(QWidget *parent) :
     QwtPlot(parent), channel(0), pointsPerSec(POINTS_PER_SEC_DEFAULT),
-    historySeconds(HISTORY_SECONDS_DEFAULT), fixedScaleMax(FIXED_SCALE_MAX_DEFAULT), fixedScale(FIXED_SCALE_DEFAULT)
+    historySeconds(HISTORY_SECONDS_DEFAULT), fixedScale(FIXED_SCALE_DEFAULT),
+    fixedScaleMax(FIXED_SCALE_MAX_DEFAULT), fixedScaleMin(FIXED_SCALE_MIN_DEFAULT)
 {
     setMinimumHeight(75);
     setMinimumWidth(350);
@@ -83,13 +84,24 @@ void TimePlot::setFixedScaleY(bool fixed) {
     setAxisAutoScale(yLeft, ! fixed);
     if (fixedScale) {
         // Restore again previous value that may be lost after automatic scale
-        setFixedScaleYMax(fixedScaleMax);
+        setScaleY();
     }
 }
 
 void TimePlot::setFixedScaleYMax(double max) {
     fixedScaleMax = max;
-    setAxisScale(yLeft, -max, +max);
+    setScaleY();
+}
+
+void TimePlot::setFixedScaleYMin(double min) {
+    fixedScaleMin = min;
+    setScaleY();
+}
+
+void TimePlot::setScaleY() {
+    if (fixedScale) {
+        setAxisScale(yLeft, fixedScaleMin, fixedScaleMax);
+    }
 }
 
 void TimePlot::receiveData(TimeStampsVector timestamps, DataVector items) {

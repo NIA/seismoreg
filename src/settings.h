@@ -82,6 +82,8 @@ public:
 
     int  plotFixedScaleMax() const;
     void setPlotFixedScaleMax(int value);
+    int  plotFixedScaleMin() const;
+    void setPlotFixedScaleMin(int value);
 
     int  plotHistorySecs() const;
     void setPlotHistorySecs(int value);

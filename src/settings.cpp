@@ -36,6 +36,7 @@ namespace {
     const QString STATS_SHOWN    = GUI_PREFIX + "stats_shown";
     const QString FIXED_SCALE    = GUI_PREFIX + "fixed_scale";
     const QString FIXED_SCALE_MAX= GUI_PREFIX + "fixed_scale_max";
+    const QString FIXED_SCALE_MIN= GUI_PREFIX + "fixed_scale_min";
     const QString HISTORY_SECS   = GUI_PREFIX + "history_secs";
     // Parameterized key: use with .arg(levelToStr[level])
     const QString LOG_LEV_ENABLED= LOG_PREFIX + "%1_enabled";
@@ -294,6 +295,12 @@ int Settings::plotFixedScaleMax() const {
 }
 void Settings::setPlotFixedScaleMax(int value) {
     settings.setValue(FIXED_SCALE_MAX, value);
+}
+int Settings::plotFixedScaleMin() const {
+    return settings.value(FIXED_SCALE_MIN, TimePlot::FIXED_SCALE_MIN_DEFAULT).toInt();
+}
+void Settings::setPlotFixedScaleMin(int value) {
+    settings.setValue(FIXED_SCALE_MIN, value);
 }
 
 int Settings::plotHistorySecs() const {

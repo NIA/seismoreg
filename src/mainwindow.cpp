@@ -118,18 +118,23 @@ void MainWindow::setup() {
     ui->connectBtn->setFocus();
     // Plot settings
     void (QSpinBox:: *valueChangedSignal)(int) = &QSpinBox::valueChanged; // resolve overloaded function
-    connect(ui->fixedScaleMax, valueChangedSignal, [=](){ui->fixedScale->setChecked(true);});
+    auto setFixedScale = [=](){ui->fixedScale->setChecked(true);};
+    connect(ui->fixedScaleMax, valueChangedSignal, setFixedScale);
+    connect(ui->fixedScaleMin, valueChangedSignal, setFixedScale);
     for (TimePlot *plot:  plots) {
         connect(ui->fixedScale,    &QAbstractButton::toggled, plot, &TimePlot::setFixedScaleY);
         connect(ui->fixedScaleMax, valueChangedSignal,        plot, &TimePlot::setFixedScaleYMax);
+        connect(ui->fixedScaleMin, valueChangedSignal,        plot, &TimePlot::setFixedScaleYMin);
         connect(ui->timeInterval,  valueChangedSignal,        plot, &TimePlot::setHistorySecs);
 
         plot->setFixedScaleYMax(settings.plotFixedScaleMax());
+        plot->setFixedScaleYMin(settings.plotFixedScaleMin());
         plot->setFixedScaleY(settings.isPlotFixedScale());
         plot->setHistorySecs(settings.plotHistorySecs());
     }
     (settings.isPlotFixedScale() ? ui->fixedScale : ui->autoScale)->setChecked(true);
     ui->fixedScaleMax->setValue( settings.plotFixedScaleMax() );
+    ui->fixedScaleMin->setValue( settings.plotFixedScaleMin() );
     ui->timeInterval->setValue(  settings.plotHistorySecs()   );
 
     portSettingsADC = settings.portSettigns(Settings::PortADC);
@@ -468,6 +473,7 @@ void MainWindow::saveSettings() {
     settings.setStatsShown(ui->actionShowStats->isChecked());
     settings.setPlotFixedScale(ui->fixedScale->isChecked());
     settings.setPlotFixedScaleMax(ui->fixedScaleMax->value());
+    settings.setPlotFixedScaleMin(ui->fixedScaleMin->value());
     settings.setPlotHistorySecs(ui->timeInterval->value());
 }
 

@@ -86,6 +86,16 @@ public slots:
     void setFixedScaleYMin(double min);
     double  fixedScaleYMin() { return fixedScaleMin; }
 
+    // easier interface to Y scale:
+    void zoomIn();
+    void zoomOut();
+    void moveUp();
+    void moveDown();
+    void resetZoom();
+
+signals:
+    void zoomChanged(double newScaleYMin, double newScaleYMax);
+
 public:
     constexpr static const double HISTORY_SECONDS_DEFAULT = 5;
     constexpr static const int    POINTS_PER_SEC_DEFAULT  = 200;
@@ -108,6 +118,9 @@ private:
      * @return the maximum size of buffer that is enough for plotting
      */
     int maxBufferSize();
+
+    void zoom(double factor);
+    void move(double factor);
 
     QVector<QPointF> itemsToPoints(TimeStampsVector timestamps, DataVector items, unsigned ch);
 

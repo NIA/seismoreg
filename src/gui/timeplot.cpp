@@ -15,6 +15,9 @@ namespace {
     const QColor BG_COLOR = Qt::white;
     const QColor CURVE_FILL = Qt::transparent; // may be some color, but currently disabled
     const qreal  CURVE_WIDTH = 2;
+    const double ZOOM_FACTOR = 1.2;
+    const double MOVE_FACTOR = 0.05;
+    const double MIN_SCALE = 1/(ZOOM_FACTOR - 1); // minimum scale so that we can zoom out from it
 
     class RoundedScaleDraw : public QwtScaleDraw {
     public:
@@ -99,9 +102,60 @@ void TimePlot::setFixedScaleYMin(double min) {
 }
 
 void TimePlot::setScaleY() {
+    // Fix errors if any:
+    if (fixedScaleMax < fixedScaleMin) {
+        qSwap(fixedScaleMax, fixedScaleMin);
+    }
+    if (qAbs(fixedScaleMax - fixedScaleMin) < MIN_SCALE) {
+        fixedScaleMax = fixedScaleMin + MIN_SCALE;
+    }
+    // Change QwtPlot settings, if currently in fixed scale mode
     if (fixedScale) {
         setAxisScale(yLeft, fixedScaleMin, fixedScaleMax);
     }
+}
+
+void TimePlot::zoomIn() {
+    zoom(ZOOM_FACTOR);
+}
+
+void TimePlot::zoomOut() {
+    zoom(1/ZOOM_FACTOR);
+}
+
+void TimePlot::zoom(double factor)
+{
+    double mid = (fixedScaleMin + fixedScaleMax) / 2;
+    double amp = qAbs(fixedScaleMax - fixedScaleMin) / 2;
+
+    amp /= factor;
+    fixedScaleMax = mid + amp;
+    fixedScaleMin = mid - amp;
+    setScaleY();
+    emit zoomChanged(fixedScaleMin, fixedScaleMax);
+}
+
+void TimePlot::moveUp() {
+    move(MOVE_FACTOR);
+}
+
+void TimePlot::moveDown() {
+    move(-MOVE_FACTOR);
+}
+
+void TimePlot::move(double factor) {
+    double delta = (fixedScaleMax - fixedScaleMin)*factor;
+    fixedScaleMin += delta;
+    fixedScaleMax += delta;
+    setScaleY();
+    emit zoomChanged(fixedScaleMin, fixedScaleMax);
+}
+
+void TimePlot::resetZoom() {
+    fixedScaleMin = FIXED_SCALE_MIN_DEFAULT;
+    fixedScaleMax = FIXED_SCALE_MAX_DEFAULT;
+    setScaleY();
+    emit zoomChanged(fixedScaleMin, fixedScaleMax);
 }
 
 void TimePlot::receiveData(TimeStampsVector timestamps, DataVector items) {

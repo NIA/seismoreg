@@ -116,22 +116,34 @@ void MainWindow::setup() {
         plots[ch]->setChannel(ch);
     }
     ui->connectBtn->setFocus();
+
     // Plot settings
+    initZoomAction(ui->actionZoomIn,    ui->zoomInBtn);
+    initZoomAction(ui->actionZoomOut,   ui->zoomOutBtn);
+    initZoomAction(ui->actionMoveUp,    ui->upBtn);
+    initZoomAction(ui->actionMoveDown,  ui->downBtn);
+    initZoomAction(ui->actionZoomReset, ui->resetZoomBtn);
     void (QSpinBox:: *valueChangedSignal)(int) = &QSpinBox::valueChanged; // resolve overloaded function
-    auto setFixedScale = [=](){ui->fixedScale->setChecked(true);};
-    connect(ui->fixedScaleMax, valueChangedSignal, setFixedScale);
-    connect(ui->fixedScaleMin, valueChangedSignal, setFixedScale);
+    connect(ui->fixedScaleMax, valueChangedSignal, this, &MainWindow::setFixedScale);
+    connect(ui->fixedScaleMin, valueChangedSignal, this, &MainWindow::setFixedScale);
     for (TimePlot *plot:  plots) {
-        connect(ui->fixedScale,    &QAbstractButton::toggled, plot, &TimePlot::setFixedScaleY);
-        connect(ui->fixedScaleMax, valueChangedSignal,        plot, &TimePlot::setFixedScaleYMax);
-        connect(ui->fixedScaleMin, valueChangedSignal,        plot, &TimePlot::setFixedScaleYMin);
-        connect(ui->timeInterval,  valueChangedSignal,        plot, &TimePlot::setHistorySecs);
+        connect(ui->fixedScale,      &QRadioButton::toggled, plot, &TimePlot::setFixedScaleY);
+        connect(ui->fixedScaleMax,   valueChangedSignal,     plot, &TimePlot::setFixedScaleYMax);
+        connect(ui->fixedScaleMin,   valueChangedSignal,     plot, &TimePlot::setFixedScaleYMin);
+        connect(ui->timeInterval,    valueChangedSignal,     plot, &TimePlot::setHistorySecs);
+        connect(ui->actionZoomIn,    &QAction::triggered,    plot, &TimePlot::zoomIn);
+        connect(ui->actionZoomOut,   &QAction::triggered,    plot, &TimePlot::zoomOut);
+        connect(ui->actionMoveUp,    &QAction::triggered,    plot, &TimePlot::moveUp);
+        connect(ui->actionMoveDown,  &QAction::triggered,    plot, &TimePlot::moveDown);
+        connect(ui->actionZoomReset, &QAction::triggered,    plot, &TimePlot::resetZoom);
 
         plot->setFixedScaleYMax(settings.plotFixedScaleMax());
         plot->setFixedScaleYMin(settings.plotFixedScaleMin());
         plot->setFixedScaleY(settings.isPlotFixedScale());
         plot->setHistorySecs(settings.plotHistorySecs());
     }
+    // TODO: using plot[0] here is not quite great
+    connect(plots[CHANNELS_NUM-1], &TimePlot::zoomChanged, this, &MainWindow::onZoomChanged);
     (settings.isPlotFixedScale() ? ui->fixedScale : ui->autoScale)->setChecked(true);
     ui->fixedScaleMax->setValue( settings.plotFixedScaleMax() );
     ui->fixedScaleMin->setValue( settings.plotFixedScaleMin() );
@@ -431,6 +443,32 @@ void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSet
             portSettings = dlg.portSettings();
         }
     });
+}
+
+void MainWindow::initZoomAction(QAction *action, QToolButton *btn) {
+    btn->setDefaultAction(action);
+    connect(action, &QAction::triggered, this, &MainWindow::setFixedScale);
+}
+
+void MainWindow::setFixedScale() {
+    ui->fixedScale->setChecked(true);
+}
+
+void MainWindow::onZoomChanged(double newMin, double newMax) {
+    // TODO: really bad practice!
+    ui->fixedScaleMax->blockSignals(true);
+    ui->fixedScaleMin->blockSignals(true);
+    ui->fixedScaleMin->setValue( int(newMin) );
+    ui->fixedScaleMax->setValue( int(newMax) );
+    ui->fixedScaleMax->blockSignals(false);
+    ui->fixedScaleMin->blockSignals(false);
+
+    if (!worker->isStarted()) {
+        // replot to see the change (when started, it will be replotted when received next data)
+        for (TimePlot * plot: plots) {
+            plot->replot();
+        }
+    }
 }
 
 void MainWindow::setFileControlsState() {

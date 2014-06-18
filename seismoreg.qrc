@@ -6,5 +6,10 @@
         <file>resources/table.ico</file>
         <file>resources/stats.ico</file>
         <file>resources/gear.ico</file>
+        <file>resources/arrow-down.ico</file>
+        <file>resources/arrow-up.ico</file>
+        <file>resources/zoom-in.ico</file>
+        <file>resources/zoom-out.ico</file>
+        <file>resources/zoom-reset.ico</file>
     </qresource>
 </RCC>

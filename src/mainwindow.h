@@ -31,12 +31,15 @@ signals:
 private slots:
     void onDataReceived(TimeStampsVector t, DataVector d);
     void onFileNameChanged();
+    void setFixedScale();
+    void onZoomChanged(double newMin, double newMax);
 
 private:
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
     void initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton *btn);
+    void initZoomAction(QAction * action, QToolButton *btn);
     void setFileControlsState();
     void setCurrentTime();
     void log(QString text);

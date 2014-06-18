@@ -124,8 +124,6 @@ void MainWindow::setup() {
     initZoomAction(ui->actionMoveDown,  ui->downBtn);
     initZoomAction(ui->actionZoomReset, ui->resetZoomBtn);
     void (QSpinBox:: *valueChangedSignal)(int) = &QSpinBox::valueChanged; // resolve overloaded function
-    connect(ui->fixedScaleMax, valueChangedSignal, this, &MainWindow::setFixedScale);
-    connect(ui->fixedScaleMin, valueChangedSignal, this, &MainWindow::setFixedScale);
     for (TimePlot *plot:  plots) {
         connect(ui->fixedScale,      &QRadioButton::toggled, plot, &TimePlot::setFixedScaleY);
         connect(ui->fixedScaleMax,   valueChangedSignal,     plot, &TimePlot::setFixedScaleYMax);
@@ -136,12 +134,16 @@ void MainWindow::setup() {
         connect(ui->actionMoveUp,    &QAction::triggered,    plot, &TimePlot::moveUp);
         connect(ui->actionMoveDown,  &QAction::triggered,    plot, &TimePlot::moveDown);
         connect(ui->actionZoomReset, &QAction::triggered,    plot, &TimePlot::resetZoom);
+        connect(ui->fixNowBtn,       &QPushButton::clicked,  plot, &TimePlot::fixCurrent);
 
         plot->setFixedScaleYMax(settings.plotFixedScaleMax());
         plot->setFixedScaleYMin(settings.plotFixedScaleMin());
         plot->setFixedScaleY(settings.isPlotFixedScale());
         plot->setHistorySecs(settings.plotHistorySecs());
     }
+    connect(ui->fixedScaleMax, valueChangedSignal, this, &MainWindow::setFixedScale);
+    connect(ui->fixedScaleMin, valueChangedSignal, this, &MainWindow::setFixedScale);
+    connect(ui->fixNowBtn,  &QPushButton::clicked, this, &MainWindow::setFixedScale);
     // TODO: using plot[0] here is not quite great
     connect(plots[CHANNELS_NUM-1], &TimePlot::zoomChanged, this, &MainWindow::onZoomChanged);
     (settings.isPlotFixedScale() ? ui->fixedScale : ui->autoScale)->setChecked(true);

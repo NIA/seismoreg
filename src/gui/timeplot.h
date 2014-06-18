@@ -85,6 +85,7 @@ public slots:
     double  fixedScaleYMax() { return fixedScaleMax; }
     void setFixedScaleYMin(double min);
     double  fixedScaleYMin() { return fixedScaleMin; }
+    void fixCurrent();
 
     // easier interface to Y scale:
     void zoomIn();

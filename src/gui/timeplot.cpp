@@ -102,14 +102,18 @@ void TimePlot::setFixedScaleYMin(double min) {
 }
 
 void TimePlot::fixCurrent() {
-    if ( ! fixedScale ) {
+    if (fixedScale) {
+        // If already fixed scale, switch to autoscale and back
+        setAxisAutoScale(yLeft, true);
+        updateAxes();
+    }
+
         const QwtScaleDiv & scaleDiv = axisScaleDiv(yLeft);
         fixedScaleMin = scaleDiv.lowerBound();
         fixedScaleMax = scaleDiv.upperBound();
         fixedScale = true;
         setAxisAutoScale(yLeft, false);
         emit zoomChanged(fixedScaleMin, fixedScaleMax);
-    }
 }
 
 void TimePlot::setScaleY() {

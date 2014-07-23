@@ -140,6 +140,10 @@ void TimePlot::zoomOut() {
 
 void TimePlot::zoom(double factor)
 {
+    if ( ! fixedScale ) {
+        fixCurrent();
+    }
+
     double mid = (fixedScaleMin + fixedScaleMax) / 2;
     double amp = qAbs(fixedScaleMax - fixedScaleMin) / 2;
 
@@ -159,6 +163,10 @@ void TimePlot::moveDown() {
 }
 
 void TimePlot::move(double factor) {
+    if ( ! fixedScale ) {
+        fixCurrent();
+    }
+
     double delta = (fixedScaleMax - fixedScaleMin)*factor;
     fixedScaleMin += delta;
     fixedScaleMax += delta;

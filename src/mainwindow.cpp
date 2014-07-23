@@ -449,7 +449,6 @@ void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSet
 
 void MainWindow::initZoomAction(QAction *action, QToolButton *btn) {
     btn->setDefaultAction(action);
-    connect(action, &QAction::triggered, this, &MainWindow::setFixedScale);
 }
 
 void MainWindow::setFixedScale() {
@@ -464,6 +463,8 @@ void MainWindow::onZoomChanged(double newMin, double newMax) {
     ui->fixedScaleMax->setValue( int(newMax) );
     ui->fixedScaleMax->blockSignals(false);
     ui->fixedScaleMin->blockSignals(false);
+
+    setFixedScale();
 
     if (!worker->isStarted()) {
         // replot to see the change (when started, it will be replotted when received next data)

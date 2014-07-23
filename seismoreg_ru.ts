@@ -165,6 +165,21 @@
         <translation>?</translation>
     </message>
     <message>
+        <location filename="mainwindow.ui" line="384"/>
+        <source>Manual</source>
+        <translation>Ручной</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="391"/>
+        <source>Automatic</source>
+        <translation>Авто</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="469"/>
+        <source>Manual auto</source>
+        <translation>Ручной авто</translation>
+    </message>
+    <message>
         <location filename="mainwindow.ui" line="579"/>
         <source>Time elapsed</source>
         <translation>Прошло времени</translation>
@@ -233,18 +248,17 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="378"/>
-        <source>Plot settings</source>
-        <translation>Настройки графиков</translation>
+        <source>Plot scale</source>
+        <oldsource>Plot settings</oldsource>
+        <translation>Масштаб графиков</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="384"/>
         <source>Auto scale</source>
-        <translation>Авто масштаб</translation>
+        <translation type="vanished">Авто масштаб</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="414"/>
         <source>Fixed scale:</source>
-        <translation>Фикс. масштаб:</translation>
+        <translation type="vanished">Фикс. масштаб:</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="329"/>
@@ -261,19 +275,18 @@
         <translation type="vanished">Суффикс (обычно расширение)</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="407"/>
+        <location filename="mainwindow.ui" line="476"/>
         <source>Time interval:</source>
         <translation>Интервал времени:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="394"/>
+        <location filename="mainwindow.ui" line="483"/>
         <source> sec.</source>
         <translation> с.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="489"/>
         <source>Fix now</source>
-        <translation>Фиксировать</translation>
+        <translation type="vanished">Фиксировать</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="611"/>
@@ -809,7 +822,7 @@
 <context>
     <name>TimePlot</name>
     <message>
-        <location filename="src/gui/timeplot.cpp" line="220"/>
+        <location filename="src/gui/timeplot.cpp" line="232"/>
         <source>Unequal size of timestamps and items: %1 vs %2</source>
         <translation>Неравный размер отсчётов времени и данных: %1 и %2</translation>
     </message>

@@ -28,6 +28,8 @@ namespace {
         {SerialProtocol::GPSTime,     "\x10\x41", 10},
         {SerialProtocol::GPSPosition, "\x10\x4A", 20},
     };
+    const QByteArray GPS_SUFFIX = "\x10\x03";
+    const int GPS_SUFFIX_SIZE = GPS_SUFFIX.size();
     // GPS constants
     const QDateTime GPS_BASE_TIME(QDate(1980, 1, 6), QTime(0, 0), Qt::UTC);
 
@@ -75,11 +77,8 @@ namespace {
         return radians / M_PI * 180.0;
     }
 
-    // Hack: time update is assumed valid if difference between
-    // new and current time is no more than MAX_TIME_UPD_DIFF
-    const int MAX_TIME_UPD_DIFF = 365;
-    bool isValidUpdate(const QDateTime & newDateTime) {
-        return qAbs(QDateTime::currentDateTime().daysTo(newDateTime)) < MAX_TIME_UPD_DIFF;
+    inline QString bytes2hex(QByteArray bytes) {
+        return QString::fromLatin1(bytes.toHex());
     }
 }
 
@@ -305,11 +304,19 @@ bool SerialProtocol::takeGPSPacket() {
         // TODO: use QMap?
         for (const KnownPacket &packetInfo: KNOWN_GPS_PACKETS) {
             if(packetInfo.kind == currentPacketGPS) {
-                if (buffer.size() > packetInfo.size) {
-                    // enough bytes, parse the packet
-                    parseGPSPacket();
+                if (buffer.size() >= packetInfo.size + GPS_SUFFIX_SIZE) {
+                    // enough bytes, check if valid...
+                    QByteArray suffix = buffer.mid(packetInfo.size, GPS_SUFFIX_SIZE); // TODO: how to avoid allocating new array (with mid)?
+                    if (suffix == GPS_SUFFIX) {
+                        // ...then parse the packet
+                        parseGPSPacket();
+                    } else {
+                        // ...otherwise just ignore corrupted
+                        currentPacketGPS = GPSNoPacket;
+                        Logger::warning(tr("Corrupted GPS 0x%1 packet: suffix %2 instead of %3").arg(bytes2hex(packetInfo.prefix)).arg(bytes2hex(suffix)).arg(bytes2hex(GPS_SUFFIX)));
+                    }
                     // remove packet from buffer
-                    buffer.remove(0, packetInfo.size);
+                    buffer.remove(0, packetInfo.size + GPS_SUFFIX_SIZE);
                     return true;
                 }
                 // Not enough, wait for the next sending
@@ -337,16 +344,9 @@ void SerialProtocol::parseGPSPacket() {
             quint16 weekNumber = unpackUINT<quint16>(packet);
             float offsetUTC    = unpackFloat(packet);
             QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
-
-            // TODO FIXME: we should check that packet has proper trailer,
-            // but we just check that new date is ``plausible'': not too far from current
-            if (isValidUpdate(dateTime)) {
-                addState(GPSHasTime);
-                Logger::trace(tr("GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC));
-                emit timeAvailable(dateTime);
-            } else {
-                Logger::warning(tr("Bad date (%4) GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3 ignored. Corrupted packet?").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC).arg(dateTime.toString("yyyy-MM-dd hh:mm")));
-            }
+            addState(GPSHasTime);
+            Logger::trace(tr("GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC));
+            emit timeAvailable(dateTime);
         }
         break;
     }

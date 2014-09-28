@@ -74,6 +74,13 @@ namespace {
     double radiansToDegrees(double radians) {
         return radians / M_PI * 180.0;
     }
+
+    // Hack: time update is assumed valid if difference between
+    // new and current time is no more than MAX_TIME_UPD_DIFF
+    const int MAX_TIME_UPD_DIFF = 365;
+    bool isValidUpdate(const QDateTime & newDateTime) {
+        return qAbs(QDateTime::currentDateTime().daysTo(newDateTime)) < MAX_TIME_UPD_DIFF;
+    }
 }
 
 PortSettingsEx::PortSettingsEx(BaudRateType baudRate, DataBitsType dataBits, ParityType parity, StopBitsType stopBits, FlowType flowControl, long timeoutMillisec, bool debug)
@@ -330,9 +337,16 @@ void SerialProtocol::parseGPSPacket() {
             quint16 weekNumber = unpackUINT<quint16>(packet);
             float offsetUTC    = unpackFloat(packet);
             QDateTime dateTime = GPS_BASE_TIME.addDays(7*weekNumber).addMSecs((timeOfWeek - offsetUTC)*1000);
-            addState(GPSHasTime);
-            Logger::trace(tr("GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC));
-            emit timeAvailable(dateTime);
+
+            // TODO FIXME: we should check that packet has proper trailer,
+            // but we just check that new date is ``plausible'': not too far from current
+            if (isValidUpdate(dateTime)) {
+                addState(GPSHasTime);
+                Logger::trace(tr("GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC));
+                emit timeAvailable(dateTime);
+            } else {
+                Logger::warning(tr("Bad date (%4) GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3 ignored. Corrupted packet?").arg(timeOfWeek).arg(weekNumber).arg(offsetUTC).arg(dateTime.toString("yyyy-MM-dd hh:mm")));
+            }
         }
         break;
     }

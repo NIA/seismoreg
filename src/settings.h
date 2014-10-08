@@ -14,8 +14,8 @@ public:
 
     // Core settings
 
-    int deviceId() const;
-    void setDeviceId(int value);
+    QString deviceId() const;
+    void setDeviceId(const QString &value);
 
     int samplingFrequency() const;
     void setSamplingFrequency(int value);

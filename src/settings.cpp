@@ -7,6 +7,7 @@
 
 namespace {
     const QString SETTINGS_FILE = "seismoreg.ini";
+    const QString DEVICE_ID_FILE_DEFAULT = "C:/Users/NIA/Desktop/config.ini";
 
     /**
      * NB: keys are case-insensitive in INI format,
@@ -130,11 +131,24 @@ Settings::Settings(QObject *parent) :
 
 // Core settings
 
-int Settings::deviceId() const {
-    return settings.value(DEVICE_ID, DEVICE_ID_DEFAULT).toInt();
+QString Settings::deviceId() const {
+    // First try to get it from external file
+    QFile file(DEVICE_ID_FILE_DEFAULT); // TODO: get path from settings too
+    if( file.open(QFile::ReadOnly | QFile::Text) ) {
+        QTextStream in(&file);
+        QString line = in.readLine().trimmed().toLower();
+        // first line of file should have format [device ID]=02
+        if (line.startsWith("[device id]")) {
+            int pos = line.indexOf('=');
+            QString id = line.mid(pos + 1);
+            return id;
+        }
+        file.close();
+    }
+    return settings.value(DEVICE_ID, DEVICE_ID_DEFAULT).toString();
 }
 
-void Settings::setDeviceId(int value) {
+void Settings::setDeviceId(const QString &value) {
     settings.setValue(DEVICE_ID, value);
 }
 

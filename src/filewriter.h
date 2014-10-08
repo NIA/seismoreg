@@ -117,7 +117,7 @@ public slots:
 
     // Settings for header:
 
-    void setDeviceID(int id) { deviceID = id; }
+    void setDeviceID(QString id);
     void setCoordinates(QString latitude, QString longitude) {
         this->latitude  = latitude;
         this->longitude = longitude;
@@ -145,7 +145,7 @@ private:
     QFile * file;
     bool autoWrite;
 
-    int deviceID;
+    QString deviceID;
     int samplingFreq;
     int filterFreq;
     QString latitude;

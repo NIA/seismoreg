@@ -7,7 +7,7 @@
 
 namespace {
     const QString SETTINGS_FILE = "seismoreg.ini";
-    const QString DEVICE_ID_FILE_DEFAULT = "C:/Users/NIA/Desktop/config.ini";
+    const QString DEVICE_ID_FILE_DEFAULT = "C:/Documents and Settings/Administrator/Desktop/config.ini";
 
     /**
      * NB: keys are case-insensitive in INI format,
@@ -32,6 +32,7 @@ namespace {
     const QString FILTR_FREQ = CORE_PREFIX + "filter_frequency";
     const QString OUTPUT_DIR = CORE_PREFIX + "output_dir";
     const QString FILE_FORMAT= CORE_PREFIX + "filename_format";
+    const QString DEVICE_ID_FILE=CORE_PREFIX +"device_id_file";
     const QString TABLE_SHOWN    = GUI_PREFIX + "table_shown";
     const QString SETTINGS_SHOWN = GUI_PREFIX + "settings_shown";
     const QString STATS_SHOWN    = GUI_PREFIX + "stats_shown";
@@ -52,7 +53,7 @@ namespace {
     const QString _DEBUG_MODE= "debug";
 
     // Default values
-    const int DEVICE_ID_DEFAULT = 1;
+    const QString DEVICE_ID_DEFAULT = "01";
     const QString PORT_DEFAULT  = "TEST";
     const int FREQUENCY_DEFAULT = 200;
     const bool TABLE_SHOWN_DEFAULT    = false;
@@ -133,18 +134,29 @@ Settings::Settings(QObject *parent) :
 
 QString Settings::deviceId() const {
     // First try to get it from external file
-    QFile file(DEVICE_ID_FILE_DEFAULT); // TODO: get path from settings too
+    QString path = settings.value(DEVICE_ID_FILE, DEVICE_ID_FILE_DEFAULT).toString();
+    QFile file(path);
     if( file.open(QFile::ReadOnly | QFile::Text) ) {
+        Logger::trace(tr("Reading device id from file '%1'").arg(path));
         QTextStream in(&file);
         QString line = in.readLine().trimmed().toLower();
         // first line of file should have format [device ID]=02
         if (line.startsWith("[device id]")) {
             int pos = line.indexOf('=');
-            QString id = line.mid(pos + 1);
-            return id;
+            QString id = line.mid(pos + 1).trimmed();
+            if ( ! id.isEmpty() ) {
+                return id;
+            } else {
+                Logger::warning(tr("Failed to read device id from file'%1': ").arg(path) + tr("id is empty"));
+            }
+        } else {
+            Logger::warning(tr("Failed to read device id from file'%1': ").arg(path) + tr("invalid format"));
         }
         file.close();
+    } else {
+        Logger::warning(tr("Failed to read device id from file'%1': ").arg(path) + tr("file cannot be read"));
     }
+    // Finally, if external config file not found or is incorrect - check local settings or fall back to default
     return settings.value(DEVICE_ID, DEVICE_ID_DEFAULT).toString();
 }
 

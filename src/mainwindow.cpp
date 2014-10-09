@@ -101,6 +101,15 @@ void MainWindow::setup() {
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_10, FREQ_1}), settings.samplingFrequency());
     initFreqSlider(ui->filterFreqSlider, FREQ_50, FREQ_200, settings.filterFrequency());
+
+    // Configure toolbar and status bar
+    ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    connect(Logger::instance(), &Logger::si_messageAdded, [=](Logger::Level level, QString message){
+        if (level >= Logger::Info) {
+            ui->statusBar->showMessage(message);
+        }
+    });
+
     fileWriter->setFileName(settings.outputDirectory(), settings.fileNameFormat());
     fileWriter->setDeviceID(settings.deviceId());
     initFileHandlers();
@@ -167,14 +176,6 @@ void MainWindow::setup() {
     });
     clockTimer->start(1000);
     setCurrentTime(); // And set for the first time
-
-    // Configure toolbar and status bar
-    ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
-    connect(Logger::instance(), &Logger::si_messageAdded, [=](Logger::Level level, QString message){
-        if (level >= Logger::Info) {
-            ui->statusBar->showMessage(message);
-        }
-    });
 
     // Connect event handlers
     connect(ui->connectBtn, &QPushButton::clicked, [=](){

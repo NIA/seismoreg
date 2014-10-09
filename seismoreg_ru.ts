@@ -25,28 +25,33 @@
 %i - ID устройства</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="114"/>
+        <location filename="src/filewriter.cpp" line="116"/>
+        <source>Device id: %1</source>
+        <translation>ID устройства: %1</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="121"/>
         <source>Nothing to write to file</source>
         <oldsource>Nothing to write in queue</oldsource>
         <translation>Нечего записать в файл</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="132"/>
+        <location filename="src/filewriter.cpp" line="139"/>
         <source>Written %1 items to file %2</source>
         <translation>Записано %1 данных в файл %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="143"/>
+        <location filename="src/filewriter.cpp" line="150"/>
         <source>Failed to open file %1: %2</source>
         <translation>Не удалось открыть файл %1: %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="146"/>
+        <location filename="src/filewriter.cpp" line="153"/>
         <source>Opened file %1</source>
         <translation>Открыт файл %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="174"/>
+        <location filename="src/filewriter.cpp" line="181"/>
         <source>Closed file %1</source>
         <translation>Закрыт файл %1</translation>
     </message>
@@ -155,7 +160,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="342"/>
-        <location filename="src/mainwindow.cpp" line="359"/>
+        <location filename="src/mainwindow.cpp" line="360"/>
         <source>Filename format help</source>
         <translation>Справка по формату имени файла</translation>
     </message>
@@ -165,12 +170,12 @@
         <translation>?</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="384"/>
+        <location filename="mainwindow.ui" line="394"/>
         <source>Manual</source>
         <translation>Ручной</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="391"/>
+        <location filename="mainwindow.ui" line="384"/>
         <source>Automatic</source>
         <translation>Авто</translation>
     </message>
@@ -254,11 +259,11 @@
     </message>
     <message>
         <source>Auto scale</source>
-        <translation type="vanished">Авто масштаб</translation>
+        <translation type="obsolete">Авто масштаб</translation>
     </message>
     <message>
         <source>Fixed scale:</source>
-        <translation type="vanished">Фикс. масштаб:</translation>
+        <translation type="obsolete">Фикс. масштаб:</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="329"/>
@@ -268,11 +273,11 @@
     <message>
         <source>&lt;time&gt;</source>
         <oldsource>&lt;date&gt;</oldsource>
-        <translation type="vanished">&lt;время&gt;</translation>
+        <translation type="obsolete">&lt;время&gt;</translation>
     </message>
     <message>
         <source>Suffix (usually extension)</source>
-        <translation type="vanished">Суффикс (обычно расширение)</translation>
+        <translation type="obsolete">Суффикс (обычно расширение)</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="476"/>
@@ -286,7 +291,7 @@
     </message>
     <message>
         <source>Fix now</source>
-        <translation type="vanished">Фиксировать</translation>
+        <translation type="obsolete">Фиксировать</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="611"/>
@@ -444,11 +449,11 @@
     </message>
     <message>
         <source>Writing</source>
-        <translation type="vanished">Запись</translation>
+        <translation type="obsolete">Запись</translation>
     </message>
     <message>
         <source>Total</source>
-        <translation type="vanished">Всего</translation>
+        <translation type="obsolete">Всего</translation>
     </message>
     <message>
         <location filename="src/mainwindow.cpp" line="84"/>
@@ -466,22 +471,22 @@
         <translation>Всего (MainWindow)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="285"/>
+        <location filename="src/mainwindow.cpp" line="286"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="293"/>
+        <location filename="src/mainwindow.cpp" line="294"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="351"/>
+        <location filename="src/mainwindow.cpp" line="352"/>
         <source>Choose output directory for data files</source>
         <translation>Выберите директорию для записи файлов данных</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="373"/>
+        <location filename="src/mainwindow.cpp" line="374"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
@@ -723,40 +728,75 @@
 <context>
     <name>SerialProtocol</name>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="103"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="109"/>
         <source>Incorrect frequency: cannot be less than %1</source>
         <translation>Неверная частота: должна быть не меньше %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="107"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="113"/>
         <source>Incorrect frequency: should be a divisor of %1</source>
         <translation>Неверная частота: должна быть делителем чилса %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="114"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="120"/>
         <source>Serial port %1 [%2-&gt;%3]</source>
         <translation>Последовательный порт%1 [%2-&gt;%3]</translation>
     </message>
     <message>
         <source>Serial port %1</source>
-        <translation type="vanished">Последовательный порт %1</translation>
+        <translation type="obsolete">Последовательный порт %1</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="180"/>
-        <location filename="src/protocols/serialprotocol.cpp" line="190"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="186"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="196"/>
         <source>Cannot change parameters when receiving data</source>
         <translation>Невозможно изменить параметры во время приёма данных</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="334"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="316"/>
+        <source>Corrupted GPS 0x%1 packet: suffix %2 instead of %3</source>
+        <translation>Поврежденный пакет GPS 0x%1: окончание %2 вместо %3</translation>
+    </message>
+    <message>
+        <location filename="src/protocols/serialprotocol.cpp" line="348"/>
         <source>GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3</source>
         <translatorcomment>do not need to translate, actually</translatorcomment>
         <translation>GPS Time packet: timeOfWeek=%1, weekNumber=%2, offsetUTC=%3</translation>
     </message>
     <message>
-        <location filename="src/protocols/serialprotocol.cpp" line="356"/>
+        <location filename="src/protocols/serialprotocol.cpp" line="370"/>
         <source>GPS packet not yet supported</source>
         <translation>GPS пакет пока не поддерживается</translation>
+    </message>
+</context>
+<context>
+    <name>Settings</name>
+    <message>
+        <location filename="src/settings.cpp" line="140"/>
+        <source>Reading device id from file &apos;%1&apos;</source>
+        <translation>Считывается id устойства из файла &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="src/settings.cpp" line="150"/>
+        <location filename="src/settings.cpp" line="153"/>
+        <location filename="src/settings.cpp" line="157"/>
+        <source>Failed to read device id from file&apos;%1&apos;: </source>
+        <translation>Не удалось считать id устройства из файла &apos;%1&apos;: </translation>
+    </message>
+    <message>
+        <location filename="src/settings.cpp" line="150"/>
+        <source>id is empty</source>
+        <translation>пустой id</translation>
+    </message>
+    <message>
+        <location filename="src/settings.cpp" line="153"/>
+        <source>invalid format</source>
+        <translation>неверный формат</translation>
+    </message>
+    <message>
+        <location filename="src/settings.cpp" line="157"/>
+        <source>file cannot be read</source>
+        <translation>файл не может быть прочитан</translation>
     </message>
 </context>
 <context>

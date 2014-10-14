@@ -52,6 +52,16 @@ public:
     }
 
 signals:
+    /*!
+     * \brief Connect this signal to your slot to receive
+     *        log messages
+     * \param level
+     * \param message
+     * \warning Always use Qt::QueuedConnection if log is used from
+     *          multiple threads
+     *  \todo TODO: Revise this logic. The Logger class should handle this itself,
+     *        instead of relying on users.
+     */
     void si_messageAdded(Level level, QString message);
     
 private:

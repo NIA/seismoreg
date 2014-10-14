@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fileWriter = new FileWriter(FileWriter::DEFAULT_OUTPUT_DIR, FileWriter::DEFAULT_FILENAME_FORMAT);
     /* TODO: this is the attempt to begin working on multithreading. There are still problems:
      *  - all interaction should be through signals, not only receiveData
-     *  - using Logger from another thread causes crash (signal is not queued)
+     *  ~ [partially fixed] using Logger from another thread causes crash (signal is not queued)
      *  - some data may be lost (not written to file) when thread is finished
      *  - ...
      */
@@ -161,11 +161,7 @@ void MainWindow::setup() {
 
     // Configure toolbar and status bar
     ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
-    connect(Logger::instance(), &Logger::si_messageAdded, [=](Logger::Level level, QString message){
-        if (level >= Logger::Info) {
-            ui->statusBar->showMessage(message);
-        }
-    });
+    connect(Logger::instance(), &Logger::si_messageAdded, this, &MainWindow::onLogMessage, Qt::QueuedConnection);
 
     // Connect event handlers
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
@@ -407,6 +403,12 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     ui->ledADC->blinkOnce();
 
     perfTotal.stop();
+}
+
+void MainWindow::onLogMessage(Logger::Level level, QString message) {
+    if (level >= Logger::Info) {
+        ui->statusBar->showMessage(message);
+    }
 }
 
 void MainWindow::setReceivedItems(int received) {

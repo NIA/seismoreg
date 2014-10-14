@@ -32,6 +32,7 @@ signals:
 private slots:
     void onDataReceived(TimeStampsVector t, DataVector d);
     void onFileNameChanged();
+    void onLogMessage(Logger::Level level, QString message);
 
 private:
     void setup();

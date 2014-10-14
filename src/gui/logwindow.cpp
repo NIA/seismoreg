@@ -22,7 +22,7 @@ LogWindow::LogWindow(QWidget *parent) :
 {
     actionClearLog = new QAction(QIcon(":/icons/images/remove.ico"), tr("Clear log"), this);
     connect(actionClearLog, &QAction::triggered, this, &LogWindow::clear);
-    connect(Logger::instance(), &Logger::si_messageAdded, this, &LogWindow::sl_messageAdded);
+    connect(Logger::instance(), &Logger::si_messageAdded, this, &LogWindow::sl_messageAdded, Qt::QueuedConnection);
 
     Settings settings;
     Logger::forEachLevel([=,&settings](Logger::Level lev) {

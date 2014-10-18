@@ -151,7 +151,7 @@ void MainWindow::setup() {
     clockTimer = new QTimer(this);
     connect(clockTimer, &QTimer::timeout, [=](){
         setCurrentTime();
-        if(worker->isStarted() && ! worker->isPaused()) {
+        if(worker->isStarted()) {
             QTime elapsed = QTime(0,0,0).addSecs(startedAt.secsTo(QDateTime::currentDateTime()));
             ui->timeElapsed->setTime(elapsed);
         }

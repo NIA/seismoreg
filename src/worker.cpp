@@ -144,26 +144,6 @@ void Worker::start() {
     emit triedToStart(StartSuccess);
 }
 
-void Worker::pause() {
-    Q_ASSERT_X(protocolADC_ != 0, "Worker::pause", "protocol not set");
-    if( paused ) {
-        return;
-    }
-    paused = true;
-    Logger::warning(tr("Paused receiving data!"));
-    protocolADC_->stopReceiving();
-}
-
-void Worker::unpause() {
-    Q_ASSERT_X(protocolADC_ != 0, "Worker::unpause", "protocol not set");
-    if( ! paused ) {
-        return;
-    }
-    paused = false;
-    Logger::info(tr("Continuing receiving data after pause..."));
-    protocolADC_->startReceiving();
-}
-
 void Worker::finalizeProtocol(Protocol * protocol) {
     if(protocol != NULL) {
         if(protocol->hasState(Protocol::Open)) {
@@ -182,6 +162,5 @@ void Worker::finish() {
     autostart = false;
     prepared = false;
     started = false;
-    paused = false;
 }
 

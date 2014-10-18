@@ -78,8 +78,6 @@ public:
      */
     bool isStarted() { return started; }
 
-    bool isPaused() { return paused; }
-
     ~Worker() { finish(); }
 
 public slots:
@@ -112,16 +110,6 @@ public slots:
      * Will do it until Worker::finish is called
      */
     void start();
-
-    /*!
-     * \brief Pause receiving data without closing protocol
-     */
-    void pause();
-
-    /*!
-     * \brief Continue receiving data after pause
-     */
-    void unpause();
 
     /*!
      * \brief Finish processing data and close protocol
@@ -169,7 +157,6 @@ private:
     bool autostart;
     bool prepared;
     bool started;
-    bool paused;
 
 };
 

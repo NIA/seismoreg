@@ -144,9 +144,10 @@ bool FileWriter::openIfClosed() {
             return false;
         } else {
             Logger::info(tr("Opened file %1").arg(file->fileName()));
+
             if (newFile) {
                 writeHeader();
-            }
+            }// TODO: else: do what? Append - incorrect, rewrite - should ask
             return true;
         }
     }

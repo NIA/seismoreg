@@ -27,19 +27,35 @@ public:
     ~MainWindow();
 
 signals:
+    // Signals for multithreaded communication (with Worker, FileWriter)
+    void protocolsChanged(ProtocolCreator * protADC, ProtocolCreator * protGPS);
+    void preparingToStart(bool autostart);
+    void starting();
+    void stopping();
+    void finishing();
+    void fileNameChanged(QString outputDir, QString saveFileFormat);
     void autoWriteChanged(bool enabled);
+    void finishingFile();
+    void frequenciesSet(int samplingFreq, int filterFreq);
+    void deviceIdSet(int id);
 
 private slots:
+    void onCheckedADC(bool success);
+    void onCheckedGPS(bool success);
+    void onPrepareFinished(Worker::PrepareResult res);
+    void onTimeAvailable(QDateTime timeGPS);
+    void onPositionAvailable(double latitiude, double longitude, double altitude);
     void onDataReceived(TimeStampsVector t, DataVector d);
     void onFileNameChanged();
     void onLogMessage(Logger::Level level, QString message);
+    void onQueueSizeChanged(unsigned size);
+    void setFileControlsState();
 
 private:
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
     void initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton *btn);
-    void setFileControlsState();
     void setCurrentTime();
     void log(QString text);
     void setReceivedItems(int received);
@@ -48,15 +64,14 @@ private:
     void saveSettings();
 
     Ui::MainWindow *ui;
-    Protocol * protocolADC;
-    Protocol * protocolGPS;
     PortSettingsEx portSettingsADC;
     PortSettingsEx portSettingsGPS;
     Worker * worker;
     FileWriter * fileWriter;
 
-    // Thread in which FileWriter works
+    // Threads where FileWriter and Worker work
     QThread * threadFileWriter;
+    QThread * threadWorker;
 
     QDateTime startedAt;
     QTimer * clockTimer;

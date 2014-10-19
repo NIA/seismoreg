@@ -134,3 +134,12 @@ DataVector TestProtocol::generateRandom(TimeStampsVector ts) {
     perfReporter.stop();
     return res;
 }
+
+TestProtocolCreator::TestProtocolCreator(int dataSize, int amp)
+    : dataSize(dataSize), amp(amp)
+{}
+
+Protocol * TestProtocolCreator::createProtocol() {
+    return new TestProtocol(dataSize, amp);
+}
+

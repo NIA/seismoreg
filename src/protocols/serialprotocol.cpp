@@ -385,3 +385,12 @@ TimeStampsVector SerialProtocol::generateTimeStamps(double periodMsecs, int coun
     generateTimestampsPerfReporter.stop();
     return res;
 }
+
+SerialProtocolCreator::SerialProtocolCreator(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings)
+    : portName(portName), samplingFreq(samplingFreq), filterFreq(filterFreq), settings(settings)
+{}
+
+Protocol * SerialProtocolCreator::createProtocol() {
+    return new SerialProtocol(portName, samplingFreq, filterFreq, settings);
+}
+

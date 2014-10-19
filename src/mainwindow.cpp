@@ -68,12 +68,12 @@ namespace {
     }
 
     // "Protocol factory"
-    Protocol * makeProtocol(QString portName, int samplingFrequency, int filterFrequency, QObject * parent, PortSettingsEx portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS) {
+    ProtocolCreator * makeProtocol(QString portName, int samplingFrequency, int filterFrequency, PortSettingsEx portSettings = SerialProtocol::DEFAULT_PORT_SETTINGS) {
         if(portName == TEST_PROTOCOL) {
             // An option for testing
-            return new TestProtocol(samplingFrequency, 9000000, parent);
+            return new TestProtocolCreator(samplingFrequency, 9000000);
         } else {
-            return new SerialProtocol(portName, samplingFrequency, filterFrequency, portSettings, parent);
+            return new SerialProtocolCreator(portName, samplingFrequency, filterFrequency, portSettings);
         }
     }
 
@@ -81,12 +81,11 @@ namespace {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), protocolADC(NULL), protocolGPS(NULL), receivedItems(0),
+    ui(new Ui::MainWindow), receivedItems(0),
     perfStats(tr("Stats")), perfDataView(tr("DataView")),
     perfPlotting(tr("Plotting")), perfTotal(tr("Total (MainWindow)"))
 {
     ui->setupUi(this);
-    worker = new Worker(NULL, NULL, this);
     fileWriter = new FileWriter(FileWriter::DEFAULT_OUTPUT_DIR, FileWriter::DEFAULT_FILENAME_FORMAT);
     /* TODO: this is the attempt to begin working on multithreading. There are still problems:
      *  - all interaction should be through signals, not only receiveData
@@ -97,6 +96,10 @@ MainWindow::MainWindow(QWidget *parent) :
     threadFileWriter = new QThread;
     fileWriter->moveToThread(threadFileWriter);
     threadFileWriter->start();
+    worker = new Worker;
+    threadWorker = new QThread;
+    worker->moveToThread(threadWorker);
+    threadWorker->start(QThread::HighestPriority);
 
     initWidgetsArray(plots, ui->plotArea, ui->plotArea2, ui->plotArea3);
     initWidgetsArray(stats, ui->stats, ui->stats2, ui->stats3);
@@ -106,14 +109,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::setup() {
     Settings settings;
+    // Init connections
+    initWorkerHandlers();
+    initFileHandlers();
+    emit fileNameChanged(settings.outputDirectory(), settings.fileNameFormat());
+    emit deviceIdSet(settings.deviceId());
     // Init GUI
     initPortChooser(ui->portChooser, settings.portName(Settings::PortADC));
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
     initFreqChooser(ui->samplingFreq, QList<int>({FREQ_200, FREQ_50, FREQ_10, FREQ_1}), settings.samplingFrequency());
     initFreqSlider(ui->filterFreqSlider, FREQ_50, FREQ_200, settings.filterFrequency());
-    fileWriter->setFileName(settings.outputDirectory(), settings.fileNameFormat());
-    fileWriter->setDeviceID(settings.deviceId());
-    initFileHandlers();
     disableOnConnect = { ui->portChooser,     ui->portChooserGPS,
                          ui->portSettingsADC, ui->portSettingsGPS };
     disableOnStart   = { ui->samplingFreq,    ui->filterFreqSlider };
@@ -179,19 +184,21 @@ void MainWindow::setup() {
 
         QString portNameADC = ui->portChooser->currentText();
         QString portNameGPS = ui->portChooserGPS->currentText();
-        protocolADC = makeProtocol(portNameADC, samplingFrequency, filterFrequency, this, portSettingsADC);
+        ProtocolCreator * protocolCreatorADC = makeProtocol(portNameADC, samplingFrequency, filterFrequency, portSettingsADC);
+        ProtocolCreator * protocolCreatorGPS = NULL;
         if (portNameADC == portNameGPS) {
             // Important! If port names are equal, protocols also should be the
             // same instance, NOT two different instances with the same parameters!
-            protocolGPS = protocolADC;
+            protocolCreatorGPS = protocolCreatorADC;
             // TODO: move this `if` into makeProtocol and move this function to core?
         } else {
-            protocolGPS = makeProtocol(portNameGPS, samplingFrequency, filterFrequency, this, portSettingsGPS);
+            protocolCreatorGPS = makeProtocol(portNameGPS, samplingFrequency, filterFrequency, portSettingsGPS);
         }
 
-        worker->reset(protocolADC, protocolGPS);
-        initWorkerHandlers();
-        worker->prepare();
+        // Calls Worker::reset
+        emit protocolsChanged(protocolCreatorADC, protocolCreatorGPS);
+        // Calls Worker::prepare(autostart = false)
+        emit preparingToStart(false);
     });
     connect(ui->startBtn, &QPushButton::clicked, [=](){
         ui->startBtn->setDisabled(true);
@@ -211,17 +218,10 @@ void MainWindow::setup() {
         for(TimePlot * plot: plots) {
             plot->setPointsPerSec(samplingFrequency);
         }
-        fileWriter->setFrequencies(samplingFrequency, filterFrequency);
-        worker->protocolADC()->setSamplingFrequency(samplingFrequency);
-        worker->protocolADC()->setFilterFrequency(filterFrequency);
-
-        // TODO: do not call Worker and FileWriter methods, send signals instead
-        // (for future parallel implementation)
-        if(worker->isStarted()) {
-            worker->unpause();
-        } else {
-            worker->start();
-        }
+        // Calls Worker::setFrequencies and FileWriter::setFrequencies
+        emit frequenciesSet(samplingFrequency, filterFrequency);
+        // Calls Worker::start
+        emit starting();
         setFileControlsState();
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
@@ -233,11 +233,13 @@ void MainWindow::setup() {
         }
         ui->ledWorking->setValue(false);
 
-        worker->pause();
+        // calls Worker::stop
+        emit stopping();
         setFileControlsState();
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
-        worker->finish();
+        // calls Worker::finish
+        emit finishing();
         ui->ledADC->setValue(false);
         ui->ledGPS->setValue(false);
         ui->disconnectBtn->setDisabled(true);
@@ -253,79 +255,45 @@ void MainWindow::setup() {
         ui->ledReady->setValue(false);
         ui->ledWorking->setValue(false);
     });
-    // Finish file both on stop and disconnect
-    connect(ui->disconnectBtn, &QPushButton::clicked, fileWriter, &FileWriter::finishFile);
-    connect(ui->stopBtn,       &QPushButton::clicked, fileWriter, &FileWriter::finishFile);
 }
 
 void MainWindow::initWorkerHandlers() {
-    worker->disconnect();
-    connect(worker->protocolADC(), &Protocol::checkedADC, [=](bool success){
-        ui->ledADC->setOnColor( success ? QLed::Green : QLed::Red);
-        ui->ledADC->setValue(true);
-    });
-    connect(worker->protocolGPS(), &Protocol::checkedGPS, [=](bool success){
-        ui->ledGPS->setOnColor( success ? QLed::Green : QLed::Red);
-        ui->ledGPS->setValue(true);
-    });
-    connect(worker->protocolGPS(), &Protocol::timeAvailable, [=](QDateTime time){
-        Logger::info(tr("Received time update: %1UTC").arg(time.toString("yyyy-MM-dd hh:mm:ss.zzz")));
-        if (synchronizedAt.isNull() || synchronizedAt.secsTo(time) > TIME_SYNC_PERIOD_SECS) {
-            System::setSystemTime(time);
-            synchronizedAt = time;
-        }
-        ui->ledGPS->blinkOnce();
-    });
-    connect(worker->protocolGPS(), &Protocol::positionAvailable, [=](double latitude, double longitude, double altitude){
-        Logger::info(tr("Received position update: %1, %2, %3m").arg(latitude).arg(longitude).arg(altitude));
-        // TODO: convert to minutes/seconds format?
-        QString latitudeStr  = QString::number(latitude, 'f', 6);
-        QString longitudeStr = QString::number(longitude, 'f', 6);
+    // Incoming
+    connect(worker, &Worker::checkedADC,        this, &MainWindow::onCheckedADC);
+    connect(worker, &Worker::checkedGPS,        this, &MainWindow::onCheckedGPS);
+    connect(worker, &Worker::timeAvailable,     this, &MainWindow::onTimeAvailable);
+    connect(worker, &Worker::positionAvailable, this, &MainWindow::onPositionAvailable);
+    connect(worker, &Worker::prepareFinished,   this, &MainWindow::onPrepareFinished);
+    connect(worker, &Worker::dataUpdated,       this, &MainWindow::onDataReceived);
+    connect(worker, &Worker::positionAvailable, fileWriter, &FileWriter::setCoordinates);
+    connect(worker, &Worker::dataUpdated,       fileWriter, &FileWriter::receiveData);
+    connect(worker, &Worker::triedToStart,      this, &MainWindow::setFileControlsState);
+    connect(worker, &Worker::stopped,           this, &MainWindow::setFileControlsState);
+    connect(worker, &Worker::finished,          this, &MainWindow::setFileControlsState);
 
-        ui->currentLatitude->setText(latitudeStr);
-        ui->currentLongitude->setText(longitudeStr);
-        fileWriter->setCoordinates(latitudeStr, longitudeStr);
-        ui->ledGPS->blinkOnce();
-    });
-    connect(worker, &Worker::prepareFinished, [=](Worker::PrepareResult res){
-        if(res == Worker::PrepareSuccess) {
-            ui->startBtn->setEnabled(true);
-            ui->startBtn->setFocus();
-
-            // TODO: avoid repetition in working with LEDs
-            ui->ledReady->setOnColor(QLed::Green);
-            ui->ledReady->setValue(true);
-        } else {
-            ui->connectBtn->setEnabled(true);
-            ui->disconnectBtn->setDisabled(true);
-            foreach(QWidget * w, disableOnConnect) {
-                w->setEnabled(true);
-            }
-            ui->connectBtn->setFocus();
-
-            if (res == Worker::PrepareFailADC) {
-                ui->ledADC->setOnColor(QLed::Red);
-                ui->ledADC->setValue(true);
-            } else if (res == Worker::PrepareFailGPS) {
-                ui->ledGPS->setOnColor(QLed::Red);
-                ui->ledGPS->setValue(true);
-            }
-        }
-    });
-    connect(worker, &Worker::dataUpdated, this, &MainWindow::onDataReceived);
-    connect(worker, &Worker::dataUpdated, fileWriter, &FileWriter::receiveData);
+    // Outcoming
+    connect(this, &MainWindow::protocolsChanged,   worker, &Worker::reset);
+    connect(this, &MainWindow::preparingToStart,   worker, &Worker::prepare);
+    connect(this, &MainWindow::starting,           worker, &Worker::start);
+    connect(this, &MainWindow::stopping,           worker, &Worker::stop);
+    connect(this, &MainWindow::finishing,          worker, &Worker::finish);
+    connect(this, &MainWindow::frequenciesSet,     worker, &Worker::setFrequencies);
 }
 
 void MainWindow::initFileHandlers() {
 
     connect(this,               &MainWindow::autoWriteChanged, fileWriter, &FileWriter::setAutoWriteEnabled);
+    connect(this,               &MainWindow::frequenciesSet,   fileWriter, &FileWriter::setFrequencies);
+    connect(this,               &MainWindow::deviceIdSet,      fileWriter, &FileWriter::setDeviceID);
+    connect(this,               &MainWindow::stopping,         fileWriter, &FileWriter::finishFile);
+    connect(this,               &MainWindow::finishing,        fileWriter, &FileWriter::finishFile);
+    connect(this,               &MainWindow::finishingFile,    fileWriter, &FileWriter::finishFile);
     connect(ui->outputDir,      &QLineEdit::editingFinished,   this,       &MainWindow::onFileNameChanged);
     connect(ui->saveFileFormat, &QLineEdit::editingFinished,   this,       &MainWindow::onFileNameChanged);
+    connect(this,               &MainWindow::fileNameChanged,  fileWriter, &FileWriter::setFileName);
     connect(ui->writeNowBtn,    &QPushButton::clicked,         fileWriter, &FileWriter::writeOnce);
     // connecting to Worker::dataUpdated is made in initWorkerHandlers
-    connect(fileWriter, &FileWriter::queueSizeChanged, [=](unsigned size){
-        ui->samplesInQueue->setText(QString::number(size));
-    });
+    connect(fileWriter, &FileWriter::queueSizeChanged, this, &MainWindow::onQueueSizeChanged);
 
     // TODO: if auto-write fails, worker should notify GUI (show warning, uncheck checkbox)
     connect(ui->writeToFileEnabled, &QCheckBox::stateChanged, [=](int state){
@@ -353,6 +321,63 @@ void MainWindow::initFileHandlers() {
     setFileControlsState();
 }
 
+void MainWindow::onCheckedADC(bool success) {
+    ui->ledADC->setOnColor( success ? QLed::Green : QLed::Red);
+    ui->ledADC->setValue(true);
+}
+
+void MainWindow::onCheckedGPS(bool success) {
+    ui->ledGPS->setOnColor( success ? QLed::Green : QLed::Red);
+    ui->ledGPS->setValue(true);
+}
+
+void MainWindow::onPrepareFinished(Worker::PrepareResult res) {
+    if(res == Worker::PrepareSuccess) {
+        ui->startBtn->setEnabled(true);
+        ui->startBtn->setFocus();
+
+        // TODO: avoid repetition in working with LEDs
+        ui->ledReady->setOnColor(QLed::Green);
+        ui->ledReady->setValue(true);
+    } else {
+        ui->connectBtn->setEnabled(true);
+        ui->disconnectBtn->setDisabled(true);
+        foreach(QWidget * w, disableOnConnect) {
+            w->setEnabled(true);
+        }
+        ui->connectBtn->setFocus();
+
+        if (res == Worker::PrepareFailADC) {
+            ui->ledADC->setOnColor(QLed::Red);
+            ui->ledADC->setValue(true);
+        } else if (res == Worker::PrepareFailGPS) {
+            ui->ledGPS->setOnColor(QLed::Red);
+            ui->ledGPS->setValue(true);
+        }
+    }
+}
+
+void MainWindow::onTimeAvailable(QDateTime time) {
+    Logger::info(tr("Received time update: %1UTC").arg(time.toString("yyyy-MM-dd hh:mm:ss.zzz")));
+    if (synchronizedAt.isNull() || synchronizedAt.secsTo(time) > TIME_SYNC_PERIOD_SECS) {
+        // TODO: an option to disable changing system clock
+        System::setSystemTime(time);
+        synchronizedAt = time;
+    }
+    ui->ledGPS->blinkOnce();
+}
+
+void MainWindow::onPositionAvailable(double latitude, double longitude, double altitude) {
+    Logger::info(tr("Received position update: %1, %2, %3m").arg(latitude).arg(longitude).arg(altitude));
+    // TODO: convert to minutes/seconds format?
+    QString latitudeStr  = QString::number(latitude, 'f', 6);
+    QString longitudeStr = QString::number(longitude, 'f', 6);
+
+    ui->currentLatitude->setText(latitudeStr);
+    ui->currentLongitude->setText(longitudeStr);
+    ui->ledGPS->blinkOnce();
+}
+
 void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     if (t.isEmpty() || d.isEmpty()) { return; }
     perfTotal.start();
@@ -361,7 +386,7 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
 
     if (startedAt.secsTo(QDateTime::fromMSecsSinceEpoch(t.last())) >= NEW_FILE_PERIOD_SECS) {
         // Maximum time for file elapsed, close file and open new one then
-        fileWriter->finishFile();
+        emit finishingFile();
         resetHistory();
     }
 
@@ -393,7 +418,7 @@ void MainWindow::onDataReceived(TimeStampsVector t, DataVector d) {
     }
     perfStats.stop();
 
-    // TODO: don't call these slots (FileWriter::receiveData and TimePlot::receiveData), connect them separately.
+    // TODO: don't call these slots (TimePlot::receiveData), connect them separately.
     perfPlotting.start();
     for(TimePlot * plot: plots) {
         plot->receiveData(t, d);
@@ -409,6 +434,10 @@ void MainWindow::onLogMessage(Logger::Level level, QString message) {
     if (level >= Logger::Info) {
         ui->statusBar->showMessage(message);
     }
+}
+
+void MainWindow::onQueueSizeChanged(unsigned size) {
+    ui->samplesInQueue->setText(QString::number(size));
 }
 
 void MainWindow::setReceivedItems(int received) {
@@ -427,7 +456,8 @@ void MainWindow::resetHistory() {
 }
 
 void MainWindow::onFileNameChanged() {
-    fileWriter->setFileName(ui->outputDir->text(), ui->saveFileFormat->text());
+    // Propagate the change to FileWriter
+    emit fileNameChanged(ui->outputDir->text(), ui->saveFileFormat->text());
 }
 
 void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton * btn) {

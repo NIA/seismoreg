@@ -78,9 +78,11 @@ signals:
 public slots:
     /*!
      * \brief Sets file name pattern and output dir for file that will be used for writing.
+     *        Closes previously opened file, so that a new one with given outputDirectory
+     *        and fileNameFormat will be opened on demand.
      *
      * \warning This slot only sets file name, it doesn't
-     *          actually write to file!
+     *          actually write to file or even open it!
      * \see Worker::setAutoWriteEnabled, Worker::writeOnce
      * \param outputDirectory - path to the directory where files will be created
      * \param fileNameFormat - pattern of filename, \see fileNameFormat() for info about format fields
@@ -116,11 +118,13 @@ public slots:
     void finishFile() { closeIfOpened(); }
 
     // Settings for header:
+    // TODO: (?) should we check that data are already being received,
+    //           so the header is already written?
 
     void setDeviceID(int id) { deviceID = id; }
-    void setCoordinates(QString latitude, QString longitude) {
-        this->latitude  = latitude;
-        this->longitude = longitude;
+    void setCoordinates(double latitude, double longitude) {
+        this->latitude  = QString::number(latitude, 'f', 6);
+        this->longitude = QString::number(longitude, 'f', 6);
     }
     void setFrequencies(int samplingFreq, int filterFreq) {
         this->samplingFreq = samplingFreq;

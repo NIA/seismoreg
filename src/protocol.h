@@ -190,4 +190,17 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Protocol::State)
 
+/*!
+ * \interface ProtocolCreator
+ * \brief Instance of this class is passed to \a Worker so that
+ * is can create \a Protocol in it's own thread
+ * (Like 'Factory method' pattern)
+ * \todo - transform this into an AbstractFactory?
+ *       - should it have a QObject*parent c-tor param?
+ */
+class ProtocolCreator {
+public:
+    virtual Protocol * createProtocol() = 0;
+};
+
 #endif // PROTOCOL_H

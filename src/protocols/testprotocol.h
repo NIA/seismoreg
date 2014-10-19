@@ -48,4 +48,13 @@ private:
     QTimer * checkGPSTimer;
 };
 
+class TestProtocolCreator : public ProtocolCreator {
+public:
+    TestProtocolCreator(int dataSize = 100, int amp = 100);
+    Protocol * createProtocol() override;
+private:
+    int dataSize;
+    int amp;
+};
+
 #endif // TESTPROTOCOL_H

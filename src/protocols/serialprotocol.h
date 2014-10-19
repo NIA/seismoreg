@@ -93,4 +93,15 @@ private:
     GPSPacketType currentPacketGPS;
 };
 
+class SerialProtocolCreator : public ProtocolCreator {
+public:
+    SerialProtocolCreator(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings = SerialProtocol::DEFAULT_PORT_SETTINGS);
+    Protocol * createProtocol() override;
+private:
+    QString portName;
+    int samplingFreq;
+    int filterFreq;
+    PortSettingsEx settings;
+};
+
 #endif // SERIALPROTOCOL_H

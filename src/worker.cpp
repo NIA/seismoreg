@@ -1,24 +1,26 @@
 #include "worker.h"
 #include "logger.h"
 
-Worker::Worker(Protocol * protADC, Protocol *protGPS, QObject *parent) :
-    QObject(parent), protocolADC_(NULL), protocolGPS_(NULL)
+Worker::Worker(QObject *parent)
+    : QObject(parent), protocolADC_(NULL), protocolGPS_(NULL)
 {
-    // NB: bool instance variables are initialized in reset (in finish)
-    reset(protADC, protGPS);
+    // Set all params to initial values
+    finish();
 }
 
-void Worker::reset(Protocol *protADC, Protocol *protGPS) {
+void Worker::reset(ProtocolCreator *protADC, ProtocolCreator *protGPS) {
     finish();
     assignProtocol(protocolADC_, protADC);
     assignProtocol(protocolGPS_, protGPS);
 }
 
-void Worker::assignProtocol(Protocol *&lvalue, Protocol *rvalue) {
-    lvalue = rvalue;
-    if (lvalue != NULL) {
+void Worker::assignProtocol(Protocol *&lvalue, ProtocolCreator *rvalue) {
+    if (rvalue != NULL) {
+        lvalue = rvalue->createProtocol();
         // Take ownership on protocol in order to prevent it from being deleted before Worker (and cause crash in destructor)
         lvalue->setParent(this);
+    } else {
+        lvalue = NULL;
     }
 }
 
@@ -53,6 +55,11 @@ void Worker::prepare(bool autostart) {
             // TODO: but what if they are different instances of SerialProtocol with same port value? This should somehow be prohibited.
         }
 
+        // Transmit signals from protocols ("internal") by emiting new signals ("public")
+        connect(protocolADC_, &Protocol::checkedADC, this, &Worker::checkedADC);
+        connect(protocolGPS_, &Protocol::checkedGPS, this, &Worker::checkedGPS);
+        connect(protocolGPS_, &Protocol::timeAvailable, this, &Worker::timeAvailable);
+        connect(protocolGPS_, &Protocol::positionAvailable, this, &Worker::positionAvailable);
         // Connect signals before starting
         connect(protocolADC_, &Protocol::checkedADC, this, &Worker::onCheckedADC);
         connect(protocolGPS_, &Protocol::checkedGPS, this, &Worker::onCheckedGPS);
@@ -136,12 +143,19 @@ void Worker::start() {
     }
 
     started = true;
-    connect(protocolADC_, &Protocol::dataAvailable, this, &Worker::dataUpdated);
+    connect(protocolADC_, &Protocol::dataAvailable, this, &Worker::dataUpdated, Qt::UniqueConnection);
 
     Logger::trace(tr("Starting receiving data..."));
     protocolADC_->startReceiving();
 
     emit triedToStart(StartSuccess);
+}
+
+void Worker::stop() {
+    Logger::info(tr("Receiving data stopped"));
+    protocolADC_->stopReceiving();
+    started = false;
+    emit stopped();
 }
 
 void Worker::finalizeProtocol(Protocol * protocol) {
@@ -162,5 +176,17 @@ void Worker::finish() {
     autostart = false;
     prepared = false;
     started = false;
+    emit finished();
+}
+
+void Worker::setFrequencies(int samplingFreq, int filterFreq)
+{
+    Q_ASSERT_X(protocolADC_ != 0, "Worker::setFrequencies", "protocol not set");
+    if ( ! started ) {
+        protocolADC_->setSamplingFrequency(samplingFreq);
+        protocolADC_->setFilterFrequency(filterFreq);
+    } else {
+        Logger::error("Cannot change frequencies when started");
+    }
 }
 

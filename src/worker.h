@@ -45,26 +45,11 @@ public:
     };
 
     /*!
-     * \brief Worker constructor. Initializes worker with given protocol
-     * \param protADC - protocol to be used for communication with ADC (send commands, receive data)
-     * \param protGPS - protocol to be used for communication with GPS (receive time and coordinates).
-     *                  Can be the same as protADC or not.
+     * \brief Worker constructor does nothing. After creating, the worker should be moved
+     *        to background thread, and then communicated via signals/slots
      * \param parent  - usual QObject parent parameter
-     * \warning Worker takes ownership on protocols in order to prevent it from
-     *          being deleted before Worker (and cause crash in destructor)
      */
-    explicit Worker(Protocol * protADC, Protocol * protGPS, QObject *parent = nullptr);
-
-    /*!
-     * \brief Getter for connecting to signals of Protocol
-     * \return current protocol for ADC
-     */
-    Protocol * protocolADC() { return protocolADC_; }
-    /*!
-     * \brief Getter for connecting to signals of Protocol
-     * \return current protocol for GPS
-     */
-    Protocol * protocolGPS() { return protocolGPS_; }
+    explicit Worker(QObject *parent = nullptr);
 
     bool isPrepared() { return prepared; }
 
@@ -87,12 +72,12 @@ public slots:
      * All operation with previous protocol is interrupted.
      * Previous protocol is closed and disconnected.
      * After that Worker::prepare can be called again.
-     * \param protADC - protocol to be used for ADC from now
-     * \param protGPS - protocol to be used for GPS from now
+     * \param protADC - creator for protocol to be used for ADC from now
+     * \param protGPS - creator for protocol to be used for GPS from now
      * \warning Worker takes ownership on protocol in order to prevent it from
      *          being deleted before Worker (and cause crash in destructor)
      */
-    void reset(Protocol * protADC, Protocol * protGPS);
+    void reset(ProtocolCreator * protADC, ProtocolCreator * protGPS);
 
     /*!
      * \brief Prepare for data receiving
@@ -112,12 +97,22 @@ public slots:
     void start();
 
     /*!
+     * \brief Stops processing data, but doesn't close protocol
+     *
+     * After then Worker can be started without calling Worker::prepare;
+     */
+    void stop();
+
+    /*!
      * \brief Finish processing data and close protocol
      *
      * In order to start worker again, you should call
      * Worker::prepare again before calling Worker::start
      */
     void finish();
+
+    /// The following actions are just forwarded to Protocol
+    void setFrequencies(int samplingFreq, int filterFreq);
 
 signals:
     /*!
@@ -135,12 +130,32 @@ signals:
     void triedToStart(StartResult result);
 
     /*!
+     * \brief emitted after \a stop was called and receiving stopped
+     */
+    void stopped();
+
+    /*!
+     * \brief emitted after \a finish() was called and protocols were closed
+     */
+    void finished();
+
+    /// The following signals are just transmissions of Protocol ones
+
+    /*!
      * \brief emitted when new data has come
      * \param newData - newly received data
      * \param newTimeStamps - timestamps for \a data
      * \see Worker::data
      */
     void dataUpdated(TimeStampsVector newTimeStamps, DataVector newData);
+    /*! \see Protocol::checkedADC */
+    void checkedADC(bool success);
+    /*! \see Protocol::checkedGPS */
+    void checkedGPS(bool success);
+    /*! \see Protocol::timeAvailable */
+    void timeAvailable(QDateTime timeGPS);
+    /*! \see Protocol::positionAvailable */
+    void positionAvailable(double latitiude, double longitude, double altitude);
 
 private slots:
     void onCheckedADC(bool);
@@ -148,7 +163,7 @@ private slots:
 private:
     void setPrepared(PrepareResult res);
 
-    void assignProtocol(Protocol *& lvalue, Protocol * rvalue);
+    void assignProtocol(Protocol *& lvalue, ProtocolCreator * rvalue);
     void finalizeProtocol(Protocol * prot);
 
     Protocol * protocolADC_;

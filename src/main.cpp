@@ -8,9 +8,11 @@
 // TODO: better place for these?
 #include "protocol.h"
 #include "logger.h"
+#include "worker.h"
 Q_DECLARE_METATYPE(TimeStampsVector)
 Q_DECLARE_METATYPE(DataVector)
 Q_DECLARE_METATYPE(Logger::Level)
+Q_DECLARE_METATYPE(Worker::PrepareResult)
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +23,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<DataVector>("DataVector");
     // TODO: should do something to correctly pass log messages between threads
     qRegisterMetaType<Logger::Level>("Level");
+    qRegisterMetaType<Worker::PrepareResult>("PrepareResult");
 
     QTranslator translator;
     translator.load("seismoreg_" + QLocale::system().name());

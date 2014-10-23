@@ -135,6 +135,12 @@ signals:
     void stopped();
 
     /*!
+     * \brief emitted after the Worker was either started or stopped
+     * \param started - the new state of Worker
+     */
+    void startedOrStopped(bool started);
+
+    /*!
      * \brief emitted after \a finish() was called and protocols were closed
      */
     void finished();

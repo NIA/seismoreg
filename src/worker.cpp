@@ -149,6 +149,7 @@ void Worker::start() {
     protocolADC_->startReceiving();
 
     emit triedToStart(StartSuccess);
+    emit startedOrStopped(true);
 }
 
 void Worker::stop() {
@@ -156,6 +157,7 @@ void Worker::stop() {
     protocolADC_->stopReceiving();
     started = false;
     emit stopped();
+    emit startedOrStopped(false);
 }
 
 void Worker::finalizeProtocol(Protocol * protocol) {
@@ -164,6 +166,7 @@ void Worker::finalizeProtocol(Protocol * protocol) {
             protocol->close();
             Logger::info(tr("Closed protocol: %1").arg(protocol->description()));
         }
+        // Disconnect all signals coming from this protocol
         protocol->disconnect(this);
     }
 }
@@ -176,6 +179,7 @@ void Worker::finish() {
     autostart = false;
     prepared = false;
     started = false;
+    emit startedOrStopped(false);
     emit finished();
 }
 

@@ -82,6 +82,7 @@ namespace {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), receivedItems(0),
+    workerStarted(false),
     perfStats(tr("Stats")), perfDataView(tr("DataView")),
     perfPlotting(tr("Plotting")), perfTotal(tr("Total (MainWindow)"))
 {
@@ -156,7 +157,7 @@ void MainWindow::setup() {
     clockTimer = new QTimer(this);
     connect(clockTimer, &QTimer::timeout, [=](){
         setCurrentTime();
-        if(worker->isStarted()) {
+        if(workerStarted) {
             QTime elapsed = QTime(0,0,0).addSecs(startedAt.secsTo(QDateTime::currentDateTime()));
             ui->timeElapsed->setTime(elapsed);
         }
@@ -220,9 +221,8 @@ void MainWindow::setup() {
         }
         // Calls Worker::setFrequencies and FileWriter::setFrequencies
         emit frequenciesSet(samplingFrequency, filterFrequency);
-        // Calls Worker::start
+        // Calls Worker::start, this will also trigger setFileControlsState
         emit starting();
-        setFileControlsState();
     });
     connect(ui->stopBtn, &QPushButton::clicked, [=](){
         ui->stopBtn->setDisabled(true);
@@ -233,12 +233,11 @@ void MainWindow::setup() {
         }
         ui->ledWorking->setValue(false);
 
-        // calls Worker::stop
+        // calls Worker::stop, this will also trigger setFileControlsState
         emit stopping();
-        setFileControlsState();
     });
     connect(ui->disconnectBtn, &QPushButton::clicked, [=](){
-        // calls Worker::finish
+        // calls Worker::finish, this will also trigger setFileControlsState
         emit finishing();
         ui->ledADC->setValue(false);
         ui->ledGPS->setValue(false);
@@ -250,7 +249,6 @@ void MainWindow::setup() {
             w->setEnabled(true);
         }
         ui->portChooser->setFocus();
-        setFileControlsState();
 
         ui->ledReady->setValue(false);
         ui->ledWorking->setValue(false);
@@ -267,9 +265,7 @@ void MainWindow::initWorkerHandlers() {
     connect(worker, &Worker::dataUpdated,       this, &MainWindow::onDataReceived);
     connect(worker, &Worker::positionAvailable, fileWriter, &FileWriter::setCoordinates);
     connect(worker, &Worker::dataUpdated,       fileWriter, &FileWriter::receiveData);
-    connect(worker, &Worker::triedToStart,      this, &MainWindow::setFileControlsState);
-    connect(worker, &Worker::stopped,           this, &MainWindow::setFileControlsState);
-    connect(worker, &Worker::finished,          this, &MainWindow::setFileControlsState);
+    connect(worker, &Worker::startedOrStopped,  this, &MainWindow::onStartedOrStopped);
 
     // Outcoming
     connect(this, &MainWindow::protocolsChanged,   worker, &Worker::reset);
@@ -470,8 +466,15 @@ void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSet
     });
 }
 
+
+void MainWindow::onStartedOrStopped(bool workerStarted) {
+    this->workerStarted = workerStarted;
+    setFileControlsState();
+}
+
+
 void MainWindow::setFileControlsState() {
-    bool disableChangingFile = (ui->writeToFileEnabled->isChecked() && worker->isStarted());
+    bool disableChangingFile = (ui->writeToFileEnabled->isChecked() && workerStarted);
     // If running and auto-saving => cannot change file name
     ui->outputDir->setDisabled(disableChangingFile);
     ui->saveFileFormat->setDisabled(disableChangingFile);
@@ -520,6 +523,7 @@ MainWindow::~MainWindow()
     saveSettings();
 
     threadFileWriter->quit();
+    threadWorker->quit();
     threadFileWriter->wait();
 
     perfPlotting.reportResults();

@@ -49,13 +49,14 @@ private slots:
     void onFileNameChanged();
     void onLogMessage(Logger::Level level, QString message);
     void onQueueSizeChanged(unsigned size);
-    void setFileControlsState();
+    void onStartedOrStopped(bool workerStarted);
 
 private:
     void setup();
     void initWorkerHandlers();
     void initFileHandlers();
     void initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton *btn);
+    void setFileControlsState();
     void setCurrentTime();
     void log(QString text);
     void setReceivedItems(int received);
@@ -68,6 +69,7 @@ private:
     PortSettingsEx portSettingsGPS;
     Worker * worker;
     FileWriter * fileWriter;
+    bool workerStarted;
 
     // Threads where FileWriter and Worker work
     QThread * threadFileWriter;

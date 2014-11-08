@@ -97,6 +97,8 @@ class SerialProtocolCreator : public ProtocolCreator {
 public:
     SerialProtocolCreator(QString portName, int samplingFreq, int filterFreq, PortSettingsEx settings = SerialProtocol::DEFAULT_PORT_SETTINGS);
     Protocol * createProtocol() override;
+    QString protocolId() override { return portName; }
+
 private:
     QString portName;
     int samplingFreq;

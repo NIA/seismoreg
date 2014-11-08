@@ -201,6 +201,17 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(Protocol::State)
 class ProtocolCreator {
 public:
     virtual Protocol * createProtocol() = 0;
+    /*!
+     * \brief An unique identifier of particular
+     * implementation of \a Protocol and its parameters
+     * (like port name).
+     *
+     * If these strings are equal for two
+     * given ProtocolCreators, createProtocol will
+     * be called once, and same Protocol will be used
+     * for both cases.
+     */
+    virtual QString protocolId() = 0;
 };
 
 #endif // PROTOCOL_H

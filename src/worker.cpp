@@ -11,7 +11,12 @@ Worker::Worker(QObject *parent)
 void Worker::reset(ProtocolCreator *protADC, ProtocolCreator *protGPS) {
     finish();
     assignProtocol(protocolADC_, protADC);
-    assignProtocol(protocolGPS_, protGPS);
+    if (protADC->protocolId() == protGPS->protocolId()) {
+        // Same creator, no need to create again
+        protocolGPS_ = protocolADC_;
+    } else {
+        assignProtocol(protocolGPS_, protGPS);
+    }
 }
 
 void Worker::assignProtocol(Protocol *&lvalue, ProtocolCreator *rvalue) {

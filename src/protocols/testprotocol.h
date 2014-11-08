@@ -52,6 +52,7 @@ class TestProtocolCreator : public ProtocolCreator {
 public:
     TestProtocolCreator(int dataSize = 100, int amp = 100);
     Protocol * createProtocol() override;
+    QString protocolId() override { return "TEST"; }
 private:
     int dataSize;
     int amp;

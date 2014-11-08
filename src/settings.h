@@ -14,8 +14,8 @@ public:
 
     // Core settings
 
-    int deviceId() const;
-    void setDeviceId(int value);
+    QString deviceId() const;
+    void setDeviceId(const QString &value);
 
     int samplingFrequency() const;
     void setSamplingFrequency(int value);
@@ -82,6 +82,8 @@ public:
 
     int  plotFixedScaleMax() const;
     void setPlotFixedScaleMax(int value);
+    int  plotFixedScaleMin() const;
+    void setPlotFixedScaleMin(int value);
 
     int  plotHistorySecs() const;
     void setPlotHistorySecs(int value);

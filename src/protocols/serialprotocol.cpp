@@ -28,6 +28,8 @@ namespace {
         {SerialProtocol::GPSTime,     "\x10\x41", 10},
         {SerialProtocol::GPSPosition, "\x10\x4A", 20},
     };
+    const QByteArray GPS_SUFFIX = "\x10\x03";
+    const int GPS_SUFFIX_SIZE = GPS_SUFFIX.size();
     // GPS constants
     const QDateTime GPS_BASE_TIME(QDate(1980, 1, 6), QTime(0, 0), Qt::UTC);
 
@@ -73,6 +75,10 @@ namespace {
     // TODO: remove on update to Qt >= 5.1
     double radiansToDegrees(double radians) {
         return radians / M_PI * 180.0;
+    }
+
+    inline QString bytes2hex(QByteArray bytes) {
+        return QString::fromLatin1(bytes.toHex());
     }
 }
 
@@ -298,11 +304,19 @@ bool SerialProtocol::takeGPSPacket() {
         // TODO: use QMap?
         for (const KnownPacket &packetInfo: KNOWN_GPS_PACKETS) {
             if(packetInfo.kind == currentPacketGPS) {
-                if (buffer.size() > packetInfo.size) {
-                    // enough bytes, parse the packet
-                    parseGPSPacket();
+                if (buffer.size() >= packetInfo.size + GPS_SUFFIX_SIZE) {
+                    // enough bytes, check if valid...
+                    QByteArray suffix = buffer.mid(packetInfo.size, GPS_SUFFIX_SIZE); // TODO: how to avoid allocating new array (with mid)?
+                    if (suffix == GPS_SUFFIX) {
+                        // ...then parse the packet
+                        parseGPSPacket();
+                    } else {
+                        // ...otherwise just ignore corrupted
+                        currentPacketGPS = GPSNoPacket;
+                        Logger::warning(tr("Corrupted GPS 0x%1 packet: suffix %2 instead of %3").arg(bytes2hex(packetInfo.prefix)).arg(bytes2hex(suffix)).arg(bytes2hex(GPS_SUFFIX)));
+                    }
                     // remove packet from buffer
-                    buffer.remove(0, packetInfo.size);
+                    buffer.remove(0, packetInfo.size + GPS_SUFFIX_SIZE);
                     return true;
                 }
                 // Not enough, wait for the next sending
@@ -377,7 +391,9 @@ TimeStampsVector SerialProtocol::generateTimeStamps(double periodMsecs, int coun
     generateTimestampsPerfReporter.start();
     TimeStampsVector res(count);
 
-    TimeStampType start = QDateTime::currentMSecsSinceEpoch() - periodMsecs;
+    // Round down to seconds (drop milliseconds)
+    qint64 seconds = qint64((QDateTime::currentMSecsSinceEpoch() - periodMsecs) / 1000);
+    TimeStampType start = seconds*1000;
     double deltaMsecs = periodMsecs / count;
     for (int i = 0; i < count; ++i) {
         res[i] = start + i*deltaMsecs;

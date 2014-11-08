@@ -82,25 +82,46 @@ public slots:
     void setFixedScaleY(bool fixed);
     bool isFixedScaleY() { return fixedScale; }
     void setFixedScaleYMax(double max);
-    int  fixedScaleYMax() { return fixedScaleMax; }
+    double  fixedScaleYMax() { return fixedScaleMax; }
+    void setFixedScaleYMin(double min);
+    double  fixedScaleYMin() { return fixedScaleMin; }
+    void fixCurrent();
+
+    // easier interface to Y scale:
+    void zoomIn();
+    void zoomOut();
+    void moveUp();
+    void moveDown();
+    void resetZoom();
+
+signals:
+    void zoomChanged(double newScaleYMin, double newScaleYMax);
 
 public:
     constexpr static const double HISTORY_SECONDS_DEFAULT = 5;
     constexpr static const int    POINTS_PER_SEC_DEFAULT  = 200;
     constexpr static const int    MAX_POINTS_PER_SEC      = 500;
     constexpr static const double FIXED_SCALE_MAX_DEFAULT = 10000000;
+    constexpr static const double FIXED_SCALE_MIN_DEFAULT = -FIXED_SCALE_MAX_DEFAULT;
     constexpr static const bool   FIXED_SCALE_DEFAULT     = false;
 
 private:
     void initGrid();
     void initCurve();
     void setTimeRange(QVector<QPointF> points);
+    /**
+     * If \a fixedScale == true, apply values from fields \a fixedScaleMin and \a fixedScaleMax to plot
+     */
+    void setScaleY();
 
     /**
      * @brief The size depends on HISTORY_SECONDS constant and on pointsPerSec
      * @return the maximum size of buffer that is enough for plotting
      */
     int maxBufferSize();
+
+    void zoom(double factor);
+    void move(double factor);
 
     QVector<QPointF> itemsToPoints(TimeStampsVector timestamps, DataVector items, unsigned ch);
 
@@ -109,8 +130,9 @@ private:
     unsigned channel;
     int pointsPerSec;
     double historySeconds;
-    double fixedScaleMax;
     bool fixedScale;
+    double fixedScaleMax;
+    double fixedScaleMin;
     QVector<QPointF> buffer;
 };
 

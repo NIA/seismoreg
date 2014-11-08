@@ -33,7 +33,7 @@ public:
      */
     void pause() {
         if (!paused) {
-            beforePause += timer.elapsed();
+            beforePause += timerElapsed();
             paused = true;
         }
     }
@@ -55,7 +55,7 @@ public:
         if (paused) {
             addMeasurement(beforePause);
         } else {
-            addMeasurement(timer.elapsed() + beforePause);
+            addMeasurement(timerElapsed() + beforePause);
         }
     }
 
@@ -73,13 +73,18 @@ public:
     static void flushDebug();
     
 private:
+    // Get elapsed milliseconds from timer
+    double timerElapsed() {
+        return timer.nsecsElapsed() / 1000000.0;
+    }
+
     QString description;
     const Logger::Level logLevel;
     const QString mode;
 
     QElapsedTimer timer;
     bool paused;
-    qint64 beforePause;
+    double beforePause;
 
     int measurementsCount;
     double minTime;

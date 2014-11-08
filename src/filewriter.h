@@ -121,7 +121,7 @@ public slots:
     // TODO: (?) should we check that data are already being received,
     //           so the header is already written?
 
-    void setDeviceID(int id) { deviceID = id; }
+    void setDeviceID(QString id);
     void setCoordinates(double latitude, double longitude) {
         this->latitude  = QString::number(latitude, 'f', 6);
         this->longitude = QString::number(longitude, 'f', 6);
@@ -149,7 +149,7 @@ private:
     QFile * file;
     bool autoWrite;
 
-    int deviceID;
+    QString deviceID;
     int samplingFreq;
     int filterFreq;
     QString latitude;

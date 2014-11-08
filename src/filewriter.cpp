@@ -12,7 +12,7 @@ PerformanceReporter  FileWriter::perfReporter("FileWriter");
 
 FileWriter::FileWriter(QString outputDirectory, QString fileNameFormat, QObject *parent) :
     QObject(parent), file(NULL), autoWrite(false),
-    deviceID(0), samplingFreq(0), filterFreq(0),
+    deviceID("00"), samplingFreq(0), filterFreq(0),
     latitude("???"), longitude("???"), itemsInQueue(0)
 {
     setFileName(outputDirectory, fileNameFormat); // will also init `file` instance variable
@@ -33,7 +33,7 @@ QString FileWriter::buildFileName() const {
     fileName.replace("%s", twoDigitStr(time.time().second()));
     fileName.replace("%f", QString::number(filterFreq));
     fileName.replace("%r", QString::number(samplingFreq));
-    fileName.replace("%i", QString::number(deviceID));
+    fileName.replace("%i", deviceID);
     return outputDir + "/" + fileName;
 }
 
@@ -107,6 +107,13 @@ void FileWriter::setAutoWriteEnabled(bool enabled) {
 void FileWriter::writeOnce() {
     writeNow();
     closeIfOpened();
+}
+
+void FileWriter::setDeviceID(QString id)
+{
+    deviceID = id;
+    // For debug:
+    Logger::info(tr("Device id: %1").arg(id));
 }
 
 void FileWriter::writeNow() {

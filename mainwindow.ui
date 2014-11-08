@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>725</height>
+    <height>737</height>
    </rect>
   </property>
   <property name="font">
@@ -375,28 +375,73 @@
          <item>
           <widget class="QGroupBox" name="plotGroup">
            <property name="title">
-            <string>Plot settings</string>
+            <string>Plot scale</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="fixedScale">
-              <property name="text">
-               <string>Fixed scale:</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="QRadioButton" name="autoScale">
               <property name="text">
-               <string>Auto scale</string>
+               <string>Automatic</string>
               </property>
               <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
             </item>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="fixedScale">
+              <property name="text">
+               <string>Manual</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QToolButton" name="zoomInBtn">
+                <property name="text">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="zoomOutBtn">
+                <property name="text">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="upBtn">
+                <property name="text">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="downBtn">
+                <property name="text">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="resetZoomBtn">
+                <property name="text">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
             <item row="2" column="1">
              <widget class="QSpinBox" name="fixedScaleMax">
+              <property name="minimum">
+               <number>-2147483647</number>
+              </property>
               <property name="maximum">
                <number>2147483647</number>
               </property>
@@ -405,14 +450,34 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
+            <item row="3" column="1">
+             <widget class="QSpinBox" name="fixedScaleMin">
+              <property name="minimum">
+               <number>-2147483647</number>
+              </property>
+              <property name="maximum">
+               <number>2147483647</number>
+              </property>
+              <property name="value">
+               <number>-10000000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="fixNowBtn">
+              <property name="text">
+               <string>Manual auto</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
              <widget class="QLabel" name="label_13">
               <property name="text">
                <string>Time interval:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item row="4" column="1">
              <widget class="QSpinBox" name="timeInterval">
               <property name="suffix">
                <string> sec.</string>
@@ -853,8 +918,19 @@
     <addaction name="actionADCPortSettings"/>
     <addaction name="actionGPSPortSettings"/>
    </widget>
+   <widget class="QMenu" name="menuPlot">
+    <property name="title">
+     <string>Plot</string>
+    </property>
+    <addaction name="actionZoomIn"/>
+    <addaction name="actionZoomOut"/>
+    <addaction name="actionMoveUp"/>
+    <addaction name="actionMoveDown"/>
+    <addaction name="actionZoomReset"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuPlot"/>
    <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -883,6 +959,9 @@
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
   <action name="actionShowTable">
    <property name="checkable">
@@ -894,6 +973,9 @@
    </property>
    <property name="text">
     <string>Show table</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+1</string>
    </property>
   </action>
   <action name="actionShowSettings">
@@ -910,6 +992,9 @@
    <property name="text">
     <string>Show settings</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+2</string>
+   </property>
   </action>
   <action name="actionShowStats">
    <property name="checkable">
@@ -924,6 +1009,9 @@
    </property>
    <property name="text">
     <string>Show stats</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+3</string>
    </property>
   </action>
   <action name="actionADCPortSettings">
@@ -942,6 +1030,63 @@
    </property>
    <property name="text">
     <string>GPS port settings</string>
+   </property>
+  </action>
+  <action name="actionZoomIn">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/zoom-in.ico</normaloff>:/icons/resources/zoom-in.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom in</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="actionZoomOut">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/zoom-out.ico</normaloff>:/icons/resources/zoom-out.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionMoveUp">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/arrow-up.ico</normaloff>:/icons/resources/arrow-up.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Move up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="actionMoveDown">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/arrow-down.ico</normaloff>:/icons/resources/arrow-down.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Move down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+  </action>
+  <action name="actionZoomReset">
+   <property name="icon">
+    <iconset resource="seismoreg.qrc">
+     <normaloff>:/icons/resources/zoom-reset.ico</normaloff>:/icons/resources/zoom-reset.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Reset zoom</string>
    </property>
   </action>
  </widget>

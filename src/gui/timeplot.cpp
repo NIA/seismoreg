@@ -15,6 +15,9 @@ namespace {
     const QColor BG_COLOR = Qt::white;
     const QColor CURVE_FILL = Qt::transparent; // may be some color, but currently disabled
     const qreal  CURVE_WIDTH = 2;
+    const double ZOOM_FACTOR = 1.2;
+    const double MOVE_FACTOR = 0.05;
+    const double MIN_SCALE = 1/(ZOOM_FACTOR - 1); // minimum scale so that we can zoom out from it
 
     class RoundedScaleDraw : public QwtScaleDraw {
     public:
@@ -34,7 +37,8 @@ namespace {
 
 TimePlot::TimePlot(QWidget *parent) :
     QwtPlot(parent), channel(0), pointsPerSec(POINTS_PER_SEC_DEFAULT),
-    historySeconds(HISTORY_SECONDS_DEFAULT), fixedScaleMax(FIXED_SCALE_MAX_DEFAULT), fixedScale(FIXED_SCALE_DEFAULT)
+    historySeconds(HISTORY_SECONDS_DEFAULT), fixedScale(FIXED_SCALE_DEFAULT),
+    fixedScaleMax(FIXED_SCALE_MAX_DEFAULT), fixedScaleMin(FIXED_SCALE_MIN_DEFAULT)
 {
     setMinimumHeight(75);
     setMinimumWidth(350);
@@ -83,13 +87,98 @@ void TimePlot::setFixedScaleY(bool fixed) {
     setAxisAutoScale(yLeft, ! fixed);
     if (fixedScale) {
         // Restore again previous value that may be lost after automatic scale
-        setFixedScaleYMax(fixedScaleMax);
+        setScaleY();
     }
 }
 
 void TimePlot::setFixedScaleYMax(double max) {
     fixedScaleMax = max;
-    setAxisScale(yLeft, -max, +max);
+    setScaleY();
+}
+
+void TimePlot::setFixedScaleYMin(double min) {
+    fixedScaleMin = min;
+    setScaleY();
+}
+
+void TimePlot::fixCurrent() {
+    if (fixedScale) {
+        // If already fixed scale, switch to autoscale and back
+        setAxisAutoScale(yLeft, true);
+        updateAxes();
+    }
+
+        const QwtScaleDiv & scaleDiv = axisScaleDiv(yLeft);
+        fixedScaleMin = scaleDiv.lowerBound();
+        fixedScaleMax = scaleDiv.upperBound();
+        fixedScale = true;
+        setAxisAutoScale(yLeft, false);
+        emit zoomChanged(fixedScaleMin, fixedScaleMax);
+}
+
+void TimePlot::setScaleY() {
+    // Fix errors if any:
+    if (fixedScaleMax < fixedScaleMin) {
+        qSwap(fixedScaleMax, fixedScaleMin);
+    }
+    if (qAbs(fixedScaleMax - fixedScaleMin) < MIN_SCALE) {
+        fixedScaleMax = fixedScaleMin + MIN_SCALE;
+    }
+    // Change QwtPlot settings, if currently in fixed scale mode
+    if (fixedScale) {
+        setAxisScale(yLeft, fixedScaleMin, fixedScaleMax);
+    }
+}
+
+void TimePlot::zoomIn() {
+    zoom(ZOOM_FACTOR);
+}
+
+void TimePlot::zoomOut() {
+    zoom(1/ZOOM_FACTOR);
+}
+
+void TimePlot::zoom(double factor)
+{
+    if ( ! fixedScale ) {
+        fixCurrent();
+    }
+
+    double mid = (fixedScaleMin + fixedScaleMax) / 2;
+    double amp = qAbs(fixedScaleMax - fixedScaleMin) / 2;
+
+    amp /= factor;
+    fixedScaleMax = mid + amp;
+    fixedScaleMin = mid - amp;
+    setScaleY();
+    emit zoomChanged(fixedScaleMin, fixedScaleMax);
+}
+
+void TimePlot::moveUp() {
+    move(MOVE_FACTOR);
+}
+
+void TimePlot::moveDown() {
+    move(-MOVE_FACTOR);
+}
+
+void TimePlot::move(double factor) {
+    if ( ! fixedScale ) {
+        fixCurrent();
+    }
+
+    double delta = (fixedScaleMax - fixedScaleMin)*factor;
+    fixedScaleMin += delta;
+    fixedScaleMax += delta;
+    setScaleY();
+    emit zoomChanged(fixedScaleMin, fixedScaleMax);
+}
+
+void TimePlot::resetZoom() {
+    fixedScaleMin = FIXED_SCALE_MIN_DEFAULT;
+    fixedScaleMax = FIXED_SCALE_MAX_DEFAULT;
+    setScaleY();
+    emit zoomChanged(fixedScaleMin, fixedScaleMax);
 }
 
 void TimePlot::receiveData(TimeStampsVector timestamps, DataVector items) {

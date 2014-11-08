@@ -47,6 +47,8 @@ private slots:
     void onPositionAvailable(double latitiude, double longitude, double altitude);
     void onDataReceived(TimeStampsVector t, DataVector d);
     void onFileNameChanged();
+    void setFixedScale();
+    void onZoomChanged(double newMin, double newMax);
     void onLogMessage(Logger::Level level, QString message);
     void onQueueSizeChanged(unsigned size);
     void onStartedOrStopped(bool workerStarted);
@@ -56,6 +58,7 @@ private:
     void initWorkerHandlers();
     void initFileHandlers();
     void initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton *btn);
+    void initZoomAction(QAction * action, QToolButton *btn);
     void setFileControlsState();
     void setCurrentTime();
     void log(QString text);

@@ -113,6 +113,10 @@ void MainWindow::setup() {
     // Init connections
     initWorkerHandlers();
     initFileHandlers();
+    // Configure toolbar and status bar
+    ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    connect(Logger::instance(), &Logger::si_messageAdded, this, &MainWindow::onLogMessage, Qt::QueuedConnection);
+
     emit fileNameChanged(settings.outputDirectory(), settings.fileNameFormat());
     emit deviceIdSet(settings.deviceId());
     // Init GUI
@@ -184,9 +188,6 @@ void MainWindow::setup() {
     clockTimer->start(1000);
     setCurrentTime(); // And set for the first time
 
-    // Configure toolbar and status bar
-    ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
-    connect(Logger::instance(), &Logger::si_messageAdded, this, &MainWindow::onLogMessage, Qt::QueuedConnection);
     // Connect event handlers
     connect(ui->connectBtn, &QPushButton::clicked, [=](){
         ui->connectBtn->setDisabled(true);

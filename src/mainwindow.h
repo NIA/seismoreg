@@ -37,7 +37,7 @@ signals:
     void autoWriteChanged(bool enabled);
     void finishingFile();
     void frequenciesSet(int samplingFreq, int filterFreq);
-    void deviceIdSet(int id);
+    void deviceIdSet(QString id);
 
 private slots:
     void onCheckedADC(bool success);

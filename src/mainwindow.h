@@ -53,6 +53,8 @@ private slots:
     void onQueueSizeChanged(unsigned size);
     void onStartedOrStopped(bool workerStarted);
 
+protected:
+    void closeEvent(QCloseEvent *e) override;
 private:
     void setup();
     void initWorkerHandlers();
@@ -65,6 +67,7 @@ private:
     void setReceivedItems(int received);
     void resetHistory();
 
+    bool askForClosing();
     void saveSettings();
 
     Ui::MainWindow *ui;

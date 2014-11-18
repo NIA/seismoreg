@@ -563,6 +563,28 @@ void MainWindow::saveSettings() {
     settings.setPlotHistorySecs(ui->timeInterval->value());
 }
 
+bool MainWindow::askForClosing() {
+    QMessageBox::StandardButton answer =
+            QMessageBox::question(
+                this, tr("Quit while receiving data?"),
+                tr("Are you sure you want to quit?\nLast pieces of data may be lost, if they are not written on disk yet\n\nQuit and interrupt receiving of data?"),
+                QMessageBox::StandardButtons(QMessageBox::Yes | QMessageBox::No),
+                QMessageBox::No);
+    return answer == QMessageBox::Yes;
+}
+
+void MainWindow::closeEvent(QCloseEvent *e) {
+    if (workerStarted) {
+        if (false == askForClosing()) {
+            e->ignore();
+        } else {
+            e->accept();
+        }
+    } else {
+        e->accept();
+    }
+}
+
 MainWindow::~MainWindow()
 {
     clockTimer->stop();

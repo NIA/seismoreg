@@ -25,9 +25,11 @@ int main(int argc, char *argv[])
     qRegisterMetaType<Logger::Level>("Level");
     qRegisterMetaType<Worker::PrepareResult>("PrepareResult");
 
-    QTranslator translator;
+    QTranslator translator, qtTranslator;
     translator.load("seismoreg_" + QLocale::system().name());
+    qtTranslator.load("qtbase_" + QLocale::system().name());
     a.installTranslator(&translator);
+    a.installTranslator(&qtTranslator);
 
     MainWindow w;
     w.show();

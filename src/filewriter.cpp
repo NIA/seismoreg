@@ -163,12 +163,17 @@ bool FileWriter::openIfClosed() {
 
 void FileWriter::writeHeader() {
     QTextStream out(file);
-    out << QStringLiteral("[Description]\nDevice ID=%1\n").arg(deviceID);
-    out << QStringLiteral("[Frequency]\n%1 Hz\n").arg(filterFreq);
-    out << QStringLiteral("[sample rate]\n%1 Hz\n").arg(samplingFreq);
-    out << QStringLiteral("[Time]\n%1\n").arg(startTime.toString("hh:mm:ss"));
-    out << QStringLiteral("[Coordinates]\n%1\n%2\n").arg(latitude).arg(longitude);
-    out << QStringLiteral("[Date]\n%1\n").arg(startTime.toString("yyyy-MM-dd"));
+    out << QStringLiteral("[Description]\n");
+    out << tr("Device ID=%1").arg(deviceID);
+    out << QStringLiteral("\n[Frequency]\n");
+    out << tr("%1 Hz").arg(filterFreq);
+    out << QStringLiteral("\n[Sample rate]\n");
+    out << tr("%1 Hz").arg(samplingFreq);
+    out << QStringLiteral("\n[Time]\n%1\n").arg(startTime.toString("hh:mm:ss"));
+    out << QStringLiteral("[Coordinates]\n");
+    out << tr("%1 deg. - latitude\n").arg(latitude);
+    out << tr("%1 deg. - longitude\n").arg(longitude);
+    out << QStringLiteral("[Date]\n%1\n").arg(startTime.toString("dd.MM.yyyy"));
     out << QStringLiteral("[Values]\n");
 }
 

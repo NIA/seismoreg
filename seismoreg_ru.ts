@@ -51,7 +51,34 @@
         <translation>Открыт файл %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="181"/>
+        <location filename="src/filewriter.cpp" line="167"/>
+        <source>Device ID=%1</source>
+        <translation>Номер прибора-%1</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="169"/>
+        <location filename="src/filewriter.cpp" line="171"/>
+        <source>%1 Hz</source>
+        <translation>%1 Гц</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="174"/>
+        <source>%1 deg. - latitude
+</source>
+        <translation>%1 град. - широта
+</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="175"/>
+        <source>%1 deg. - longitude
+</source>
+        <oldsource>%2 deg. - longitude
+</oldsource>
+        <translation>%1 град. - долгота
+</translation>
+    </message>
+    <message>
+        <location filename="src/filewriter.cpp" line="187"/>
         <source>Closed file %1</source>
         <translation>Закрыт файл %1</translation>
     </message>
@@ -160,7 +187,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="342"/>
-        <location filename="src/mainwindow.cpp" line="360"/>
+        <location filename="src/mainwindow.cpp" line="330"/>
         <source>Filename format help</source>
         <translation>Справка по формату имени файла</translation>
     </message>
@@ -443,7 +470,7 @@
         <translation type="obsolete">ТЕСТ</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="85"/>
+        <location filename="src/mainwindow.cpp" line="88"/>
         <source>Plotting</source>
         <translation>Графики</translation>
     </message>
@@ -456,37 +483,63 @@
         <translation type="obsolete">Всего</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="84"/>
+        <location filename="src/mainwindow.cpp" line="87"/>
         <source>Stats</source>
         <translation>Stats</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="84"/>
+        <location filename="src/mainwindow.cpp" line="87"/>
         <source>DataView</source>
         <translation>DataView</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="85"/>
+        <location filename="src/mainwindow.cpp" line="88"/>
         <source>Total (MainWindow)</source>
         <translation>Всего (MainWindow)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="286"/>
+        <location filename="src/mainwindow.cpp" line="377"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="294"/>
+        <location filename="src/mainwindow.cpp" line="387"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="352"/>
+        <location filename="src/mainwindow.cpp" line="570"/>
+        <source>Quit while receiving data?</source>
+        <translation>Выйти во время получения данных?</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="571"/>
+        <source>Are you sure you want to quit?
+Last pieces of data may be lost, if they are not written on disk yet
+
+Quit and interrupt receiving of data?</source>
+        <translation>Вы уверены, что хотите выйти?
+Последние данные могут быть потеряны, если они ещё не записаны на диск.
+
+Выйти и прервать получение данных?</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="596"/>
+        <source>Worker thread hangs</source>
+        <translation>Поток Worker завис</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="601"/>
+        <source>FileWriter thread hangs</source>
+        <translation>Поток FileWriter завис</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="322"/>
         <source>Choose output directory for data files</source>
         <translation>Выберите директорию для записи файлов данных</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="374"/>
+        <location filename="src/mainwindow.cpp" line="401"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>
@@ -870,34 +923,34 @@
 <context>
     <name>Worker</name>
     <message>
-        <location filename="src/worker.cpp" line="29"/>
+        <location filename="src/worker.cpp" line="36"/>
         <source>Called prepare twice!</source>
         <translation>Дважды вызвана prepare!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="37"/>
+        <location filename="src/worker.cpp" line="44"/>
         <source>Opening protocol: %1...</source>
         <translation>Открываю протокол: %1...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="39"/>
-        <location filename="src/worker.cpp" line="45"/>
+        <location filename="src/worker.cpp" line="46"/>
+        <location filename="src/worker.cpp" line="52"/>
         <source>Opened protocol: %1</source>
         <translation>Открыт протокол: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="43"/>
+        <location filename="src/worker.cpp" line="50"/>
         <source>Opening GPS protocol: %1...</source>
         <translation>Открываю протокол GPS: %1...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="48"/>
+        <location filename="src/worker.cpp" line="55"/>
         <source>Failed to open GPS protocol: %1</source>
         <translation>Не удалось открыть протокол GPS: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="61"/>
-        <location filename="src/worker.cpp" line="102"/>
+        <location filename="src/worker.cpp" line="73"/>
+        <location filename="src/worker.cpp" line="114"/>
         <source>Checking ADC...</source>
         <translation>Проверка АЦП...</translation>
     </message>
@@ -906,76 +959,75 @@
         <translation type="obsolete">Не удалось открыть протокол: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="64"/>
+        <location filename="src/worker.cpp" line="76"/>
         <source>Failed to open ADC protocol: %1</source>
         <translation>Не удалось открыть протокол АЦП: %1</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="75"/>
+        <location filename="src/worker.cpp" line="87"/>
         <source>ADC ready</source>
         <translation>АЦП готов</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="81"/>
+        <location filename="src/worker.cpp" line="93"/>
         <source>Checking GPS...</source>
         <translation>Проверка GPS...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="85"/>
+        <location filename="src/worker.cpp" line="97"/>
         <source>ADC check failed!</source>
         <translation>Проверка АЦП неудачна!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="96"/>
+        <location filename="src/worker.cpp" line="108"/>
         <source>GPS ready</source>
         <translation>GPS готов</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="106"/>
+        <location filename="src/worker.cpp" line="118"/>
         <source>GPS check failed!</source>
         <translation>Проверка GPS неудачна!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="117"/>
+        <location filename="src/worker.cpp" line="129"/>
         <source>Worker prepared and automatically started!</source>
         <translation>Worker подготовлен и автоматически запущен!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="120"/>
+        <location filename="src/worker.cpp" line="132"/>
         <source>Worker prepared and now can be started</source>
         <translation>Worker готов и может быть теперь запущен</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="128"/>
+        <location filename="src/worker.cpp" line="140"/>
         <source>Trying to start not prepared worker!</source>
         <translation>Попытка запуска не подготовленного Worker&apos;а!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="133"/>
+        <location filename="src/worker.cpp" line="145"/>
         <source>Trying to start already started worker!</source>
         <translation>Попытка запуска уже запущенного Worker&apos;а!</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="141"/>
+        <location filename="src/worker.cpp" line="153"/>
         <source>Starting receiving data...</source>
         <translation>Начинаю принимать данные...</translation>
+    </message>
+    <message>
+        <location filename="src/worker.cpp" line="161"/>
+        <source>Receiving data stopped</source>
+        <translation>Получение данных остановлено</translation>
     </message>
     <message>
         <source>Received %1 data items</source>
         <translation type="obsolete">Получено %1 данных</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="153"/>
-        <source>Paused receiving data!</source>
-        <translation>Приём данных приостановлен!</translation>
-    </message>
-    <message>
-        <location filename="src/worker.cpp" line="163"/>
         <source>Continuing receiving data after pause...</source>
-        <translation>Продолжаю приём данных после паузы...</translation>
+        <translation type="obsolete">Продолжаю приём данных после паузы...</translation>
     </message>
     <message>
-        <location filename="src/worker.cpp" line="171"/>
+        <location filename="src/worker.cpp" line="172"/>
         <source>Closed protocol: %1</source>
         <translation>Закрыт протокол: %1</translation>
     </message>

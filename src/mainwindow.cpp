@@ -26,6 +26,7 @@ namespace {
 
     const int TIME_SYNC_PERIOD_SECS = 60; // sync time every minute
     const int NEW_FILE_PERIOD_SECS  = 60*60; // reset file every hour
+    const int MAX_WAIT = 5000; // Wait background threads no more than 5 secs
 
     void initPortChooser(QComboBox * chooser, QString initialValue) {
         chooser->addItem(TEST_PROTOCOL);
@@ -574,14 +575,12 @@ bool MainWindow::askForClosing() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *e) {
-    if (workerStarted) {
-        if (false == askForClosing()) {
-            e->ignore();
-        } else {
-            e->accept();
-        }
+    if (workerStarted && (false == askForClosing()) ) {
+        e->ignore();
     } else {
         e->accept();
+        // Calls Worker::finish and FileWriter::closeIfOpened
+        emit finishing();
     }
 }
 
@@ -593,7 +592,16 @@ MainWindow::~MainWindow()
 
     threadFileWriter->quit();
     threadWorker->quit();
-    threadFileWriter->wait();
+    if (false == threadWorker->wait(MAX_WAIT)) {
+        Logger::error(tr("Worker thread hangs"));
+    } else {
+        delete worker;
+    }
+    if (false == threadFileWriter->wait(MAX_WAIT)) {
+        Logger::error(tr("FileWriter thread hangs"));
+    } else {
+        delete fileWriter;
+    }
 
     perfPlotting.reportResults();
     FileWriter::perfReporter.reportResults();
@@ -605,7 +613,5 @@ MainWindow::~MainWindow()
     TestProtocol::perfReporter.reportResults();
     perfTotal.flushDebug();
 
-    delete worker;
-    delete fileWriter;
     delete ui;
 }

@@ -177,6 +177,9 @@ void Worker::finalizeProtocol(Protocol * protocol) {
 }
 
 void Worker::finish() {
+    if (started) {
+        stop();
+    }
     finalizeProtocol(protocolADC_);
     if (protocolADC_ != protocolGPS_) {
         finalizeProtocol(protocolGPS_);
@@ -184,7 +187,6 @@ void Worker::finish() {
     autostart = false;
     prepared = false;
     started = false;
-    emit startedOrStopped(false);
     emit finished();
 }
 

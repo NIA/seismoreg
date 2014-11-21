@@ -25,51 +25,51 @@
 %i - ID устройства</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="116"/>
+        <location filename="src/filewriter.cpp" line="117"/>
         <source>Device id: %1</source>
         <translation>ID устройства: %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="121"/>
+        <location filename="src/filewriter.cpp" line="122"/>
         <source>Nothing to write to file</source>
         <oldsource>Nothing to write in queue</oldsource>
         <translation>Нечего записать в файл</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="139"/>
+        <location filename="src/filewriter.cpp" line="140"/>
         <source>Written %1 items to file %2</source>
         <translation>Записано %1 данных в файл %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="150"/>
+        <location filename="src/filewriter.cpp" line="151"/>
         <source>Failed to open file %1: %2</source>
         <translation>Не удалось открыть файл %1: %2</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="153"/>
+        <location filename="src/filewriter.cpp" line="154"/>
         <source>Opened file %1</source>
         <translation>Открыт файл %1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="167"/>
+        <location filename="src/filewriter.cpp" line="168"/>
         <source>Device ID=%1</source>
         <translation>Номер прибора-%1</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="169"/>
-        <location filename="src/filewriter.cpp" line="171"/>
+        <location filename="src/filewriter.cpp" line="170"/>
+        <location filename="src/filewriter.cpp" line="172"/>
         <source>%1 Hz</source>
         <translation>%1 Гц</translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="174"/>
+        <location filename="src/filewriter.cpp" line="175"/>
         <source>%1 deg. - latitude
 </source>
         <translation>%1 град. - широта
 </translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="175"/>
+        <location filename="src/filewriter.cpp" line="176"/>
         <source>%1 deg. - longitude
 </source>
         <oldsource>%2 deg. - longitude
@@ -78,7 +78,7 @@
 </translation>
     </message>
     <message>
-        <location filename="src/filewriter.cpp" line="187"/>
+        <location filename="src/filewriter.cpp" line="188"/>
         <source>Closed file %1</source>
         <translation>Закрыт файл %1</translation>
     </message>
@@ -498,22 +498,32 @@
         <translation>Всего (MainWindow)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="377"/>
+        <location filename="src/mainwindow.cpp" line="373"/>
         <source>Received time update: %1UTC</source>
         <translation>Получено обновление времени: %1UTC</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="387"/>
+        <location filename="src/mainwindow.cpp" line="383"/>
         <source>Received position update: %1, %2, %3m</source>
         <translation>Получено обновление позиции: %1, %2, %3м</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="570"/>
+        <location filename="src/mainwindow.cpp" line="484"/>
+        <source>Current output directory &apos;%1&apos; is checked</source>
+        <translation>Текущая папка для записи &apos;%1&apos; проверена</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="489"/>
+        <source>Current output directory &apos;%1&apos; isn&apos;t writable!</source>
+        <translation>Текущая папка для записи &apos;%1&apos; не доступна для записи!</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="587"/>
         <source>Quit while receiving data?</source>
         <translation>Выйти во время получения данных?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="571"/>
+        <location filename="src/mainwindow.cpp" line="588"/>
         <source>Are you sure you want to quit?
 Last pieces of data may be lost, if they are not written on disk yet
 
@@ -524,12 +534,12 @@ Quit and interrupt receiving of data?</source>
 Выйти и прервать получение данных?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="596"/>
+        <location filename="src/mainwindow.cpp" line="613"/>
         <source>Worker thread hangs</source>
         <translation>Поток Worker завис</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="601"/>
+        <location filename="src/mainwindow.cpp" line="618"/>
         <source>FileWriter thread hangs</source>
         <translation>Поток FileWriter завис</translation>
     </message>
@@ -539,7 +549,7 @@ Quit and interrupt receiving of data?</source>
         <translation>Выберите директорию для записи файлов данных</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="401"/>
+        <location filename="src/mainwindow.cpp" line="397"/>
         <source>Received %1 data items</source>
         <translation>Получено %1 данных</translation>
     </message>

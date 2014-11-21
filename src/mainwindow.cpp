@@ -270,9 +270,9 @@ void MainWindow::setup() {
         }
         ui->portChooser->setFocus();
 
-        ui->ledReady->setValue(false);
         ui->ledWorking->setValue(false);
     });
+    checkOutputDirectory();
 }
 
 void MainWindow::initWorkerHandlers() {
@@ -351,10 +351,6 @@ void MainWindow::onPrepareFinished(Worker::PrepareResult res) {
     if(res == Worker::PrepareSuccess) {
         ui->startBtn->setEnabled(true);
         ui->startBtn->setFocus();
-
-        // TODO: avoid repetition in working with LEDs
-        ui->ledReady->setOnColor(QLed::Green);
-        ui->ledReady->setValue(true);
     } else {
         ui->connectBtn->setEnabled(true);
         ui->disconnectBtn->setDisabled(true);
@@ -472,8 +468,29 @@ void MainWindow::resetHistory() {
 }
 
 void MainWindow::onFileNameChanged() {
+    checkOutputDirectory();
     // Propagate the change to FileWriter
     emit fileNameChanged(ui->outputDir->text(), ui->saveFileFormat->text());
+}
+
+bool MainWindow::checkOutputDirectory() {
+    QString dir = ui->outputDir->text();
+    QFile testFile(dir + QString("/test%1.tmp").arg(QApplication::applicationPid()));
+    bool writable = testFile.open(QFile::WriteOnly);
+    if (writable) {
+        testFile.close();
+        testFile.remove();
+
+        Logger::info(tr("Current output directory '%1' is checked").arg(dir));
+        // TODO: avoid repetition in working with LEDs
+        ui->ledReady->setOnColor(QLed::Green);
+        ui->ledReady->setValue(true);
+    } else {
+        Logger::warning(tr("Current output directory '%1' isn't writable!").arg(dir));
+        ui->ledReady->setOnColor(QLed::Red);
+        ui->ledReady->setValue(true);
+    }
+    return writable;
 }
 
 void MainWindow::initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton * btn) {

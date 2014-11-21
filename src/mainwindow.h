@@ -62,6 +62,7 @@ private:
     void initPortSettingsAction(QAction * action, QString title, PortSettingsEx & portSettings, QToolButton *btn);
     void initZoomAction(QAction * action, QToolButton *btn);
     void setFileControlsState();
+    bool checkOutputDirectory();
     void setCurrentTime();
     void log(QString text);
     void setReceivedItems(int received);

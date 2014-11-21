@@ -96,6 +96,7 @@ void FileWriter::setAutoWriteEnabled(bool enabled) {
     autoWrite = enabled;
     if (enabled) {
         // TODO: check if can write and disable autoWrite if cannot
+        // BUG: somehow start time will be incorrect when enabling after disabling (see https://github.com/NIA/seismoreg/issues/9)
         if (! waitingQueue.isEmpty()) {
             writeNow();
         }

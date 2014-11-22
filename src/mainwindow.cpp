@@ -481,7 +481,7 @@ bool MainWindow::checkOutputDirectory() {
         testFile.close();
         testFile.remove();
 
-        Logger::info(tr("Current output directory '%1' is checked").arg(dir));
+        Logger::trace(tr("Current output directory '%1' is checked").arg(dir));
         // TODO: avoid repetition in working with LEDs
         ui->ledReady->setOnColor(QLed::Green);
         ui->ledReady->setValue(true);

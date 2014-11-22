@@ -118,8 +118,6 @@ void MainWindow::setup() {
     ui->mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
     connect(Logger::instance(), &Logger::si_messageAdded, this, &MainWindow::onLogMessage, Qt::QueuedConnection);
 
-    emit fileNameChanged(settings.outputDirectory(), settings.fileNameFormat());
-    emit deviceIdSet(settings.deviceId());
     // Init GUI
     initPortChooser(ui->portChooser, settings.portName(Settings::PortADC));
     initPortChooser(ui->portChooserGPS, settings.portName(Settings::PortGPS));
@@ -331,8 +329,11 @@ void MainWindow::initFileHandlers() {
     });
 
     // Set initial values
-    ui->outputDir->setText(fileWriter->outputDirectory());
-    ui->saveFileFormat->setText(fileWriter->fileNameFormat());
+    Settings settings;
+    ui->outputDir->setText(settings.outputDirectory());
+    ui->saveFileFormat->setText(settings.fileNameFormat());
+    emit fileNameChanged(settings.outputDirectory(), settings.fileNameFormat());
+    emit deviceIdSet(settings.deviceId());
     emit autoWriteChanged(ui->writeToFileEnabled->isChecked());
     setFileControlsState();
 }
@@ -529,7 +530,7 @@ void MainWindow::onZoomChanged(double newMin, double newMax) {
 
     setFixedScale();
 
-    if (!worker->isStarted()) {
+    if (!workerStarted) {
         // replot to see the change (when started, it will be replotted when received next data)
         for (TimePlot * plot: plots) {
             plot->replot();

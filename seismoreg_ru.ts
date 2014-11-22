@@ -27,7 +27,7 @@
     <message>
         <location filename="src/filewriter.cpp" line="117"/>
         <source>Device id: %1</source>
-        <translation>ID устройства: %1</translation>
+        <translation>Номер прибора: %1</translation>
     </message>
     <message>
         <location filename="src/filewriter.cpp" line="122"/>

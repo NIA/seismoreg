@@ -73,7 +73,9 @@ void FileWriter::receiveData(TimeStampsVector t, DataVector d) {
         for(unsigned ch = 0; ch < CHANNELS_NUM; ++ch) {
             number.setNum(item.byChannel[ch]);
             allData += number;
-            allData += '\t';
+            if (ch < CHANNELS_NUM-1) {
+                allData += "    "; // 4 spaces except the last column
+            }
         }
         allData += '\n';
     }
@@ -96,7 +98,14 @@ void FileWriter::setAutoWriteEnabled(bool enabled) {
     autoWrite = enabled;
     if (enabled) {
         // TODO: check if can write and disable autoWrite if cannot
+
+
+
         // BUG: somehow start time will be incorrect when enabling after disabling (see https://github.com/NIA/seismoreg/issues/9)
+
+
+
+
         if (! waitingQueue.isEmpty()) {
             writeNow();
         }

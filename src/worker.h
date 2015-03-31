@@ -167,6 +167,18 @@ private slots:
     void onCheckedADC(bool);
     void onCheckedGPS(bool);
 private:
+    /*! Initializes all fields */
+    void setInitial();
+    /*!
+     * \brief Clever setter for \a prepared
+     * \param res the result of preparing (\see PrepareResult)
+     *
+     * Does three things:
+     *
+     * 1. Sets \a prepared to either true or false
+     * 2. Emits Worker::prepareFinished() passing \a res to it
+     * 3. If \a autostart enabled, starts worker
+     */
     void setPrepared(PrepareResult res);
 
     void assignProtocol(Protocol *& lvalue, ProtocolCreator * rvalue);

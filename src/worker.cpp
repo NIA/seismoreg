@@ -5,7 +5,7 @@ Worker::Worker(QObject *parent)
     : QObject(parent), protocolADC_(NULL), protocolGPS_(NULL)
 {
     // Set all params to initial values
-    finish();
+    setInitial();
 }
 
 void Worker::reset(ProtocolCreator *protADC, ProtocolCreator *protGPS) {
@@ -120,6 +120,13 @@ void Worker::onCheckedGPS(bool success) {
     }
 }
 
+void Worker::setInitial()
+{
+    autostart = false;
+    prepared = false;
+    started = false;
+}
+
 void Worker::setPrepared(PrepareResult res) {
     prepared = (res == PrepareSuccess);
     emit prepareFinished(res);
@@ -184,9 +191,7 @@ void Worker::finish() {
     if (protocolADC_ != protocolGPS_) {
         finalizeProtocol(protocolGPS_);
     }
-    autostart = false;
-    prepared = false;
-    started = false;
+    setInitial();
     emit finished();
 }
 
